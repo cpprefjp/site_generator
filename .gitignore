@@ -1,5 +1,5 @@
 *.pyc
-cpprefjp.site/
-boostjp.site/
-cpprefjp.github.io/
-boostjp.github.io/
+cpprefjp/site/
+cpprefjp/cpprefjp.github.io/
+boostjp/site/
+boostjp/boostjp.github.io/
