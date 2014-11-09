@@ -7,6 +7,7 @@ site_generator
 
 ```
 $ git clone https://github.com/cpprefjp/site_generator.git
+$ cd site_generator
 $ git submodule update -i
 ```
 
