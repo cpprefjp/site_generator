@@ -14,6 +14,6 @@ rm -r boostjp/boostjp.github.io/*
 
 cd boostjp/boostjp.github.io
 git add ./ --all
-git commit -a "--author=boostjp-autoupdate <shigemasa7watanabe@gmail.com>"
+git commit -a "--author=boostjp-autoupdate <shigemasa7watanabe@gmail.com>" -m "update automatically"
 git push origin master
 '

@@ -14,6 +14,6 @@ rm -r cpprefjp/cpprefjp.github.io/*
 
 cd cpprefjp/cpprefjp.github.io
 git add ./ --all
-git commit -a "--author=cpprefjp-autoupdate <shigemasa7watanabe@gmail.com>"
+git commit -a "--author=cpprefjp-autoupdate <shigemasa7watanabe@gmail.com>" -m "update automatically"
 git push origin master
 '
