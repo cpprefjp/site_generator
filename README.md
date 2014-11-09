@@ -21,6 +21,14 @@ Python を使っているので、依存するライブラリを以下のよう�
 $ pip install -r requirements.txt
 ```
 
+`virtualenv` を使って、以下のようにすることをオススメします。
+
+```
+$ virtualenv venv
+$ source venv/bin/activate
+$ pip install -r requirements.txt
+```
+
 ### cpprefjp の場合
 
 ```python
