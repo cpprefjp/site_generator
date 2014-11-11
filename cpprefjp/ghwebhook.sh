@@ -8,7 +8,7 @@ cd site_generator
 git pull
 source venv/bin/activate
 
-pushd boostjp/site && git pull && popd
+pushd cpprefjp/site && git pull && popd
 
 rm -r cpprefjp/cpprefjp.github.io/*
 ./run.py settings.cpprefjp
