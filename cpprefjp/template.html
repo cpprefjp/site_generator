@@ -14,7 +14,7 @@
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
 <!-- <link rel="stylesheet" href="/static/css/root.css"> -->
 
-<script src="http://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
 <!-- <script src="//platform.twitter.com/widgets.js"></script> -->
 
@@ -59,10 +59,20 @@
             <div class="container-fluid">
 <div class="row">
   <div class="col-md-2">
-@@header@@
+@@sidebar@@
   </div>
   <div class="col-md-10">
+    <div class="row">
+@@header@@
+<ol class="breadcrumb">
+  <li><a href="#">Home</a></li>
+  <li><a href="#">Library</a></li>
+  <li class="active">Data</li>
+</ol>
+    </div>
+    <div class="row">
 @@body@@
+    </div>
   </div>
 </div>
             </div>
