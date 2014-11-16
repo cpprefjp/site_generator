@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block brand %}{{ brand }}{% endblock %}
+{% block title %}{{ title }}{% endblock %}
+
+{% macro sidebar_tree(children, parent_opened) %}
+  {% for child in children %}
+    {% if child.is_node %}
+      <li {{ 'style="display: none"' if not parent_opened }} {{ 'class="active"' if child.opened }}>
+        <span><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
+        {% if child.href %}
+          <a href="{{ child.href|urlencode }}">{{ child.title }}</a>
+        {% else %}
+          {{ child.title }}
+        {% endif %}
+        <ul>
+          {{ sidebar_tree(child.children, child.opened) }}
+        </ul>
+      </li>
+    {% else %}
+      <li {{ 'style="display: none"' if not parent_opened }}>
+        {% if child.href %}
+          <a href="{{ child.href|urlencode }}">{{ child.title }}</a>
+        {% else %}
+          {{ child.title }}
+        {% endif %}
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% block sidebar %}
+<div class="tree">
+  <ul>
+    {{ sidebar_tree(sidebar.children, True) }}
+  </ul>
+</div>
+{% endblock %}
+
+{% block content_header %}
+  <ol class="breadcrumb">
+    {% for header in content_header.headers %}
+      <li {{ 'class="active"' if header.is_active }}>
+        {% if not header.is_active and header.href %}
+          <a href="{{ header.href|urlencode }}">{{ header.title }}</a>
+        {% else %}
+          {{ header.title }}
+        {% endif %}
+      </li>
+    {% endfor %}
+  </ol>
+{% endblock %}
+
+{% block body %}
+  {{ body|safe }}
+{% endblock %}

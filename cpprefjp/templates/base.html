@@ -1,0 +1,210 @@
+<!doctype html>
+<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
+<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
+<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
+<!--[if gt IE 8]><!-->
+<html class="no-js" lang="en"> <!--<![endif]-->
+    <head>
+        <meta charset="UTF-8">
+
+        <title>{% block title %}{% endblock %}</title>
+
+        <meta name="viewport" content="width=device-width,initial-scale=1">
+
+<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<!-- <link rel="stylesheet" href="/static/css/root.css"> -->
+
+<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<!-- <script src="//platform.twitter.com/widgets.js"></script> -->
+
+<!-- <script src="/static/js/root.js"></script> -->
+
+
+        <!--[if lt IE 9]>
+        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+        <![endif]-->
+
+        <script>
+            document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
+        </script>
+
+        <style type="text/css">
+.tree{
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
+  -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
+  box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
+  background-color:#fbfbfb;
+  border:1px solid #999;
+  margin-bottom:10px;
+  /*max-height:300px;*/
+  /*min-height:20px;*/
+  /*overflow-y:auto;*/
+  padding:3px
+}
+.tree ul {
+  padding-left:32px
+}
+.tree > ul{
+  padding-left:0px
+}
+.tree a{
+  display:inline;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  width:90%
+}
+.tree li{
+  list-style-type:none;
+  margin:0;
+  padding:4px 0 0 2px;
+  position:relative
+}
+.tree li::before,.tree li::after{
+  content:'';
+  left:-20px;
+  position:absolute;
+  right:auto
+}
+.tree li::before{
+  border-left:1px solid #999;
+  bottom:50px;
+  height:100%;
+  top:0;
+  width:1px;
+  -webkit-transition:"border-color 0.1s ease 0.1s";
+  -moz-transition:"border-color 0.1s ease 0.1s";
+  -o-transition:"border-color 0.1s ease 0.1s";
+  transition:"border-color 0.1s ease 0.1s"
+}
+.tree li::after{
+  border-top:1px solid #999;
+  height:20px;
+  top:13px;
+  width:23px;
+  -webkit-transition:"border-color 0.1s ease 0.1s";
+  -moz-transition:"border-color 0.1s ease 0.1s";
+  -o-transition:"border-color 0.1s ease 0.1s";
+  transition:"border-color 0.1s ease 0.1s"
+}
+.tree li span{
+  -moz-border-radius:5px;
+  -webkit-border-radius:5px;
+  border:1px solid #999;
+  border-radius:5px;
+  display:inline-block;
+  line-height:14px;
+  padding:2px 4px;
+  text-decoration:none;
+  -webkit-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
+  -moz-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
+  -o-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
+  transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s
+}
+.tree li.parent_li>span{cursor:pointer}
+.tree li.parent_li>span:hover{
+  background-color:#df8505;
+  border:1px solid #c67605;
+  color:#fff
+}
+.tree li.parent_li>span:hover+ul li::after{border-top-color:#f89406}
+.tree li.parent_li>span:hover+ul li::before{border-left-color:#f89406}
+.tree li.parent_li>span:hover+ul li span{
+  background:#fddfb3;
+  border:1px solid #faa937;
+  color:#000
+}
+.tree li:last-child::before{height:30px}
+.tree>ul>li::before,.tree>ul>li::after{border:0}
+        </style>
+        <script>
+$(document).ready(function() {
+    $('.tree > ul')
+        .attr('role', 'tree')
+        .find('ul')
+        .attr('role', 'group');
+    $('.tree')
+        .find('li:has(ul)')
+        .addClass('parent_li')
+        .attr('role', 'treeitem')
+        .find(' > span')
+        .attr('title', 'Collapse this branch')
+        .on('click', function (e) {
+
+        var children = $(this).parent('li.parent_li').find(' > ul > li');
+        if (children.is(':visible')) {
+            children.hide('fast');
+            $(this)
+                .attr('title', 'Expand this branch')
+                .find(' > i')
+                .addClass('glyphicon-plus')
+                .removeClass('glyphicon-minus');
+        }
+        else {
+            children.show('fast');
+            $(this)
+                .attr('title', 'Collapse this branch')
+                .find(' > i')
+                .addClass('glyphicon-minus')
+                .removeClass('glyphicon-plus');
+        }
+        e.stopPropagation();
+    });
+});
+        </script>
+    </head>
+    <body>
+<header>
+  <nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+      <div class="navbar-header">
+        <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar-collapse">
+          <span class="sr-only">Toggle navigation</span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+          <span class="icon-bar"></span>
+        </button>
+        <a class="navbar-brand" href="/">{% block brand %}{% endblock %}</a>
+      </div>
+
+      <div class="collapse navbar-collapse" id="navbar-collapse">
+        <form class="navbar-form navbar-right" role="search">
+          <div class="form-group">
+            <input type="text" class="form-control" placeholder="Search">
+          </div>
+          <button type="submit" class="btn btn-default">検索</button>
+        </form>
+      </div>
+    </div>
+  </nav>
+</header>
+
+        <main id="main" role="main">
+            <div class="container-fluid">
+<div class="row">
+  <div class="col-md-3">
+    {% block sidebar %}{% endblock %}
+  </div>
+  <div class="col-md-9">
+    <div class="row">
+      {% block content_header %}{% endblock %}
+    </div>
+    <div class="row">
+      {% block body %}{% endblock %}
+    </div>
+  </div>
+</div>
+            </div>
+        </main>
+    </body>
+    <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.  chromium.org/developers/how-tos/chrome-frame-getting-started -->
+    <!--[if lt IE 7 ]>
+        <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+        <script>
+            window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
+        </script>
+    <![endif]-->
+</html>

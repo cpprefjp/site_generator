@@ -5,7 +5,8 @@ import re
 import markdown
 import sys
 import importlib
-from collections import defaultdict
+import jinja2
+
 
 if len(sys.argv) != 2:
     print '{} <setting>'.format(sys.argv[0])
@@ -14,7 +15,7 @@ if len(sys.argv) != 2:
 settings = importlib.import_module(sys.argv[1])
 
 
-def convert(path, tmpl):
+def md_to_html(path, md_data):
     md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
     paths = path.split('/')
 
@@ -36,12 +37,22 @@ def convert(path, tmpl):
         qualified_fenced_code,
         'codehilite(noclasses=True)',
         html_attribute])
-    html_data = md.convert(unicode(md_data, encoding='utf-8'))
+    return md.convert(unicode(md_data, encoding='utf-8'))
+
+
+def convert(path, template, context):
+    md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
+
+    body = md_to_html(path, md_data)
 
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
-    open(os.path.join(settings.OUTPUT_DIR, path + '.html'), 'w').write(tmpl.replace('@@body@@', html_data.encode('utf-8')))
+    html_data = template.render(body=body, **context)
+    if settings.USE_MINIFY:
+        import htmlmin
+        html_data = htmlmin.minify(html_data)
+    open(os.path.join(settings.OUTPUT_DIR, path + '.html'), 'w').write(html_data.encode('utf-8'))
 
 
 def target_paths():
@@ -96,97 +107,105 @@ def make_pageinfo(path):
     paths = path.split('/')
     md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
     title, md = split_title(md_data)
+    title = unicode(title, encoding='utf-8')
     if title is None:
         title = paths[-1]
-    filename = paths[-1]
-    dirnames = paths[:-1]
     return {
         'path': path,
+        'paths': paths,
         'href': '/' + path + '.html',
         'title': title,
-        'dirnames': dirnames,
-        'filename': filename,
     }
 
 
+class Sidebar(object):
+
+    def __init__(self):
+        self._children = {}
+        self.href = None
+        self.title = ''
+        self.name = ''
+        self.active = []
+        self.opened = False
+
+    @property
+    def is_node(self):
+        return len(self._children) != 0
+
+    @property
+    def children(self):
+        return sorted(self._children.values(), key=lambda x: (x.is_node, x.name))
+
+    def set_pageinfo(self, paths, href, title, *args, **kwargs):
+        sidebar = self
+        for path in paths:
+            if path not in sidebar._children:
+                child = Sidebar()
+                child.name = path
+                child.title = path
+                sidebar._children[path] = child
+            sidebar = sidebar._children[path]
+        sidebar.name = paths[-1]
+        sidebar.href = href
+        sidebar.title = title
+
+    def set_active(self, paths):
+        sidebar = self
+        for path in self.active:
+            sidebar = sidebar._children[path]
+            sidebar.opened = False
+
+        sidebar = self
+        for path in paths:
+            sidebar = sidebar._children[path]
+            sidebar.opened = True
+
+        self.active = paths
+
+
 def make_sidebar(pageinfos):
-    # TODO: use template engine
-    def quote(text):
-        text = text.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;')
-        return text
-
-    link2_fmt = '''<li class="list-group-item"><a href="{href}">{title}</a></li>'''
-    link1_fmt = '''
-      <div class="panel panel-default">
-        <div class="panel-heading" role="tab" id="{heading_id}">
-          <h4 class="panel-title">
-            <a data-toggle="collapse" data-parent="#accordion" href="#{collapse_id}" aria-expanded="true" aria-controls="{collapse_id}">
-              {title}
-            </a>
-          </h4>
-        </div>
-        <div id="{collapse_id}" class="panel-collapse collapse" role="tabpanel" aria-labelledby="{heading_id}">
-          <div class="panel-body">
-            <h4 class="panel-title">
-              <a href="{href}">
-                {title}
-              </a>
-            </h4>
-          </div>
-          <ul class="list-group">
-            {link2}
-          </ul>
-        </div>
-      </div>
-    '''
-    html = '''<div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">{link1}</div>'''
-
-    infodic = defaultdict(dict)
+    sidebar = Sidebar()
     for pageinfo in pageinfos:
-        depth = len(pageinfo['dirnames'])
-        if depth == 0:
-            filename = pageinfo['filename']
-            infodic[filename]['pageinfo'] = pageinfo
-        if depth == 1:
-            filename = pageinfo['dirnames'][0]
-            if 'children' not in infodic[filename]:
-                infodic[filename]['children'] = []
-            infodic[filename]['children'].append(pageinfo)
+        sidebar.set_pageinfo(**pageinfo)
+    return sidebar
 
-    link1 = ''
-    for filename in sorted(infodic):
-        if 'children' not in infodic[filename]:
-            continue
-        if 'pageinfo' not in infodic[filename]:
-            continue
 
-        pageinfo = infodic[filename]['pageinfo']
-        children = infodic[filename]['children']
-        link2 = ''
-        for child in children:
-            link2 += link2_fmt.format(href=child['href'], title=quote(child['title']))
-        heading_id = 'heading-' + pageinfo['path'].replace('/', '-')
-        collapse_id = 'collapse-' + pageinfo['path'].replace('/', '-')
-        link1 += link1_fmt.format(
-            link2=link2,
-            href=pageinfo['href'],
-            title=quote(pageinfo['title']),
-            heading_id=heading_id,
-            collapse_id=collapse_id)
+class ContentHeader(object):
 
-    return html.format(link1=link1)
-    #return '<ul>{}</ul>'.format(
-    #    ''.join(['<li><a href="{href}">{title}</a></li>'.format(**pageinfo) for pageinfo in pageinfos if len(pageinfo['dirnames']) < 2]))
+    def __init__(self, paths, sidebar):
+        self._headers = []
+        for i in range(len(paths)):
+            path = paths[i]
+            last = i == len(paths) - 1
+            child = sidebar._children[path]
+            self._headers.append({
+                'name': path,
+                'is_active': last,
+                'href': child.href,
+                'title': child.title,
+            })
+            sidebar = child
+
+    @property
+    def headers(self):
+        return self._headers
 
 
 def main():
     pageinfos = [make_pageinfo(path) for path in target_paths()]
     sidebar = make_sidebar(pageinfos)
-    tmpl = open(settings.PAGE_TEMPLATE).read()
-    tmpl = tmpl.replace('@@sidebar@@', sidebar)
+    env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
+    template = env.get_template('content.html')
     for pageinfo in pageinfos:
         print(pageinfo['path'])
-        convert(pageinfo['path'], tmpl.replace('@@title@@', pageinfo['title']))
+        sidebar.set_active(pageinfo['paths'])
+        content_header = ContentHeader(pageinfo['paths'], sidebar)
+        convert(pageinfo['path'], template, {
+            'title': pageinfo['title'] + settings.TITLE_SUFFIX,
+            'sidebar': sidebar,
+            'content_header': content_header,
+            'brand': unicode(settings.BRAND, encoding='utf-8'),
+        })
 
 
 if __name__ == '__main__':

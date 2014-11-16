@@ -10,5 +10,14 @@ OUTPUT_DIR = 'boostjp/boostjp.github.io'
 BASE_URL = 'http://boostjp.github.io'
 EDIT_URL_FORMAT = 'https://github.com/boostjp/site/edit/master/{paths}'
 
-# テンプレートファイル
-PAGE_TEMPLATE = 'boostjp/template.html'
+# ブランド名
+BRAND = 'boostjp : Boost日本語情報サイト'
+
+# タイトルの後ろに付ける文字列
+TITLE_SUFFIX = ' - boostjp'
+
+# テンプレートディレクトリ
+PAGE_TEMPLATE_DIR = 'boostjp/templates'
+
+# HTML の minify を行なうか
+USE_MINIFY = True

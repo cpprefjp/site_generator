@@ -10,5 +10,14 @@ OUTPUT_DIR = 'cpprefjp/cpprefjp.github.io'
 BASE_URL = 'http://cpprefjp.github.io'
 EDIT_URL_FORMAT = 'https://github.com/cpprefjp/site/edit/master/{paths}'
 
-# テンプレートファイル
-PAGE_TEMPLATE = 'cpprefjp/template.html'
+# ブランド名
+BRAND = 'cpprefjp - C++ Library Reference'
+
+# タイトルの後ろに付ける文字列
+TITLE_SUFFIX = ' - cpprefjp'
+
+# テンプレートディレクトリ
+PAGE_TEMPLATE_DIR = 'cpprefjp/templates'
+
+# HTML の minify を行なうか
+USE_MINIFY = True
