@@ -123,7 +123,6 @@
         <script>
 function tree_onclick(e) {
     var children = $(this).parent('li.parent_li').find(' > ul > li');
-    console.log(this, e, children);
     if (children.is(':visible')) {
         children.hide(100);
         $(this)
