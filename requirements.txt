@@ -3,3 +3,4 @@ Markdown==2.3.1
 MarkupSafe==0.23
 htmlmin==0.1.5
 wsgiref==0.1.2
+Pygments==1.6
