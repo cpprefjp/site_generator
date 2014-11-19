@@ -19,6 +19,9 @@ ATOM_TEMPLATE = '''<?xml version="1.0" encoding="utf-8"?>
       <id>{{ id|e }}</id>
       <updated>{{ entry.updated|e }}</updated>
       <summary>{{ entry.summary|e }}</summary>
+      {% if entry.content %}
+        <content>{{ entry.content|e }}</content>
+      {% endif %}
       <author>
         <name>{{ entry.author.name|e }}</name>
         <email>{{ entry.author.email|e }}</email>
@@ -69,10 +72,11 @@ def run_with_output(command, shell=True, check=True):
 
 class GitAtom(object):
 
-    def __init__(self, is_target, get_title, get_link):
+    def __init__(self, is_target, get_title, get_link, get_html_content):
         self._is_target = is_target
         self._get_title = get_title
         self._get_link = get_link
+        self._get_html_content = get_html_content
 
     def _get_content(self, commit, file):
         exitcode, output, _ = run_with_output('git show {commit}:{file}'.format(**locals()), check=False)
@@ -89,12 +93,15 @@ class GitAtom(object):
 
         _, summary, _ = run_with_output('git diff {commit}^ {commit} -- {file}'.format(**locals()))
 
+        html_data = self._get_html_content(commit, file, content)
+
         return {
             'title': title,
             'link': link,
             'id': id,
             'updated': updated,
             'summary': summary,
+            'content': html_data,
             'author': {
                 'name': author_name,
                 'email': author_email,

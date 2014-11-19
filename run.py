@@ -17,8 +17,7 @@ if len(sys.argv) != 2:
 settings = importlib.import_module(sys.argv[1])
 
 
-def md_to_html(path, md_data):
-    md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
+def md_to_html(md_data, path):
     paths = path.split('/')
 
     qualified_fenced_code = 'markdown_to_html.qualified_fenced_code'
@@ -39,13 +38,12 @@ def md_to_html(path, md_data):
         qualified_fenced_code,
         'codehilite(noclasses=True)',
         html_attribute])
-    return md.convert(unicode(md_data, encoding='utf-8'))
+    return md.convert(md_data)
 
 
 def convert(path, template, context):
-    md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
-
-    body = md_to_html(path, md_data)
+    md_data = unicode(open(os.path.join(settings.INPUT_DIR, path + '.md')).read(), encoding='utf-8')
+    body = md_to_html(md_data, path)
 
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
@@ -210,8 +208,11 @@ def make_atom():
     def get_link(commit, file, content):
         return settings.BASE_URL + '/' + file[:-3] + '.html'
 
+    def get_html_content(commit, file, content):
+        return md_to_html(content, file[:-3]) if content else ''
+
     title = unicode(settings.BRAND, encoding='utf-8')
-    return atom.GitAtom(is_target, get_title, get_link).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
+    return atom.GitAtom(is_target, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
 
 
 def main():
