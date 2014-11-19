@@ -3,6 +3,8 @@ from __future__ import unicode_literals
 import jinja2
 import os
 import subprocess
+import uuid
+import datetime
 
 
 ATOM_TEMPLATE = '''<?xml version="1.0" encoding="utf-8"?>
@@ -127,12 +129,8 @@ class GitAtom(object):
             for commit in commits:
                 entries += self._hash_to_entries(commit)
 
-            if len(entries) == 0:
-                updated = '2000-01-01 00:00:00'
-                id = 'no entry'
-            else:
-                updated = entries[0]['updated']
-                id = entries[0]['id']
+            updated = datetime.datetime.now().isoformat()
+            id = uuid.uuid4()
 
             dic = {
                 'title': title,
