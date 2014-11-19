@@ -206,6 +206,7 @@ def main():
             'content_header': content_header,
             'brand': unicode(settings.BRAND, encoding='utf-8'),
             'search': settings.GOOGLE_SITE_SEARCH,
+            'analytics': settings.GOOGLE_ANALYTICS,
         })
 
 
