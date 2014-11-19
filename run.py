@@ -210,7 +210,8 @@ def make_atom():
     def get_link(commit, file, content):
         return settings.BASE_URL + '/' + file[:-3] + '.html'
 
-    return atom.GitAtom(is_target, get_title, get_link).git_to_atom(settings.INPUT_DIR, settings.BRAND, settings.BASE_URL)
+    title = unicode(settings.BRAND, encoding='utf-8')
+    return atom.GitAtom(is_target, get_title, get_link).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
 
 
 def main():
