@@ -51,3 +51,6 @@ GOOGLE_ANALYTICS = '''
   ga('send', 'pageview');
 </script>
 '''
+
+# RSS ファイル
+RSS_PATH = 'rss.xml'

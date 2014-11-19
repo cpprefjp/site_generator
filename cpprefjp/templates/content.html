@@ -1,6 +1,10 @@
 {% extends "base.html" %}
-{% block brand %}{{ brand }}{% endblock %}
-{% block title %}{{ title }}{% endblock %}
+{% block brand %}{{ brand|e }}{% endblock %}
+{% block title %}{{ title|e }}{% endblock %}
+
+{% block rss %}
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="{{ rss }}" />
+{% endblock %}
 
 {% macro sidebar_tree(children, parent_opened) %}
   {% for child in children %}
@@ -8,9 +12,9 @@
       <li {{ 'style="display: none"' if not parent_opened }} class="parent_li {{ 'active' if child.opened }}">
         <span onclick="tree_onclick.call(this, event)"><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
         {% if child.href %}
-          <a href="{{ child.href|urlencode }}">{{ child.title }}</a>
+          <a href="{{ child.href }}">{{ child.title|e }}</a>
         {% else %}
-          {{ child.title }}
+          {{ child.title|e }}
         {% endif %}
         <ul>
           {{ sidebar_tree(child.children, child.opened) }}
@@ -19,9 +23,9 @@
     {% else %}
       <li {{ 'style="display: none"' if not parent_opened }}>
         {% if child.href %}
-          <a href="{{ child.href|urlencode }}">{{ child.title }}</a>
+          <a href="{{ child.href }}">{{ child.title|e }}</a>
         {% else %}
-          {{ child.title }}
+          {{ child.title|e }}
         {% endif %}
       </li>
     {% endif %}
@@ -41,9 +45,9 @@
     {% for header in content_header.headers %}
       <li {{ 'class="active"' if header.is_active }}>
         {% if not header.is_active and header.href %}
-          <a href="{{ header.href|urlencode }}">{{ header.title }}</a>
+          <a href="{{ header.href }}">{{ header.title|e }}</a>
         {% else %}
-          {{ header.title }}
+          {{ header.title|e }}
         {% endif %}
       </li>
     {% endfor %}

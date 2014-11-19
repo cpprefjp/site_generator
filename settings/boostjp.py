@@ -52,3 +52,6 @@ GOOGLE_ANALYTICS = '''
 
 </script>
 '''
+
+# RSS ファイル
+RSS_PATH = 'rss.xml'

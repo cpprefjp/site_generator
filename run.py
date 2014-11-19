@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 #coding: utf-8
+from __future__ import unicode_literals
 import os
 import re
 import markdown
 import sys
 import importlib
 import jinja2
+import atom
 
 
 if len(sys.argv) != 2:
@@ -107,9 +109,9 @@ def make_pageinfo(path):
     paths = path.split('/')
     md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
     title, md = split_title(md_data)
-    title = unicode(title, encoding='utf-8')
     if title is None:
         title = paths[-1]
+    title = unicode(title, encoding='utf-8')
     return {
         'path': path,
         'paths': paths,
@@ -191,6 +193,26 @@ class ContentHeader(object):
         return self._headers
 
 
+def make_atom():
+    def is_target(commit, file, content):
+        if file.endswith('.md'):
+            # 更新対象でないファイルは無視する
+            if re.match('^([A-Z].*)|(.*!(\.md))$', file.split('/')[-1]):
+                return False
+            return True
+
+    def get_title(commit, file, content):
+        title, md = split_title(content)
+        if title is None:
+            title = file.split('/')[-1]
+        return title
+
+    def get_link(commit, file, content):
+        return settings.BASE_URL + '/' + file[:-3] + '.html'
+
+    return atom.GitAtom(is_target, get_title, get_link).git_to_atom(settings.INPUT_DIR, settings.BRAND, settings.BASE_URL)
+
+
 def main():
     pageinfos = [make_pageinfo(path) for path in target_paths()]
     sidebar = make_sidebar(pageinfos)
@@ -207,7 +229,10 @@ def main():
             'brand': unicode(settings.BRAND, encoding='utf-8'),
             'search': settings.GOOGLE_SITE_SEARCH,
             'analytics': settings.GOOGLE_ANALYTICS,
+            'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
         })
+    with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w') as f:
+        f.write(make_atom().encode('utf-8'))
 
 
 if __name__ == '__main__':
