@@ -18,9 +18,9 @@ ATOM_TEMPLATE = '''<?xml version="1.0" encoding="utf-8"?>
       <link href="{{ entry.link }}"/>
       <id>{{ id|e }}</id>
       <updated>{{ entry.updated|e }}</updated>
-      <summary>{{ entry.summary|e }}</summary>
+      <summary type="html">{{ entry.summary|e }}</summary>
       {% if entry.content %}
-        <content>{{ entry.content|e }}</content>
+        <content type="html">{{ entry.content|e }}</content>
       {% endif %}
       <author>
         <name>{{ entry.author.name|e }}</name>
@@ -82,16 +82,17 @@ class GitAtom(object):
         exitcode, output, _ = run_with_output('git show {commit}:{file}'.format(**locals()), check=False)
         return output if exitcode == 0 else ''
 
-    def _file_to_entry(self, commit, file, author_name, author_email, updated):
+    def _file_to_entry(self, commit, file, author_name, author_email, updated, commit_title):
         content = self._get_content(commit, file)
         if not self._is_target(commit, file, content):
             return None
 
-        title = self._get_title(commit, file, content)
+        title = self._get_title(commit, file, content) + ' -- ' + commit_title
         link = self._get_link(commit, file, content)
         id = commit + ':' + file
 
         _, summary, _ = run_with_output('git diff {commit}^ {commit} -- {file}'.format(**locals()))
+        summary = jinja2.Template('<pre><code>{{ summary|e }}</code></pre>').render(summary=summary)
 
         html_data = self._get_html_content(commit, file, content)
 
@@ -112,9 +113,10 @@ class GitAtom(object):
         _, author_name, _ = run_with_output('git show {commit} -s --format=%aN'.format(**locals()))
         _, author_email, _ = run_with_output('git show {commit} -s --format=%aE'.format(**locals()))
         _, updated, _ = run_with_output('git show {commit} -s --format=%ai'.format(**locals()))
+        _, commit_title, _ = run_with_output('git show {commit} -s --format=%s'.format(**locals()))
         _, files_str, _ = run_with_output('git diff {commit}^ {commit} --name-only'.format(**locals()))
         files = files_str[:-1].split('\n')
-        entries = filter(None, [self._file_to_entry(commit, file, author_name[:-1], author_email[:-1], updated[:-1]) for file in files])
+        entries = filter(None, [self._file_to_entry(commit, file, author_name[:-1], author_email[:-1], updated[:-1], commit_title[:-1]) for file in files])
         return entries
 
     def git_to_atom(self, cwd, title, link):
