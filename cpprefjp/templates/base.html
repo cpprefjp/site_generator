@@ -160,6 +160,7 @@ function tree_onclick(e) {
     e.stopPropagation();
 }
         </script>
+    {% block analytics %}{% endblock %}
     </head>
     <body>
 <header>
@@ -212,5 +213,4 @@ function tree_onclick(e) {
             window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
         </script>
     <![endif]-->
-    {% block analytics %}{% endblock %}
 </html>
