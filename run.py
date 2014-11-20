@@ -149,7 +149,18 @@ class Sidebar(object):
         sidebar.href = href
         sidebar.title = title
 
+    def contains(self, paths):
+        sidebar = self
+        for path in paths:
+            if path not in sidebar._children:
+                return False
+            sidebar = sidebar._children[path]
+        return True
+
     def set_active(self, paths):
+        if not self.contains(paths):
+            return
+
         sidebar = self
         for path in self.active:
             sidebar = sidebar._children[path]
@@ -172,8 +183,19 @@ def make_sidebar(pageinfos):
 
 class ContentHeader(object):
 
-    def __init__(self, paths, sidebar):
+    def __init__(self, paths, sidebar, sidebar_index):
         self._headers = []
+        if sidebar_index:
+            last = len(paths) == 1 and paths[0] == 'index'
+            self._headers.append({
+                'name': 'index',
+                'is_active': last,
+                'href': sidebar_index.href,
+                'title': sidebar_index.title,
+            })
+            if last:
+                return
+
         for i in range(len(paths)):
             path = paths[i]
             last = i == len(paths) - 1
@@ -218,12 +240,18 @@ def make_atom():
 def main():
     pageinfos = [make_pageinfo(path) for path in target_paths()]
     sidebar = make_sidebar(pageinfos)
+    if 'index' in sidebar._children:
+        sidebar_index = sidebar._children['index']
+        del sidebar._children['index']
+    else:
+        sidebar_index = None
+
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
     template = env.get_template('content.html')
     for pageinfo in pageinfos:
         print(pageinfo['path'])
         sidebar.set_active(pageinfo['paths'])
-        content_header = ContentHeader(pageinfo['paths'], sidebar)
+        content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
         convert(pageinfo['path'], template, {
             'title': pageinfo['title'] + settings.TITLE_SUFFIX,
             'sidebar': sidebar,
