@@ -20,9 +20,10 @@ ATOM_TEMPLATE = '''<?xml version="1.0" encoding="utf-8"?>
       <link href="{{ entry.link }}"/>
       <id>{{ id|e }}</id>
       <updated>{{ entry.updated|e }}</updated>
-      <summary type="html">{{ entry.summary|e }}</summary>
       {% if entry.content %}
         <content type="html">{{ entry.content|e }}</content>
+      {% else %}
+        <summary type="html">{{ entry.summary|e }}</summary>
       {% endif %}
       <author>
         <name>{{ entry.author.name|e }}</name>
