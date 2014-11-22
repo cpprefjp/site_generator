@@ -3,6 +3,9 @@
 # 入力ディレクトリ
 INPUT_DIR = 'cpprefjp/site'
 
+# 静的ファイルディレクトリ
+STATIC_DIR = 'cpprefjp/static'
+
 # 出力ディレクトリ
 OUTPUT_DIR = 'cpprefjp/cpprefjp.github.io'
 

@@ -3,6 +3,9 @@
 # 入力ディレクトリ
 INPUT_DIR = 'boostjp/site'
 
+# 静的ファイルディレクトリ
+STATIC_DIR = 'cpprefjp/static'
+
 # 出力ディレクトリ
 OUTPUT_DIR = 'boostjp/boostjp.github.io'
 

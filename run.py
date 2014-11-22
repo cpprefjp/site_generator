@@ -6,6 +6,8 @@ import re
 import json
 import sys
 import importlib
+import subprocess
+import glob
 import markdown
 import jinja2
 import atom
@@ -358,6 +360,9 @@ def main():
 
     with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w') as f:
         f.write(make_atom().encode('utf-8'))
+
+    # 静的ファイルをコピーする
+    subprocess.call(['cp', '-v', '-r'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])
 
 
 if __name__ == '__main__':
