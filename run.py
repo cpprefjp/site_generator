@@ -294,6 +294,32 @@ class Cache(object):
             f.write(json.dumps(self._cache))
 
 
+# 不要な html を削除する
+# static ファイルや rss も消えるが、この後生成するので気にしない
+def remove_not_target_paths(paths):
+    html_path_set = set(map(make_html_path, paths))
+    for root, dirs, files in os.walk(settings.OUTPUT_DIR):
+        if '/.git' in root:
+            continue
+
+        for f in files:
+            target_file_path = os.path.join(root, f)
+            if target_file_path not in html_path_set:
+                print('remove: ' + target_file_path)
+                os.remove(target_file_path)
+    # 空ディレクトリの削除
+    for root, dirs, files in os.walk(settings.OUTPUT_DIR, topdown=False):
+        if '/.git' in root:
+            continue
+
+        if len(files) == 0:
+            try:
+                os.rmdir(root)
+                print('remove directory: ' + root)
+            except:
+                pass
+
+
 def main():
     pageinfos = [make_pageinfo(path) for path in target_paths()]
     sidebar = make_sidebar(pageinfos)
@@ -328,6 +354,7 @@ def main():
         })
         cache.converted(pageinfo['path'])
     cache.flush()
+    remove_not_target_paths(pageinfo['path'] for pageinfo in pageinfos)
 
     with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w') as f:
         f.write(make_atom().encode('utf-8'))

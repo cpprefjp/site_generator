@@ -10,7 +10,6 @@ source venv/bin/activate
 
 pushd cpprefjp/site && git pull && popd
 
-rm -r cpprefjp/cpprefjp.github.io/* || true
 ./run.py settings.cpprefjp
 
 cd cpprefjp/cpprefjp.github.io

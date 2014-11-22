@@ -10,7 +10,6 @@ source venv/bin/activate
 
 pushd boostjp/site && git pull && popd
 
-rm -r boostjp/boostjp.github.io/* || true
 ./run.py settings.boostjp
 
 cd boostjp/boostjp.github.io
