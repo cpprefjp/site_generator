@@ -3,18 +3,29 @@
 from __future__ import unicode_literals
 import os
 import re
-import markdown
+import json
 import sys
 import importlib
+import markdown
 import jinja2
 import atom
 
 
-if len(sys.argv) != 2:
-    print '{} <setting>'.format(sys.argv[0])
+if len(sys.argv) < 2:
+    print '{} <setting> [--all]'.format(sys.argv[0])
     sys.exit(0)
 
 settings = importlib.import_module(sys.argv[1])
+CONVERT_ALL = '--all' in sys.argv[2:]
+CACHE_FILE = sys.argv[1] + '.cache'
+
+
+def make_md_path(path):
+    return os.path.join(settings.INPUT_DIR, path + '.md')
+
+
+def make_html_path(path):
+    return os.path.join(settings.OUTPUT_DIR, path + '.html')
 
 
 def md_to_html(md_data, path):
@@ -42,7 +53,7 @@ def md_to_html(md_data, path):
 
 
 def convert(path, template, context):
-    md_data = unicode(open(os.path.join(settings.INPUT_DIR, path + '.md')).read(), encoding='utf-8')
+    md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
     body = md_to_html(md_data, path)
 
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
@@ -52,7 +63,7 @@ def convert(path, template, context):
     if settings.USE_MINIFY:
         import htmlmin
         html_data = htmlmin.minify(html_data)
-    open(os.path.join(settings.OUTPUT_DIR, path + '.html'), 'w').write(html_data.encode('utf-8'))
+    open(make_html_path(path), 'w').write(html_data.encode('utf-8'))
 
 
 def target_paths():
@@ -105,7 +116,7 @@ def split_title(md):
 
 def make_pageinfo(path):
     paths = path.split('/')
-    md_data = open(os.path.join(settings.INPUT_DIR, path + '.md')).read()
+    md_data = open(make_md_path(path)).read()
     title, md = split_title(md_data)
     if title is None:
         title = paths[-1]
@@ -237,6 +248,52 @@ def make_atom():
     return atom.GitAtom(is_target, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
 
 
+class Cache(object):
+
+    def __init__(self, cache_file):
+        try:
+            self._cache = json.loads(open(cache_file).read())
+        except:
+            self._cache = {}
+        self._cache_file = cache_file
+
+    def convert_required(self, path):
+        if path not in self._cache:
+            return True
+        cache = self._cache[path]
+
+        if 'md_lastmodify' not in cache:
+            return True
+        if 'html_lastmodify' not in cache:
+            return True
+
+        md_path = make_md_path(path)
+        if not os.path.exists(md_path):
+            return True
+        if os.path.getmtime(md_path) != cache['md_lastmodify']:
+            return True
+
+        html_path = make_html_path(path)
+        if not os.path.exists(html_path):
+            return True
+        if os.path.getmtime(html_path) != cache['html_lastmodify']:
+            return True
+
+        return False
+
+    def converted(self, path):
+        md_path = make_md_path(path)
+        html_path = make_html_path(path)
+        self._cache[path] = {
+            'md_lastmodify': os.path.getmtime(md_path),
+            'html_lastmodify': os.path.getmtime(html_path),
+        }
+
+    def flush(self):
+        with open(self._cache_file, 'w') as f:
+            f.write(json.dumps(self._cache))
+
+
 def main():
     pageinfos = [make_pageinfo(path) for path in target_paths()]
     sidebar = make_sidebar(pageinfos)
@@ -246,10 +303,18 @@ def main():
     else:
         sidebar_index = None
 
+    cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
     template = env.get_template('content.html')
     for pageinfo in pageinfos:
-        print(pageinfo['path'])
+        required = cache.convert_required(pageinfo['path'])
+        if not CONVERT_ALL and not required:
+            # print(pageinfo['path'] + ' -- already converted')
+            continue
+        if CONVERT_ALL and not required:
+            print(pageinfo['path'] + ' -- force converting')
+        else:
+            print(pageinfo['path'])
         sidebar.set_active(pageinfo['paths'])
         content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
         convert(pageinfo['path'], template, {
@@ -261,6 +326,9 @@ def main():
             'analytics': settings.GOOGLE_ANALYTICS,
             'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
         })
+        cache.converted(pageinfo['path'])
+    cache.flush()
+
     with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w') as f:
         f.write(make_atom().encode('utf-8'))
 
