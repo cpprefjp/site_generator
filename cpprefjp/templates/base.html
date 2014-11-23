@@ -146,6 +146,17 @@ code {
 a code {
     color: #428bca;
 }
+.row > h1:first-child {
+    margin-top: 0px;
+}
+.edit {
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  border:1px solid #999;
+  margin: 5px;
+  padding: 3px;
+}
         </style>
         <script>
 function tree_onclick(e) {
@@ -206,6 +217,13 @@ function tree_onclick(e) {
     </div>
     <div class="row">
       {% block content_header %}{% endblock %}
+    </div>
+    <div class="row">
+      <p class="text-right">
+        <a class="edit" target="_blank" href="{% block edit_url %}{% endblock %}">
+          <span class="glyphicon glyphicon-pencil"></span>編集
+        </a>
+      </p>
     </div>
     <div class="row">
       {% block body %}{% endblock %}

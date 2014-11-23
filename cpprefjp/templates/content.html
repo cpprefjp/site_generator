@@ -6,6 +6,8 @@
   <link rel="alternate" type="application/atom+xml" title="Atom" href="{{ rss }}" />
 {% endblock %}
 
+{% block edit_url %}{{ edit_url }}{% endblock %}
+
 {% macro sidebar_tree(children, parent_opened) %}
   {% for child in children %}
     {% if child.is_node %}

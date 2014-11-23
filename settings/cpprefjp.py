@@ -11,7 +11,7 @@ OUTPUT_DIR = 'cpprefjp/cpprefjp.github.io'
 
 # URL ベース
 BASE_URL = 'http://cpprefjp.github.io'
-EDIT_URL_FORMAT = 'https://github.com/cpprefjp/site/edit/master/{paths}'
+EDIT_URL_FORMAT = 'https://github.com/cpprefjp/site/edit/master/{path}'
 
 # ブランド名
 BRAND = 'cpprefjp - C++ Library Reference'

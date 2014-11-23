@@ -353,6 +353,7 @@ def main():
             'search': settings.GOOGLE_SITE_SEARCH,
             'analytics': settings.GOOGLE_ANALYTICS,
             'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
+            'edit_url': settings.EDIT_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
         })
         cache.converted(pageinfo['path'])
     cache.flush()
