@@ -14,7 +14,7 @@ BASE_URL = 'http://cpprefjp.github.io'
 EDIT_URL_FORMAT = 'https://github.com/cpprefjp/site/edit/master/{path}'
 
 # ブランド名
-BRAND = 'cpprefjp - C++ Library Reference'
+BRAND = 'cpprefjp - C++ Reference Site'
 
 # タイトルの後ろに付ける文字列
 TITLE_SUFFIX = ' - cpprefjp'
