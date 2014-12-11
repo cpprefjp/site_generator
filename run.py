@@ -68,14 +68,21 @@ def convert(path, template, context):
     open(make_html_path(path), 'w').write(html_data.encode('utf-8'))
 
 
+def is_target(path):
+    # .md ファイルでなかったり、
+    # 大文字のみの .md ファイルは変換しない
+    if not path.endswith('.md'):
+        return False
+    if re.match(r'^[A-Z]+\.md$', path.split('/')[-1]):
+        return False
+    return True
+
+
 def target_paths():
     for root, dirs, files in os.walk(settings.INPUT_DIR):
         for f in files:
-            if f.endswith('.md'):
-                path = os.path.join(root, f)[len(settings.INPUT_DIR):].lstrip('/')
-                # 更新対象でないファイルは無視する
-                if re.match('^([A-Z].*)|(.*!(\.md))$', path.split('/')[-1]):
-                    continue
+            path = os.path.join(root, f)[len(settings.INPUT_DIR):].lstrip('/')
+            if is_target(path):
                 # .md を取り除く
                 path = path[:-3]
                 yield path
@@ -227,12 +234,8 @@ class ContentHeader(object):
 
 
 def make_atom():
-    def is_target(commit, file, content):
-        if file.endswith('.md'):
-            # 更新対象でないファイルは無視する
-            if re.match('^([A-Z].*)|(.*!(\.md))$', file.split('/')[-1]):
-                return False
-            return True
+    def is_target_(commit, file, content):
+        return is_target(file)
 
     def get_title(commit, file, content):
         title, md = split_title(content)
@@ -247,7 +250,7 @@ def make_atom():
         return md_to_html(content, file[:-3]) if content else ''
 
     title = unicode(settings.BRAND, encoding='utf-8')
-    return atom.GitAtom(is_target, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
+    return atom.GitAtom(is_target_, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
 
 
 class Cache(object):
