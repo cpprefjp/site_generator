@@ -56,6 +56,9 @@
   </ol>
 {% endblock %}
 
+{% block project %}
+  <a href="{{ project_url }}">{{ project_name }}</a>
+{% endblock %}
 {% block body %}
   {{ body|safe }}
 {% endblock %}

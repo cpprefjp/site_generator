@@ -197,9 +197,14 @@ function tree_onclick(e) {
       </div>
 
       <div class="collapse navbar-collapse" id="navbar-collapse">
-        <div class="nav navbar-nav navbar-right google-search">
-          {% block search %}{% endblock %}
-        </div>
+        <ul class="nav navbar-nav navbar-right">
+          <li>
+            <div class="google-search">
+              {% block search %}{% endblock %}
+            </div>
+          </li>
+          <li>{% block project %}{% endblock %}</li>
+        </ul>
       </div>
     </div>
   </nav>

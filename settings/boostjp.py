@@ -12,6 +12,8 @@ OUTPUT_DIR = 'boostjp/boostjp.github.io'
 # URL ベース
 BASE_URL = 'http://boostjp.github.io'
 EDIT_URL_FORMAT = 'https://github.com/boostjp/site/edit/master/{path}'
+PROJECT_URL = 'https://github.com/boostjp/site'
+PROJECT_NAME = 'GitHub Project'
 
 # ブランド名
 BRAND = 'boostjp : Boost日本語情報サイト'

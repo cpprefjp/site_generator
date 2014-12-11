@@ -354,6 +354,8 @@ def main():
             'analytics': settings.GOOGLE_ANALYTICS,
             'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
             'edit_url': settings.EDIT_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
+            'project_url': settings.PROJECT_URL,
+            'project_name': settings.PROJECT_NAME,
         })
         cache.converted(pageinfo['path'])
     cache.flush()
