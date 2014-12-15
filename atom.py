@@ -97,20 +97,28 @@ class GitAtom(object):
         _, summary, _ = run_with_output('git diff {commit}^ {commit} -- {file}'.format(**locals()))
         summary = jinja2.Template('<pre><code>{{ summary|e }}</code></pre>').render(summary=summary)
 
-        html_data = self._get_html_content(commit, file, content)
-
-        return {
+        result = {
             'title': title,
             'link': link,
             'id': id,
             'updated': updated,
             'summary': summary,
-            'content': html_data,
             'author': {
                 'name': author_name,
                 'email': author_email,
             }
         }
+
+        try:
+            html_data = self._get_html_content(commit, file, content)
+            if html_data:
+                result.update({
+                    'content': html_data,
+                })
+        except Exception:
+            pass
+
+        return result
 
     def _hash_to_entries(self, commit):
         _, author_name, _ = run_with_output('git show {commit} -s --format=%aN'.format(**locals()))
