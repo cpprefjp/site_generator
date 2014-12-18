@@ -214,21 +214,29 @@ function tree_onclick(e) {
             <div class="container-fluid">
 <div class="row">
   <div class="col-sm-9 col-sm-push-3">
-    <div class="row google-search-result">
-      <gcse:searchresults></gcse:searchresults>
+    <div class="row">
+      <div class="col-sm-12 google-search-result">
+        <gcse:searchresults></gcse:searchresults>
+      </div>
     </div>
     <div class="row">
-      {% block content_header %}{% endblock %}
+      <div class="col-sm-12 content-header">
+        {% block content_header %}{% endblock %}
+      </div>
     </div>
     <div class="row">
-      <p class="text-right">
-        <a class="edit" target="_blank" href="{% block edit_url %}{% endblock %}">
-          <span class="glyphicon glyphicon-pencil"></span>編集
-        </a>
-      </p>
+      <div class="col-sm-12 edit-button">
+        <p class="text-right">
+          <a class="edit" target="_blank" href="{% block edit_url %}{% endblock %}">
+            <span class="glyphicon glyphicon-pencil"></span>編集
+          </a>
+        </p>
+      </div>
     </div>
     <div class="row">
-      {% block body %}{% endblock %}
+      <div class="col-sm-12 content-body">
+        {% block body %}{% endblock %}
+      </div>
     </div>
   </div>
   <div class="col-sm-3 col-sm-pull-9">
