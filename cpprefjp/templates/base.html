@@ -157,6 +157,14 @@ a code {
   margin: 5px;
   padding: 3px;
 }
+.history {
+  -webkit-border-radius:4px;
+  -moz-border-radius:4px;
+  border-radius:4px;
+  border:1px solid #999;
+  margin: 5px;
+  padding: 3px;
+}
         </style>
         <script>
 function tree_onclick(e) {
@@ -227,6 +235,9 @@ function tree_onclick(e) {
     <div class="row">
       <div class="col-sm-12 edit-button">
         <p class="text-right">
+          <a class="history" target="_blank" href="{% block history_url %}{% endblock %}">
+            <span class="glyphicon glyphicon-time"></span>履歴
+          </a>
           <a class="edit" target="_blank" href="{% block edit_url %}{% endblock %}">
             <span class="glyphicon glyphicon-pencil"></span>編集
           </a>

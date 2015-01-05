@@ -12,6 +12,7 @@ OUTPUT_DIR = 'boostjp/boostjp.github.io'
 # URL ベース
 BASE_URL = 'http://boostjp.github.io'
 EDIT_URL_FORMAT = 'https://github.com/boostjp/site/edit/master/{path}'
+HISTORY_URL_FORMAT = 'https://github.com/boostjp/site/commits/master/{path}'
 PROJECT_URL = 'https://github.com/boostjp/site'
 PROJECT_NAME = 'GitHub Project'
 
