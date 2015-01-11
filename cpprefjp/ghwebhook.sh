@@ -6,6 +6,7 @@ su - melpon -c "
 set -ex
 cd site_generator
 git pull
+git submodule update -i
 source venv/bin/activate
 
 pushd cpprefjp/site && git pull && popd
