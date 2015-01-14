@@ -154,7 +154,7 @@ class Sidebar(object):
 
     @property
     def children(self):
-        return sorted(self._children.values(), key=lambda x: (x.is_node, x.name))
+        return sorted(self._children.values(), key=lambda x: (x.is_node, settings.get_order_priority(x.name), x.name))
 
     def set_pageinfo(self, paths, href, title, *args, **kwargs):
         sidebar = self

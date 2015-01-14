@@ -61,3 +61,8 @@ GOOGLE_ANALYTICS = '''
 
 # RSS ファイル
 RSS_PATH = 'rss.xml'
+
+
+# 並び替えルール
+def get_order_priority(name):
+    return 1
