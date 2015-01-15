@@ -30,7 +30,7 @@ def make_html_path(path):
     return os.path.join(settings.OUTPUT_DIR, path + '.html')
 
 
-def md_to_html(md_data, path):
+def md_to_html(md_data, path, hrefs=None):
     paths = path.split('/')
 
     qualified_fenced_code = 'markdown_to_html.qualified_fenced_code'
@@ -51,12 +51,14 @@ def md_to_html(md_data, path):
         qualified_fenced_code,
         'codehilite(noclasses=True)',
         html_attribute])
+    md._html_attribute_hrefs = hrefs
+
     return md.convert(md_data)
 
 
-def convert(path, template, context):
+def convert(path, template, context, hrefs):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
-    body = md_to_html(md_data, path)
+    body = md_to_html(md_data, path, hrefs)
 
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
@@ -337,6 +339,7 @@ def main():
     cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
     template = env.get_template('content.html')
+    hrefs = {pageinfo['href'] for pageinfo in pageinfos}
     for pageinfo in pageinfos:
         required = cache.convert_required(pageinfo['path'])
         if not CONVERT_ALL and not required:
@@ -360,7 +363,7 @@ def main():
             'history_url': settings.HISTORY_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
             'project_url': settings.PROJECT_URL,
             'project_name': settings.PROJECT_NAME,
-        })
+        }, hrefs)
         cache.converted(pageinfo['path'])
     cache.flush()
     remove_not_target_paths(pageinfo['path'] for pageinfo in pageinfos)
