@@ -292,10 +292,10 @@ class Cache(object):
     def converted(self, path):
         md_path = make_md_path(path)
         html_path = make_html_path(path)
-        self._cache[path].update({
+        self._cache[path] = {
             'md_lastmodify': os.path.getmtime(md_path),
             'html_lastmodify': os.path.getmtime(html_path),
-        })
+        }
 
     def flush(self):
         with open(self._cache_file, 'w') as f:
