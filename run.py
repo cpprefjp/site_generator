@@ -8,6 +8,7 @@ import sys
 import importlib
 import subprocess
 import glob
+from datetime import datetime
 import markdown
 import jinja2
 import atom
@@ -291,14 +292,23 @@ class Cache(object):
     def converted(self, path):
         md_path = make_md_path(path)
         html_path = make_html_path(path)
-        self._cache[path] = {
+        self._cache[path].update({
             'md_lastmodify': os.path.getmtime(md_path),
             'html_lastmodify': os.path.getmtime(html_path),
-        }
+        })
 
     def flush(self):
         with open(self._cache_file, 'w') as f:
             f.write(json.dumps(self._cache))
+
+
+def get_latest_commit_info(path):
+    timestamp = int(subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at', path + '.md'], cwd=settings.INPUT_DIR))
+    author = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%an', path + '.md'], cwd=settings.INPUT_DIR)
+    return {
+        'last_updated': datetime.fromtimestamp(timestamp),
+        'last_author': author,
+    }
 
 
 # 不要な html を削除する
@@ -349,6 +359,8 @@ def main():
             print(pageinfo['path'] + ' -- force converting')
         else:
             print(pageinfo['path'])
+        latest_commit_info = get_latest_commit_info(pageinfo['path'])
+
         sidebar.set_active(pageinfo['paths'])
         content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
         convert(pageinfo['path'], template, {
@@ -363,6 +375,7 @@ def main():
             'history_url': settings.HISTORY_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
             'project_url': settings.PROJECT_URL,
             'project_name': settings.PROJECT_NAME,
+            'latest_commit_info': latest_commit_info,
         }, hrefs)
         cache.converted(pageinfo['path'])
     cache.flush()

@@ -165,6 +165,9 @@ a code {
   margin: 5px;
   padding: 3px;
 }
+ol.breadcrumb {
+  margin-bottom: 5px;
+}
         </style>
         <script>
 function tree_onclick(e) {
@@ -234,6 +237,7 @@ function tree_onclick(e) {
     </div>
     <div class="row">
       <div class="col-sm-12 edit-button">
+        {% block latest_commit_info %}{% endblock %}
         <p class="text-right">
           <a class="history" target="_blank" href="{% block history_url %}{% endblock %}">
             <span class="glyphicon glyphicon-time"></span>履歴
