@@ -1,9 +1,9 @@
 #!/bin/bash
 
-set -ex
+set -e
 
 su - melpon -c "
-set -ex
+set -e
 cd site_generator
 git pull
 git submodule update -i
