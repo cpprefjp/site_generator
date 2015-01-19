@@ -16,5 +16,5 @@ pushd boostjp/site && git pull && popd
 cd boostjp/boostjp.github.io
 git add ./ --all
 git commit -a \"--author=boostjp-autoupdate <shigemasa7watanabe@gmail.com>\" -m \"update automatically\"
-git push origin master
+git push origin master 2>/dev/null
 "

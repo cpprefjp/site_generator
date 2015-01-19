@@ -16,5 +16,5 @@ pushd cpprefjp/site && git pull && popd
 cd cpprefjp/cpprefjp.github.io
 git add ./ --all
 git commit -a \"--author=cpprefjp-autoupdate <shigemasa7watanabe@gmail.com>\" -m \"update automatically\"
-git push origin master
+git push origin master 2>/dev/null
 "
