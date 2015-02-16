@@ -72,6 +72,10 @@
   {{ analytics|safe }}
 {% endblock %}
 
+{% block keywords %}
+  {{ keywords|safe }}
+{% endblock %}
+
 {% block latest_commit_info %}
   <p class="text-right"><small>
     最終更新日時: {{ latest_commit_info['last_updated'].strftime('%Y年%m月%d日 %H時%M分%S秒'.encode('utf-8')).decode('utf-8') }}<br/>

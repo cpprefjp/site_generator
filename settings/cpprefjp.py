@@ -64,6 +64,9 @@ RSS_PATH = 'rss.xml'
 # sitemap ファイル
 SITEMAP_PATH = 'sitemap.xml'
 
+# キーワード
+META_KEYWORDS = 'C++,標準ライブラリ,リファレンス,ドキュメント,STL,std'
+
 # 並び替えルール
 ORDER_PRIORITY_LIST = [
     'op_constructor',
@@ -113,7 +116,6 @@ ORDER_PRIORITY_LIST = [
     'op_istream', # operator>>(is, b)
 ]
 ORDER_PRIORITY = {v:n for n,v in enumerate(ORDER_PRIORITY_LIST)}
-
 
 def get_order_priority(name):
     if not name.startswith('op_'):

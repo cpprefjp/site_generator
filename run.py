@@ -390,6 +390,7 @@ def main():
             'project_url': settings.PROJECT_URL,
             'project_name': settings.PROJECT_NAME,
             'latest_commit_info': latest_commit_info,
+            'keywords': unicode(settings.META_KEYWORDS, encoding='utf-8'),
         }, hrefs)
         cache.converted(pageinfo['path'])
     cache.flush()

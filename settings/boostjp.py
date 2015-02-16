@@ -65,6 +65,9 @@ RSS_PATH = 'rss.xml'
 # sitemap ファイル
 SITEMAP_PATH = 'sitemap.xml'
 
+# キーワード
+META_KEYWORDS = 'C++,Boost,リファレンス,ドキュメント'
+
 
 # 並び替えルール
 def get_order_priority(name):
