@@ -1,0 +1,2 @@
+User-agent: *
+Sitemap: http://boostjp.github.io/sitemap.xml

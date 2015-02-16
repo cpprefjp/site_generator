@@ -12,6 +12,7 @@ from datetime import datetime
 import markdown
 import jinja2
 import atom
+import sitemap
 
 
 if len(sys.argv) < 2:
@@ -256,6 +257,19 @@ def make_atom():
     return atom.GitAtom(is_target_, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
 
 
+def make_sitemap(pageinfos):
+    def get_loc(pageinfo):
+        return settings.BASE_URL + pageinfo['href']
+
+    def get_priority(pageinfo):
+        if pageinfo['path'] == 'index':
+            return 1.0
+        depth = len(pageinfo['paths'])
+        return 1.0 - depth * 0.1
+
+    return sitemap.GitSitemap(get_loc, get_priority).git_to_sitemap(settings.INPUT_DIR, pageinfos)
+
+
 class Cache(object):
 
     def __init__(self, cache_file):
@@ -383,6 +397,9 @@ def main():
 
     with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w') as f:
         f.write(make_atom().encode('utf-8'))
+
+    with open(os.path.join(settings.OUTPUT_DIR, settings.SITEMAP_PATH), 'w') as f:
+        f.write(make_sitemap(pageinfos).encode('utf-8'))
 
     # 静的ファイルをコピーする
     subprocess.call(['cp', '-v', '-r'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])

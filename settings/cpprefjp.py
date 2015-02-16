@@ -61,6 +61,9 @@ GOOGLE_ANALYTICS = '''
 # RSS ファイル
 RSS_PATH = 'rss.xml'
 
+# sitemap ファイル
+SITEMAP_PATH = 'sitemap.xml'
+
 # 並び替えルール
 ORDER_PRIORITY_LIST = [
     'op_constructor',

@@ -62,6 +62,9 @@ GOOGLE_ANALYTICS = '''
 # RSS ファイル
 RSS_PATH = 'rss.xml'
 
+# sitemap ファイル
+SITEMAP_PATH = 'sitemap.xml'
+
 
 # 並び替えルール
 def get_order_priority(name):
