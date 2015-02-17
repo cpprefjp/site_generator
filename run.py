@@ -378,7 +378,7 @@ def main():
         sidebar.set_active(pageinfo['paths'])
         content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
         convert(pageinfo['path'], template, {
-            'title': pageinfo['title'] + settings.TITLE_SUFFIX,
+            'title': pageinfo['title'] + unicode(settings.TITLE_SUFFIX, encoding='utf-8'),
             'sidebar': sidebar,
             'content_header': content_header,
             'brand': unicode(settings.BRAND, encoding='utf-8'),

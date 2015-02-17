@@ -17,10 +17,10 @@ PROJECT_URL = 'https://github.com/cpprefjp/site'
 PROJECT_NAME = 'GitHub Project'
 
 # ブランド名
-BRAND = 'cpprefjp - C++ Reference Site'
+BRAND = 'cpprefjp - C++日本語リファレンス'
 
 # タイトルの後ろに付ける文字列
-TITLE_SUFFIX = ' - cpprefjp'
+TITLE_SUFFIX = ' - cpprefjp C++日本語リファレンス'
 
 # テンプレートディレクトリ
 PAGE_TEMPLATE_DIR = 'cpprefjp/templates'
