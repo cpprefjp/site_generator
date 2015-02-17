@@ -139,6 +139,7 @@ def make_pageinfo(path):
         'paths': paths,
         'href': '/' + path + '.html',
         'title': title,
+        'is_index': len(paths) == 1 and paths[0] == 'index',
     }
 
 
@@ -378,7 +379,9 @@ def main():
         sidebar.set_active(pageinfo['paths'])
         content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
         convert(pageinfo['path'], template, {
-            'title': pageinfo['title'] + unicode(settings.TITLE_SUFFIX, encoding='utf-8'),
+            'title': (
+                pageinfo['title'] if pageinfo['is_index'] else
+                pageinfo['title'] + unicode(settings.TITLE_SUFFIX, encoding='utf-8')),
             'sidebar': sidebar,
             'content_header': content_header,
             'brand': unicode(settings.BRAND, encoding='utf-8'),
