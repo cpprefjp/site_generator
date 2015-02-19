@@ -46,13 +46,15 @@
 {% block content_header %}
   <ol class="breadcrumb">
     {% for header in content_header.headers %}
-      <li {{ 'class="active"' if header.is_active }}>
-        {% if not header.is_active and header.href %}
-          <a href="{{ header.href }}">{{ header.title|e }}</a>
-        {% else %}
-          {{ header.title|e }}
-        {% endif %}
-      </li>
+      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+        <li {{ 'class="active"' if header.is_active }}>
+          {% if not header.is_active and header.href %}
+            <a href="{{ header.href }}">{{ header.title|e }}</a>
+          {% else %}
+            {{ header.title|e }}
+          {% endif %}
+        </li>
+      </span>
     {% endfor %}
   </ol>
 {% endblock %}
@@ -78,7 +80,14 @@
 
 {% block latest_commit_info %}
   <p class="text-right"><small>
-    最終更新日時: {{ latest_commit_info['last_updated'].strftime('%Y年%m月%d日 %H時%M分%S秒'.encode('utf-8')).decode('utf-8') }}<br/>
-    {{ latest_commit_info['last_author'] }} が更新
+    最終更新日時:
+    <span itemprop="datePublished" content="{{ latest_commit_info['last_updated'].strftime('%Y-%m-%dT%H:%M:%S'.encode('utf-8')).decode('utf-8') }}">
+      {{ latest_commit_info['last_updated'].strftime('%Y年%m月%d日 %H時%M分%S秒'.encode('utf-8')).decode('utf-8') }}
+    </span>
+    <br/>
+    <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <span itemprop="name">{{ latest_commit_info['last_author'] }}</span>
+    </span>
+    が更新
   </small></p>
 {% endblock %}
