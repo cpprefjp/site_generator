@@ -46,16 +46,15 @@
 {% block content_header %}
   <ol class="breadcrumb">
     {% for header in content_header.headers %}
-      <li {{ 'class="active"' if header.is_active }}>
-        <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
+      <li {{ 'class="active"' if header.is_active }} itemscope itemtype="http://www.schema.org/SiteNavigationElement">
           {% if not header.is_active and header.href %}
             <a href="{{ header.href }}" itemprop="url">
-              <span itemprop="title">
+              <span itemprop="name">
                 {{ header.title|e }}
               </span>
             </a>
           {% else %}
-            <span itemprop="title">
+            <span itemprop="name">
               {{ header.title|e }}
             </span>
           {% endif %}

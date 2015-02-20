@@ -3,7 +3,7 @@
 <!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
 <!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
 <!--[if gt IE 8]><!-->
-<html class="no-js" lang="en"> <!--<![endif]-->
+<html class="no-js" lang="ja" itemscope="" itemtype="http://schema.org/WebPage"> <!--<![endif]-->
     <head>
         <meta charset="UTF-8">
 
@@ -11,6 +11,9 @@
 
         <meta name="viewport" content="width=device-width,initial-scale=1">
         <meta name="keywords" content="{% block keywords %}{% endblock %}">
+        <meta name="title" content="{{ self.title() }}" />
+        <meta itemprop="name" content="{{ self.title() }}" />
+        <meta property="og:title" content="{{ self.title() }}" />
 
         {% block rss %}{% endblock %}
 
