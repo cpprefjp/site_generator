@@ -46,15 +46,21 @@
 {% block content_header %}
   <ol class="breadcrumb">
     {% for header in content_header.headers %}
-      <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
-        <li {{ 'class="active"' if header.is_active }}>
+      <li {{ 'class="active"' if header.is_active }}>
+        <span itemscope itemtype="http://data-vocabulary.org/Breadcrumb">
           {% if not header.is_active and header.href %}
-            <a href="{{ header.href }}">{{ header.title|e }}</a>
+            <a href="{{ header.href }}" itemprop="url">
+              <span itemprop="title">
+                {{ header.title|e }}
+              </span>
+            </a>
           {% else %}
-            {{ header.title|e }}
+            <span itemprop="title">
+              {{ header.title|e }}
+            </span>
           {% endif %}
-        </li>
-      </span>
+        </span>
+      </li>
     {% endfor %}
   </ol>
 {% endblock %}
