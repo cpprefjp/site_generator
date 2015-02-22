@@ -268,7 +268,11 @@ def make_sitemap(pageinfos):
         depth = len(pageinfo['paths'])
         return 1.0 - depth * 0.1
 
-    return sitemap.GitSitemap(get_loc, get_priority).git_to_sitemap(settings.INPUT_DIR, pageinfos)
+    def get_default_datetime(pageinfo):
+        # TODO: 後でちゃんとした実装にする（予定）
+        return '2015-02-20T20:47:36+09:00'
+
+    return sitemap.GitSitemap(get_loc, get_priority, get_default_datetime).git_to_sitemap(settings.INPUT_DIR, pageinfos)
 
 
 class Cache(object):

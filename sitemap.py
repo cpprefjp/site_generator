@@ -59,9 +59,10 @@ def run_with_output(command, shell=True, check=True):
 
 class GitSitemap(object):
 
-    def __init__(self, get_loc, get_priority):
+    def __init__(self, get_loc, get_priority, get_default_datetime):
         self._get_loc = get_loc
         self._get_priority = get_priority
+        self._get_default_datetime = get_default_datetime
 
     def _get_last_commit_times(self):
         prefix = '---- '
@@ -74,7 +75,7 @@ class GitSitemap(object):
                 xs = dt.split(' ')
                 # 2015-02-13 00:10:04 +0900
                 # to
-                # 2015-02-13T00:10:04T+09:00
+                # 2015-02-13T00:10:04+09:00
                 dt = xs[0] + 'T' + xs[1] + xs[2][:3] + ':' + xs[2][3:]
             elif len(line) != 0:
                 if line not in dic:
@@ -83,7 +84,7 @@ class GitSitemap(object):
 
     def _pageinfo_to_entry(self, times, pageinfo):
         loc = self._get_loc(pageinfo)
-        lastmod = times[pageinfo['path'] + '.md']
+        lastmod = max(times[pageinfo['path'] + '.md'], self._get_default_datetime(pageinfo))
         priority = self._get_priority(pageinfo)
 
         if priority > 1.0:
