@@ -50,17 +50,19 @@ def md_to_html(md_data, path, hrefs=None):
 
     md = markdown.Markdown([
         'tables',
+        'markdown_to_html.meta',
         qualified_fenced_code,
         'codehilite(noclasses=True)',
         html_attribute])
     md._html_attribute_hrefs = hrefs
 
-    return md.convert(md_data)
+    html = md.convert(md_data)
+    return html, md._meta_result
 
 
 def convert(path, template, context, hrefs):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
-    body = md_to_html(md_data, path, hrefs)
+    body, meta = md_to_html(md_data, path, hrefs)
 
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
@@ -252,7 +254,7 @@ def make_atom():
         return settings.BASE_URL + '/' + file[:-3] + '.html'
 
     def get_html_content(commit, file, content):
-        return md_to_html(content, file[:-3]) if content else ''
+        return md_to_html(content, file[:-3])[0] if content else ''
 
     title = unicode(settings.BRAND, encoding='utf-8')
     return atom.GitAtom(is_target_, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
