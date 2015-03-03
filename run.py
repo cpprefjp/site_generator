@@ -270,9 +270,14 @@ def make_sitemap(pageinfos):
         depth = len(pageinfo['paths'])
         return 1.0 - depth * 0.1
 
+    info = get_self_latest_commit_info()
+
     def get_default_datetime(pageinfo):
-        # TODO: 後でちゃんとした実装にする（予定）
-        return '2015-02-20T20:47:36+09:00'
+        xs = info['last_updated'].split(' ')
+        # 2015-02-13 00:10:04 +0900
+        # to
+        # 2015-02-13T00:10:04+09:00
+        return xs[0] + 'T' + xs[1] + xs[2][:3] + ':' + xs[2][3:]
 
     return sitemap.GitSitemap(get_loc, get_priority, get_default_datetime).git_to_sitemap(settings.INPUT_DIR, pageinfos)
 
@@ -329,6 +334,13 @@ def get_latest_commit_info(path):
     return {
         'last_updated': datetime.fromtimestamp(timestamp),
         'last_author': author,
+    }
+
+
+def get_self_latest_commit_info():
+    last_updated = subprocess.check_output(['git', 'log', '-1', '--format=%ai']).strip()
+    return {
+        'last_updated': last_updated,
     }
 
 
