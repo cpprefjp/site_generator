@@ -64,6 +64,9 @@ def convert(path, template, context, hrefs):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
     body, meta = md_to_html(md_data, path, hrefs)
 
+    if 'class' in meta:
+        context['title'] = meta['class'] + '::' + context['title']
+
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
