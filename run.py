@@ -60,12 +60,24 @@ def md_to_html(md_data, path, hrefs=None):
     return html, md._meta_result
 
 
+_TAG_RE = re.compile('<.+?>')
+
+
+def remove_tags(html):
+    return _TAG_RE.sub('', html)
+
+
 def convert(path, template, context, hrefs):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
     body, meta = md_to_html(md_data, path, hrefs)
 
     if 'class' in meta:
         context['title'] = meta['class'] + '::' + context['title']
+    context['keywords'] += ',' + ','.join(meta.values())
+
+    if context['description'] is None:
+        context['description'] = remove_tags(body)
+    context['description'] = context['description'].replace('\n', ' ')[:200]
 
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
@@ -132,6 +144,15 @@ def split_title(md):
     return m.group('header').strip(), m.group('remain')
 
 
+_DESCRIPTION_RE = re.compile(ur'#.*?概要.*?\n(?P<description>.*?)(\n#|$)', re.MULTILINE)
+
+
+def get_description(md):
+    m = _DESCRIPTION_RE.search(md)
+    if m is not None:
+        return m.group('description')
+
+
 def make_pageinfo(path):
     paths = path.split('/')
     md_data = open(make_md_path(path)).read()
@@ -139,12 +160,15 @@ def make_pageinfo(path):
     if title is None:
         title = paths[-1]
     title = unicode(title, encoding='utf-8')
+    md = unicode(md, encoding='utf-8')
+    description = get_description(md)
     return {
         'path': path,
         'paths': paths,
         'href': '/' + path + '.html',
         'title': title,
         'is_index': len(paths) == 1 and paths[0] == 'index',
+        'description': description,
     }
 
 
@@ -403,6 +427,8 @@ def main():
             'title': (
                 pageinfo['title'] if pageinfo['is_index'] else
                 pageinfo['title'] + unicode(settings.TITLE_SUFFIX, encoding='utf-8')),
+            'url': settings.BASE_URL + '/' + pageinfo['href'],
+            'description': pageinfo['description'],
             'sidebar': sidebar,
             'content_header': content_header,
             'brand': unicode(settings.BRAND, encoding='utf-8'),
