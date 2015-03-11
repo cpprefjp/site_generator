@@ -51,13 +51,17 @@ def md_to_html(md_data, path, hrefs=None):
     md = markdown.Markdown([
         'tables',
         'markdown_to_html.meta',
+        'markdown_to_html.mathjax',
         qualified_fenced_code,
         'codehilite(noclasses=True)',
         html_attribute])
     md._html_attribute_hrefs = hrefs
 
     html = md.convert(md_data)
-    return html, md._meta_result
+    return html, {
+        'meta_result': md._meta_result,
+        'mathjax_enabled': md._mathjax_enabled
+    }
 
 
 _TAG_RE = re.compile('<.+?>')
@@ -69,7 +73,8 @@ def remove_tags(html):
 
 def convert(path, template, context, hrefs):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
-    body, meta = md_to_html(md_data, path, hrefs)
+    body, info = md_to_html(md_data, path, hrefs)
+    meta = info['meta_result']
 
     if 'class' in meta:
         context['title'] = meta['class'] + '::' + context['title']
@@ -79,6 +84,7 @@ def convert(path, template, context, hrefs):
         context['description'] = remove_tags(body)
     context['description'] = context['description'].replace('\n', ' ')[:200]
 
+    context['mathjax'] = info['mathjax_enabled']
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
     if not os.path.exists(dst_dir):
         os.makedirs(dst_dir)
