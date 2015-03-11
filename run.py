@@ -22,6 +22,8 @@ if len(sys.argv) < 2:
 settings = importlib.import_module(sys.argv[1])
 CONVERT_ALL = '--all' in sys.argv[2:]
 CACHE_FILE = sys.argv[1] + '.cache'
+TARGET_PREFIX = [x[len('--prefix='):] for x in sys.argv[2:] if x.startswith('--prefix=')]
+TARGET_PREFIX = TARGET_PREFIX[0] if TARGET_PREFIX else ''
 
 
 def make_md_path(path):
@@ -417,6 +419,8 @@ def main():
     template = env.get_template('content.html')
     hrefs = {pageinfo['href'] for pageinfo in pageinfos}
     for pageinfo in pageinfos:
+        if not pageinfo['path'].startswith(TARGET_PREFIX):
+            continue
         required = cache.convert_required(pageinfo['path'])
         if not CONVERT_ALL and not required:
             # print(pageinfo['path'] + ' -- already converted')
