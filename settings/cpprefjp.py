@@ -76,7 +76,7 @@ ORDER_PRIORITY_LIST = [
     'op_call', # operator()
     'op_deref', # operator*
     'op_arrow', # opeartor->
-    '__functions__', # 通常の関数や非メンバ関数(op_でもtype_でもないもの)
+    '__functions__', # 通常の関数や非メンバ関数(op_でもtype-でもないもの)
     'op_plus_assign', # opeartor+=
     'op_minus_assign', # opeartor-=
     'op_multiply_assign', # operator*=
@@ -114,7 +114,7 @@ ORDER_PRIORITY_LIST = [
     'op_right_shift', # opeartor>>(a, b)
     'op_ostream', # operator<<(os, b)
     'op_istream', # operator>>(is, b)
-    '__types__', # メンバ型（頭にtype_が付いているもの）
+    '__types__', # メンバ型（頭にtype-が付いているもの）
 ]
 ORDER_PRIORITY = {v:n for n,v in enumerate(ORDER_PRIORITY_LIST)}
 
@@ -123,7 +123,7 @@ def get_order_priority(name):
         if name in ORDER_PRIORITY:
             return ORDER_PRIORITY[name]
         return ORDER_PRIORITY['__converter__']
-    elif name.startswith('type_'):
+    elif name.startswith('type-'):
         return ORDER_PRIORITY['__types__']
     else:
         return ORDER_PRIORITY['__functions__']
