@@ -368,7 +368,7 @@ def get_latest_commit_info(path):
     author = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%an', path + '.md'], cwd=settings.INPUT_DIR)
     return {
         'last_updated': datetime.fromtimestamp(timestamp),
-        'last_author': author,
+        'last_author': unicode(author, encoding='utf-8'),
     }
 
 
