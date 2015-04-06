@@ -16,7 +16,7 @@ import sitemap
 
 
 if len(sys.argv) < 2:
-    print '{} <setting> [--all]'.format(sys.argv[0])
+    print '{} <setting> [--all] [--prefix=<target>]'.format(sys.argv[0])
     sys.exit(0)
 
 settings = importlib.import_module(sys.argv[1])
