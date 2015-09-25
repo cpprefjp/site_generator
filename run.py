@@ -13,6 +13,7 @@ import markdown
 import jinja2
 import atom
 import sitemap
+import markdown_to_html.meta
 
 
 if len(sys.argv) < 2:
@@ -152,8 +153,22 @@ def split_title(md):
     return m.group('header').strip(), m.group('remain')
 
 
-_DESCRIPTION_RE = re.compile(ur'#.*?概要.*?\n(?P<description>.*?)(\n#|$)', re.MULTILINE)
+def get_meta(md):
+    """メタ情報を取り出す"""
+    result = {}
+    lines = md.split('\n')
+    for line in lines:
+        m = markdown_to_html.meta.META_RE.match(line)
+        if m is not None:
+            target = m.group('target')
+            name = m.group('name')
+            if name not in result:
+                result[name] = []
+            result[name].append(target)
+    return result
 
+
+_DESCRIPTION_RE = re.compile(ur'#.*?概要.*?\n(?P<description>.*?)(\n#|$)', re.MULTILINE)
 
 def get_description(md):
     m = _DESCRIPTION_RE.search(md)
@@ -168,6 +183,7 @@ def make_pageinfo(path):
     if title is None:
         title = paths[-1]
     title = unicode(title, encoding='utf-8')
+    meta = get_meta(unicode(md_data, encoding='utf-8'))
     md = unicode(md, encoding='utf-8')
     description = get_description(md)
     return {
@@ -175,6 +191,7 @@ def make_pageinfo(path):
         'paths': paths,
         'href': '/' + path + '.html',
         'title': title,
+        'meta': meta,
         'is_index': len(paths) == 1 and paths[0] == 'index',
         'description': description,
     }
@@ -187,6 +204,7 @@ class Sidebar(object):
         self.href = None
         self.title = ''
         self.name = ''
+        self.meta = {}
         self.active = []
         self.opened = False
 
@@ -198,7 +216,20 @@ class Sidebar(object):
     def children(self):
         return sorted(self._children.values(), key=lambda x: (x.is_node, settings.get_order_priority(x.name), x.name))
 
-    def set_pageinfo(self, paths, href, title, *args, **kwargs):
+    CPP_DIC = markdown_to_html.meta.MetaPostprocessor.CPP_DIC
+
+    @property
+    def encoded_cpp_meta(self):
+        html = ''
+        if 'cpp' in self.meta:
+            for name in self.meta['cpp']:
+                html = '<span class="cpp-sidebar {class_name}" title="{title}">{text}</span>'.format(**self.CPP_DIC[name]) + html
+        if len(html) == 0:
+            return ''
+        else:
+            return ' ' + html
+
+    def set_pageinfo(self, paths, href, title, meta, *args, **kwargs):
         sidebar = self
         for path in paths:
             if path not in sidebar._children:
@@ -210,6 +241,7 @@ class Sidebar(object):
         sidebar.name = paths[-1]
         sidebar.href = href
         sidebar.title = title
+        sidebar.meta = meta
 
     def contains(self, paths):
         sidebar = self

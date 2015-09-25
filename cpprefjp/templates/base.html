@@ -105,7 +105,7 @@
   -o-transition:"border-color 0.1s ease 0.1s";
   transition:"border-color 0.1s ease 0.1s"
 }
-.tree li span{
+.tree li span.treespan{
   -moz-border-radius:5px;
   -webkit-border-radius:5px;
   border:1px solid #999;
@@ -119,15 +119,15 @@
   -o-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
   transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s
 }
-.tree li.parent_li>span{cursor:pointer}
-.tree li.parent_li>span:hover{
+.tree li.parent_li>span.treespan{cursor:pointer}
+.tree li.parent_li>span.treespan:hover{
   background-color:#df8505;
   border:1px solid #c67605;
   color:#fff
 }
-.tree li.parent_li>span:hover+ul li::after{border-top-color:#f89406}
-.tree li.parent_li>span:hover+ul li::before{border-left-color:#f89406}
-.tree li.parent_li>span:hover+ul li span{
+.tree li.parent_li>span.treespan:hover+ul li::after{border-top-color:#f89406}
+.tree li.parent_li>span.treespan:hover+ul li::before{border-left-color:#f89406}
+.tree li.parent_li>span.treespan:hover+ul li span.treespan{
   background:#fddfb3;
   border:1px solid #faa937;
   color:#000
@@ -206,6 +206,10 @@ h1 .class {
 h1 .cpp {
   font-size: 14px;
 }
+.tree .cpp-sidebar {
+  font-size: 10px;
+}
+
         </style>
         <script>
 function tree_onclick(e) {

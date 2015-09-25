@@ -13,11 +13,11 @@
   {% for child in children %}
     {% if child.is_node %}
       <li {{ 'style="display: none"' if not parent_opened }} class="parent_li {{ 'active' if child.opened }}">
-        <span onclick="tree_onclick.call(this, event)"><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
+        <span class="treespan" onclick="tree_onclick.call(this, event)"><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
         {% if child.href %}
-          <a href="{{ child.href }}">{{ child.title|e }}</a>
+          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
-          {{ child.title|e }}
+          {{ child.title|e }}{{ child.encoded_cpp_meta }}
         {% endif %}
         <ul>
           {{ sidebar_tree(child.children, child.opened) }}
@@ -26,9 +26,9 @@
     {% else %}
       <li {{ 'style="display: none"' if not parent_opened }}>
         {% if child.href %}
-          <a href="{{ child.href }}">{{ child.title|e }}</a>
+          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
-          {{ child.title|e }}
+          {{ child.title|e }}{{ child.encoded_cpp_meta }}
         {% endif %}
       </li>
     {% endif %}
