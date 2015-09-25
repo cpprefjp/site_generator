@@ -79,8 +79,8 @@ def convert(path, template, context, hrefs):
     meta = info['meta_result']
 
     if 'class' in meta:
-        context['title'] = meta['class'] + '::' + context['title']
-    context['keywords'] += ',' + ','.join(meta.values())
+        context['title'] = meta['class'][0] + '::' + context['title']
+    context['keywords'] += ',' + ','.join(value[0] for value in meta.values())
 
     if context['description'] is None:
         context['description'] = remove_tags(body)
