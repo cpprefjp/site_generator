@@ -35,6 +35,10 @@ def make_html_path(path):
     return os.path.join(settings.OUTPUT_DIR, path + '.html')
 
 
+_SWAP_A_AND_CODE_RE = re.compile(r'<(a|span)\b([^>]*)><code>([^<]*)</code>(</\1>)')
+_MERGE_ADJACENT_CODE_RE = re.compile(r'</code>( ?)<code>')
+
+
 def md_to_html(md_data, path, hrefs=None):
     paths = path.split('/')
 
@@ -61,6 +65,8 @@ def md_to_html(md_data, path, hrefs=None):
     md._html_attribute_hrefs = hrefs
 
     html = md.convert(md_data)
+    html = _SWAP_A_AND_CODE_RE.sub(r'<code><\1\2>\3</\1></code>', html)
+    html = _MERGE_ADJACENT_CODE_RE.sub(r'\1', html)
     return html, {
         'meta_result': md._meta_result,
         'mathjax_enabled': md._mathjax_enabled
