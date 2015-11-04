@@ -26,6 +26,7 @@
         {% block rss %}{% endblock %}
 
 <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="/static/pygments/default.css">
 <!-- <link rel="stylesheet" href="/static/css/root.css"> -->
 
 <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
@@ -215,6 +216,8 @@ h1 .cpp {
   font-size: 10px;
 }
 
+pre .err { border: 0px } /* Error */
+.syntax pre .err { border: 0px } /* Error */
         </style>
         <script>
 function tree_onclick(e) {

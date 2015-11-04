@@ -60,7 +60,7 @@ def md_to_html(md_data, path, hrefs=None):
         'markdown_to_html.meta',
         'markdown_to_html.mathjax',
         qualified_fenced_code,
-        'codehilite(noclasses=True)',
+        'codehilite(noclasses=False)',
         html_attribute])
     md._html_attribute_hrefs = hrefs
 
