@@ -501,7 +501,7 @@ def main():
         f.write(make_sitemap(pageinfos).encode('utf-8'))
 
     # 静的ファイルをコピーする
-    subprocess.call(['cp', '-v', '-r'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])
+    subprocess.call(['cp', '-v', '-rL'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])
 
 
 if __name__ == '__main__':
