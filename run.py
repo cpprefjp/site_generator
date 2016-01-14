@@ -402,7 +402,10 @@ class Cache(object):
 
 
 def get_latest_commit_info(path):
-    timestamp = int(subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at', path + '.md'], cwd=settings.INPUT_DIR))
+    timestamp = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at', path + '.md'], cwd=settings.INPUT_DIR)
+    if not timestamp:
+        return None
+    timestamp = int(timestamp)
     author = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%an', path + '.md'], cwd=settings.INPUT_DIR)
     return {
         'last_updated': datetime.fromtimestamp(timestamp),

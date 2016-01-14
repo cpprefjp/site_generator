@@ -83,8 +83,11 @@ class GitSitemap(object):
         return dic
 
     def _pageinfo_to_entry(self, times, pageinfo):
+        mdpath = pageinfo['path'] + '.md'
+        if mdpath not in times:
+            return None
         loc = self._get_loc(pageinfo)
-        lastmod = max(times[pageinfo['path'] + '.md'], self._get_default_datetime(pageinfo))
+        lastmod = max(times[mdpath], self._get_default_datetime(pageinfo))
         priority = self._get_priority(pageinfo)
 
         if priority > 1.0:
@@ -100,7 +103,7 @@ class GitSitemap(object):
     def git_to_sitemap(self, cwd, pageinfos):
         with cd(cwd):
             times = self._get_last_commit_times()
-            entries = [self._pageinfo_to_entry(times, pageinfo) for pageinfo in pageinfos]
+            entries = filter(None, [self._pageinfo_to_entry(times, pageinfo) for pageinfo in pageinfos])
             dic = {
                 'entries': entries,
             }
