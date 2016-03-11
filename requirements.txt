@@ -1,6 +1,13 @@
+flake8==2.2.4
+flake8-import-order==0.7
+hacking==0.10.2
+htmlmin==0.1.5
 Jinja2==2.7.3
 Markdown==2.3.1
 MarkupSafe==0.23
-htmlmin==0.1.5
-wsgiref==0.1.2
+mccabe==0.2.1
+pbr==1.8.1
+pep8==1.5.7
+pyflakes==0.8.1
 Pygments==1.6
+six==1.10.0
