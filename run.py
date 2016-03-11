@@ -1,23 +1,32 @@
 #!/usr/bin/env python
-#coding: utf-8
+# -*- coding: utf-8 -*-
+from __future__ import absolute_import
+from __future__ import division
+from __future__ import print_function
 from __future__ import unicode_literals
+
+from datetime import datetime
+import glob
+import importlib
+import json
 import os
 import re
-import json
-import sys
-import importlib
 import subprocess
-import glob
-from datetime import datetime
-import markdown
-import jinja2
+import sys
+
 import atom
-import sitemap
+
+import jinja2
+
+import markdown
+
 import markdown_to_html.meta
+
+import sitemap
 
 
 if len(sys.argv) < 2:
-    print '{} <setting> [--all] [--prefix=<target>]'.format(sys.argv[0])
+    print('{} <setting> [--all] [--prefix=<target>]'.format(sys.argv[0]).encode('utf-8'))
     sys.exit(0)
 
 settings = importlib.import_module(sys.argv[1])
@@ -130,6 +139,7 @@ _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remai
 
 def split_title(md):
     r"""先頭の見出し部分を（あるなら）取り出す
+
     >>> md = '''
     ... # header
     ...
@@ -175,6 +185,7 @@ def get_meta(md):
 
 
 _DESCRIPTION_RE = re.compile(ur'#.*?概要.*?\n(?P<description>.*?)(\n#|$)', re.MULTILINE)
+
 
 def get_description(md):
     m = _DESCRIPTION_RE.search(md)
@@ -360,7 +371,7 @@ class Cache(object):
     def __init__(self, cache_file):
         try:
             self._cache = json.loads(open(cache_file).read())
-        except:
+        except Exception:
             self._cache = {}
         self._cache_file = cache_file
 
@@ -431,7 +442,7 @@ def remove_not_target_paths(paths):
         for f in files:
             target_file_path = os.path.join(root, f)
             if target_file_path not in html_path_set:
-                print('remove: ' + target_file_path)
+                print('remove: {}'.format(target_file_path).encode('utf-8'))
                 os.remove(target_file_path)
     # 空ディレクトリの削除
     for root, dirs, files in os.walk(settings.OUTPUT_DIR, topdown=False):
@@ -441,8 +452,8 @@ def remove_not_target_paths(paths):
         if len(files) == 0:
             try:
                 os.rmdir(root)
-                print('remove directory: ' + root)
-            except:
+                print('remove directory: {}'.format(root).encode('utf-8'))
+            except Exception:
                 pass
 
 
