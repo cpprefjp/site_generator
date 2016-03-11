@@ -195,13 +195,12 @@ def get_description(md):
 
 def make_pageinfo(path):
     paths = path.split('/')
-    md_data = open(make_md_path(path)).read()
+    md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
     title, md = split_title(md_data)
     if title is None:
         title = paths[-1]
-    title = unicode(title, encoding='utf-8')
-    meta = get_meta(unicode(md_data, encoding='utf-8'))
-    md = unicode(md, encoding='utf-8')
+    title = title
+    meta = get_meta(md_data)
     description = get_description(md)
     return {
         'path': path,
@@ -340,7 +339,7 @@ def make_atom():
     def get_html_content(commit, file, content):
         return md_to_html(content, file[:-3])[0] if content else ''
 
-    title = unicode(settings.BRAND, encoding='utf-8')
+    title = settings.BRAND
     return atom.GitAtom(is_target_, get_title, get_link, get_html_content).git_to_atom(settings.INPUT_DIR, title, settings.BASE_URL)
 
 
@@ -417,10 +416,10 @@ def get_latest_commit_info(path):
     if not timestamp:
         return None
     timestamp = int(timestamp)
-    author = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%an', path + '.md'], cwd=settings.INPUT_DIR)
+    author = unicode(subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%an', path + '.md'], cwd=settings.INPUT_DIR), encoding='utf-8')
     return {
         'last_updated': datetime.fromtimestamp(timestamp),
-        'last_author': unicode(author, encoding='utf-8'),
+        'last_author': author,
     }
 
 
@@ -488,12 +487,12 @@ def main():
         convert(pageinfo['path'], template, {
             'title': (
                 pageinfo['title'] if pageinfo['is_index'] else
-                pageinfo['title'] + unicode(settings.TITLE_SUFFIX, encoding='utf-8')),
+                pageinfo['title'] + settings.TITLE_SUFFIX),
             'url': settings.BASE_URL + '/' + pageinfo['href'],
             'description': pageinfo['description'],
             'sidebar': sidebar,
             'content_header': content_header,
-            'brand': unicode(settings.BRAND, encoding='utf-8'),
+            'brand': settings.BRAND,
             'search': settings.GOOGLE_SITE_SEARCH,
             'analytics': settings.GOOGLE_ANALYTICS,
             'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
@@ -502,7 +501,7 @@ def main():
             'project_url': settings.PROJECT_URL,
             'project_name': settings.PROJECT_NAME,
             'latest_commit_info': latest_commit_info,
-            'keywords': unicode(settings.META_KEYWORDS, encoding='utf-8'),
+            'keywords': settings.META_KEYWORDS,
         }, hrefs)
         cache.converted(pageinfo['path'])
     cache.flush()
