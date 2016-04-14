@@ -135,6 +135,7 @@ def target_paths():
 
 _HASH_HEADER_RE = re.compile(r'^( *?\n)*#(?P<header>.*?)#*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
 _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
+_REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
 
 
 def split_title(md):
@@ -166,7 +167,7 @@ def split_title(md):
         m = _SETEXT_HEADER_RE.match(md)
     if m is None:
         return None, md
-    return m.group('header').strip(), m.group('remain')
+    return _REMOVE_ESCAPE_RE.sub(r'\1', m.group('header').strip()), m.group('remain')
 
 
 def get_meta(md):
