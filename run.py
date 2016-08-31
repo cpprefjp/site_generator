@@ -196,7 +196,13 @@ def get_description(md):
 
 def make_pageinfo(path):
     paths = path.split('/')
-    md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
+    md_data = None
+    try:
+        md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
+    except Exception:
+        print('open file error : {}'.format(path))
+        raise
+
     title, md = split_title(md_data)
     if title is None:
         title = paths[-1]
