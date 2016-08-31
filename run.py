@@ -478,20 +478,16 @@ def main():
     template = env.get_template('content.html')
     hrefs = {pageinfo['href'] for pageinfo in pageinfos}
     for pageinfo in pageinfos:
-        if pageinfo['path'] == 'index':
-            print('found index.md')
-        else:
+        if not pageinfo['path'].startswith(TARGET_PREFIX):
             continue
-            if not pageinfo['path'].startswith(TARGET_PREFIX):
-                continue
-            required = cache.convert_required(pageinfo['path'])
-            if not CONVERT_ALL and not required:
-                # print(pageinfo['path'] + ' -- already converted')
-                continue
-            if CONVERT_ALL and not required:
-                print(pageinfo['path'] + ' -- force converting')
-            else:
-                print(pageinfo['path'])
+        required = cache.convert_required(pageinfo['path'])
+        if not CONVERT_ALL and not required:
+            # print(pageinfo['path'] + ' -- already converted')
+            continue
+        if CONVERT_ALL and not required:
+            print(pageinfo['path'] + ' -- force converting')
+        else:
+            print(pageinfo['path'])
         latest_commit_info = get_latest_commit_info(pageinfo['path'])
 
         sidebar.set_active(pageinfo['paths'])
