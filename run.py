@@ -48,10 +48,10 @@ _SWAP_A_AND_CODE_RE = re.compile(r'<(a|span)\b([^>]*)><code>([^<]*)</code>(</\1>
 _MERGE_ADJACENT_CODE_RE = re.compile(r'</code>( ?)<code>')
 
 
-def md_to_html(md_data, path, hrefs=None):
+def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
     paths = path.split('/')
 
-    qualified_fenced_code = 'markdown_to_html.qualified_fenced_code'
+    qualified_fenced_code = 'markdown_to_html.qualified_fenced_code(global_qualify_list={})'.format(global_qualify_list)
     html_attribute = 'markdown_to_html.html_attribute(base_url={base_url}, base_path={base_path}, full_path={full_path}, extension={extension})'.format(
         base_url=settings.BASE_URL,
         base_path='/'.join(paths[:-1]),
@@ -89,9 +89,9 @@ def remove_tags(html):
     return _TAG_RE.sub('', html)
 
 
-def convert(path, template, context, hrefs):
+def convert(path, template, context, hrefs, global_qualify_list):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
-    body, info = md_to_html(md_data, path, hrefs)
+    body, info = md_to_html(md_data, path, hrefs, global_qualify_list)
     meta = info['meta_result']
 
     if 'class' in meta:
@@ -471,21 +471,27 @@ def main():
     else:
         sidebar_index = None
 
+    global_qualify_list = open('{}/GLOBAL_QUALIFY_LIST.md'.format(settings.INPUT_DIR)).read()
+
     cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
     template = env.get_template('content.html')
     hrefs = {pageinfo['href'] for pageinfo in pageinfos}
     for pageinfo in pageinfos:
-        if not pageinfo['path'].startswith(TARGET_PREFIX):
-            continue
-        required = cache.convert_required(pageinfo['path'])
-        if not CONVERT_ALL and not required:
-            # print(pageinfo['path'] + ' -- already converted')
-            continue
-        if CONVERT_ALL and not required:
-            print(pageinfo['path'] + ' -- force converting')
+        if pageinfo['path'] == 'index':
+            print('found index.md')
         else:
-            print(pageinfo['path'])
+            continue
+            if not pageinfo['path'].startswith(TARGET_PREFIX):
+                continue
+            required = cache.convert_required(pageinfo['path'])
+            if not CONVERT_ALL and not required:
+                # print(pageinfo['path'] + ' -- already converted')
+                continue
+            if CONVERT_ALL and not required:
+                print(pageinfo['path'] + ' -- force converting')
+            else:
+                print(pageinfo['path'])
         latest_commit_info = get_latest_commit_info(pageinfo['path'])
 
         sidebar.set_active(pageinfo['paths'])
@@ -508,7 +514,7 @@ def main():
             'project_name': settings.PROJECT_NAME,
             'latest_commit_info': latest_commit_info,
             'keywords': settings.META_KEYWORDS,
-        }, hrefs)
+        }, hrefs, global_qualify_list)
         cache.converted(pageinfo['path'])
     cache.flush()
     remove_not_target_paths(pageinfo['path'] for pageinfo in pageinfos)
