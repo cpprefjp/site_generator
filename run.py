@@ -471,7 +471,10 @@ def main():
     else:
         sidebar_index = None
 
-    global_qualify_list = open('{}/GLOBAL_QUALIFY_LIST.txt'.format(settings.INPUT_DIR)).read()
+    global_qualify_list = []
+    for line in open('{}/GLOBAL_QUALIFY_LIST.txt'.format(settings.INPUT_DIR)):
+        global_qualify_list.append(line.lstrip())
+    global_qualify_list = "\n".join(global_qualify_list)
 
     cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
