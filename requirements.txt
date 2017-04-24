@@ -11,3 +11,4 @@ pep8==1.5.7
 pyflakes==0.8.1
 Pygments==1.6
 six==1.10.0
+regex==2017.4.23
