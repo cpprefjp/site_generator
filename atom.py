@@ -129,6 +129,7 @@ class GitAtom(object):
         _, author_name, _ = run_with_output('git show {commit} -s --format=%aN'.format(**locals()))
         _, author_email, _ = run_with_output('git show {commit} -s --format=%aE'.format(**locals()))
         _, updated, _ = run_with_output('git show {commit} -s --format=%ai'.format(**locals()))
+        updated = updated.replace(' ', 'T', 1).replace(' ', '').replace('\n', '')[:-2] + ':00'
         _, commit_title, _ = run_with_output('git show {commit} -s --format=%s'.format(**locals()))
         _, files_str, _ = run_with_output('git diff {commit}^ {commit} --name-only'.format(**locals()))
         files = files_str[:-1].split('\n')
