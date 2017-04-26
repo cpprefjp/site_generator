@@ -133,7 +133,7 @@ class GitAtom(object):
         _, commit_title, _ = run_with_output('git show {commit} -s --format=%s'.format(**locals()))
         _, files_str, _ = run_with_output('git diff {commit}^ {commit} --name-only'.format(**locals()))
         files = files_str[:-1].split('\n')
-        entries = filter(None, [self._file_to_entry(commit, file, author_name[:-1], author_email[:-1], updated[:-1], commit_title[:-1]) for file in files])
+        entries = filter(None, [self._file_to_entry(commit, file, author_name[:-1], author_email[:-1], updated, commit_title[:-1]) for file in files])
         return entries
 
     def git_to_atom(self, cwd, title, link):
