@@ -42,6 +42,8 @@ $ ./localhost.sh cpprefjp/cpprefjp.github.io
 これでローカルサーバが起動します。
 http://localhost:8000 を開けば `index.html` が表示されます。
 
+`run.py`のコマンドライン引数として`--prefix=lang/cpp17/`のように指定すれば、`lang/cpp17/`ディレクトリ階層以下のみが変換されます。
+
 ### boostjp の場合
 
 ```
