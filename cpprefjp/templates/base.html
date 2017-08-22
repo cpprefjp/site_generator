@@ -53,6 +53,14 @@
         </script>
 
         <style type="text/css">
+.navbar-brand {
+  padding: 0px;
+}
+.navbar-brand>img {
+  height: 100%;
+  padding: 10px;
+  width: auto;
+}
 .tree{
   -webkit-border-radius:4px;
   -moz-border-radius:4px;
@@ -261,7 +269,7 @@ function tree_onclick(e) {
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">{% block brand %}{% endblock %}</a>
+        <a class="navbar-brand" href="/"><img src="/static/favicons/favicon-32x32.png">{% block brand %}{% endblock %}</a>
       </div>
 
       <div class="collapse navbar-collapse" id="navbar-collapse">
