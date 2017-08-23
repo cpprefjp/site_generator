@@ -47,16 +47,21 @@
   <ol class="breadcrumb">
     {% for header in content_header.headers %}
       <li {{ 'class="active"' if header.is_active }} itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+        <span>
           {% if not header.is_active and header.href %}
             <a href="{{ header.href }}" itemprop="url">
-              <span itemprop="name">
-                {{ header.title|e }}
-              </span>
+              {% if loop.index == 1 %}
+                <i class="glyphicon glyphicon-home"></i>
+              {% else %}
+                <span itemprop="name">{{ header.title|e }}</span>
+              {% endif %}
             </a>
           {% else %}
-            <span itemprop="name">
-              {{ header.title|e }}
-            </span>
+            {% if loop.index == 1 %}
+              <i class="glyphicon glyphicon-home"></i>
+            {% else %}
+              <span itemprop="name">{{ header.title|e }}</span>
+            {% endif %}
           {% endif %}
         </span>
       </li>
