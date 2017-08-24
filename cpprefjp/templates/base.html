@@ -54,12 +54,24 @@
 
         <style type="text/css">
 .navbar-brand {
-  padding: 0px;
+  line-height: 32px;
+  padding: 0.5em 15px;
 }
-.navbar-brand>img {
-  height: 100%;
-  padding: 10px;
-  width: auto;
+.navbar-brand > .title-wrapper:before {
+  content: "";
+  float: left;
+  display: inline-block;
+  overflow: hidden;
+  height: 0;
+  padding: 32px 32px 0 0;
+  margin: 0 4px 0 0;
+  background-image: url(/static/original-icons/cpprefjp-icon-v1.1-transparent.png);
+  background-size: contain;
+  background-repeat: no-repeat;
+}
+.navbar-brand > .title-wrapper > .title {
+  float: left;
+  display: inline-block;
 }
 .tree{
   -webkit-border-radius:4px;
@@ -269,7 +281,11 @@ function tree_onclick(e) {
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/"><img src="/static/favicons/favicon-32x32.png">{% block brand %}{% endblock %}</a>
+        <a class="navbar-brand" href="/">
+          <div class="title-wrapper clearfix">
+            <div class="title">{% block brand %}{% endblock %}</div>
+          </div>
+        </a>
       </div>
 
       <div class="collapse navbar-collapse" id="navbar-collapse">
