@@ -75,6 +75,7 @@ META_KEYWORDS = 'C++,標準ライブラリ,リファレンス,ドキュメント
 ORDER_PRIORITY_LIST = [
     'op_constructor',
     'op_destructor',
+    'op_deduction_guide', # 推論補助
     'op_assign',  # operatr=
     'op_at',  # operator[]
     'op_call',  # operator()
