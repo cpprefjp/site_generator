@@ -15,7 +15,7 @@ class TestRun(unittest.TestCase):
             * bar[meta text2]
             * piyo[meta text]
         '''
-        result = run.get_meta(md)
+        result = run.Generator().get_meta(md)
         self.assertEqual({'text': ['foo', 'piyo'], 'text2': ['bar']}, result)
 
     def test_validate(self):
@@ -31,8 +31,8 @@ class TestRun(unittest.TestCase):
                             'id': {
                                 'type': 'header',
                                 'key': ['vector'],
+                                'cpp_namespace': ['std', 'experimental'],
                             },
-                            'cpp_namespace': ['std', 'experimental'],
                             'page_id': 'operator_at',
                         },
                     ],
@@ -41,8 +41,19 @@ class TestRun(unittest.TestCase):
         }
         run.Validator().validate(value)
 
-    def test_convert(self):
-        pass
+    def test_generate(self):
+        paths = [
+            'test/reference/array.md',
+            'test/reference/array/op_less.md',
+            'test/reference/algorithm/all_of.md',
+            'test/reference/vector.md',
+            'test/reference/vector/push_back.md',
+            'test/reference/vector/swap_free.md',
+        ]
+        value = run.Generator().generate('test', paths)
+        # print(json.dumps(value))
+        run.Validator().validate(value)
+
 
 if __name__ == '__main__':
     unittest.main()
