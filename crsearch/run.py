@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
+import json
 import os
 import re
+
 import jsonschema
 
 
 class Validator(object):
     _json_schema = {
         'type': 'object',
-        'require': ['base_url', 'database_name', 'namespaces'],
+        'require': ['base_url', 'database_name', 'namespaces', 'ids'],
         'additionalProperties': False,
         'properties': {
             'base_url': {
@@ -17,6 +19,12 @@ class Validator(object):
             },
             'database_name': {
                 'type': 'string',
+            },
+            'ids': {
+                'type': 'array',
+                'items': {
+                    '$ref': '#/definitions/index_id',
+                },
             },
             'namespaces': {
                 'type': 'array',
@@ -43,7 +51,7 @@ class Validator(object):
                         },
                         'cpp_version': {
                             'type': 'string',
-                            'enum': ['98', '03', '11', '14', '17'],
+                            'enum': ['98', '03', '11', '14', '17', '20'],
                         },
                         'indexes': {
                             'type': 'array',
@@ -53,16 +61,20 @@ class Validator(object):
                                 'additionalProperties': False,
                                 'properties': {
                                     'id': {
-                                        '$ref': '#/definitions/index_id',
+                                        'type': 'integer',
                                     },
                                     'page_id': {
-                                        'type': 'string',
-                                        'minLength': 1,
+                                        'type': 'array',
+                                        'minItems': 1,
+                                        'items': {
+                                            'type': 'string',
+                                            'pattern': '[^/]+',
+                                        },
                                     },
                                     'related_to': {
                                         'type': 'array',
                                         'items': {
-                                            '$ref': '#/definitions/index_id',
+                                            'type': 'integer',
                                         },
                                     },
                                 },
@@ -136,6 +148,21 @@ class Validator(object):
 
 
 class Generator(object):
+    class IndexIDGenerator(object):
+        def __init__(self):
+            self._ids = []
+
+        def get_indexid(self, indexid):
+            for n, id in enumerate(self._ids):
+                if indexid == id:
+                    return n
+            n = len(self._ids)
+            self._ids.append(indexid)
+            return n
+
+        def get_all(self):
+            return self._ids
+
     _HASH_HEADER_RE = re.compile(r'^( *?\n)*#(?P<header>.*?)#*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
@@ -198,17 +225,34 @@ class Generator(object):
                 result[name].append(target)
         return result
 
-    def make_index(self, md, names):
+    def make_index(self, md, names, idgen):
         title, contents = self.split_title(md)
         metas = self.get_meta(md)
 
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
-        if metas['id-type'][0] == 'class' or metas['id-type'][0] == 'class template':
+        if 'id-type' not in metas and 'header' in metas:
+            type = 'header'
+        elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
+            # lang/ 直下は meta 扱いにする
+            if names[0] == 'lang' and len(names) == 2:
+                type = 'meta'
+            else:
+                # それ以外の article/ と lang/ の下は article 扱いにする
+                type = 'article'
+        elif 'id-type' not in metas and '/'.join(names).startswith('reference/concepts'):
+            # 特殊扱い
+            type = 'article'
+        elif 'id-type' not in metas and '/'.join(names).startswith('reference/container_concepts'):
+            # 特殊扱い
+            type = 'article'
+        elif 'id-type' not in metas:
+            raise RuntimeError(f'unexpected meta: {metas}')
+        elif metas['id-type'][0] == 'class' or metas['id-type'][0] == 'class template':
             type = 'class'
         elif metas['id-type'][0] == 'function' or metas['id-type'][0] == 'function template':
-            if 'class' in metas:
+            if 'class' in metas or 'class template' in metas:
                 type = 'mem_fun'
             else:
                 type = 'function'
@@ -218,6 +262,18 @@ class Generator(object):
             type = 'variable'
         elif metas['id-type'][0] == 'type-alias':
             type = 'type-alias'
+        elif metas['id-type'][0] == 'macro':
+            type = 'macro'
+        elif metas['id-type'][0] == 'namespace':
+            type = 'namespace'
+        else:
+            raise RuntimeError(f'unexpected meta: {metas}')
+
+        keys = []
+        if 'class' in metas:
+            keys = metas['class']
+        elif 'class template' in metas:
+            keys = metas['class template']
 
         # namespace 判別
         if 'namespace' in metas:
@@ -227,20 +283,37 @@ class Generator(object):
 
         index_id = {
             'type': type,
-            'key': [title],
+            'key': keys + [title],
         }
 
         if cpp_namespaces is not None:
             index_id['cpp_namespace'] = cpp_namespaces
 
         index = {
-            'id': index_id,
-            'page_id': names[-1][:-3], # remove .md
+            'id': idgen.get_indexid(index_id),
+            'page_id': names[1:-1] + [names[-1][:-3]],  # remove .md
         }
+
+        related_to = []
+        if 'class' in metas:
+            related_to.append(idgen.get_indexid({
+                'type': 'class',
+                'key': metas['class'][0].split('::'),
+            }))
+        if 'header' in metas:
+            related_to.append(idgen.get_indexid({
+                'type': 'header',
+                'key': metas['header'][0].split('/'),
+            }))
+
+        if len(related_to) != 0:
+            index['related_to'] = related_to
 
         return index
 
     def generate(self, base_dir, file_paths):
+        idgen = Generator.IndexIDGenerator()
+
         indices = []
         for file_path in file_paths:
             if not file_path.startswith(base_dir):
@@ -248,25 +321,41 @@ class Generator(object):
             if not file_path.endswith('.md'):
                 raise RuntimeError(f'{file_path} not ends with .md')
 
+            print(f'processing {file_path}...')
             names = list(filter(None, file_path[len(base_dir):].split('/')))
             with open(file_path) as f:
                 md = f.read()
-            index = self.make_index(md, names)
-            indices.append((names, index))
+            index = self.make_index(md, names, idgen)
+            # C++ のバージョン情報を入れる
+            cpp_version = None
+            metas = self.get_meta(md)
+            if 'cpp' in metas:
+                if any(map(lambda cpp: cpp == 'cpp11', metas['cpp'])):
+                    cpp_version = '11'
+                elif any(map(lambda cpp: cpp == 'cpp14', metas['cpp'])):
+                    cpp_version = '14'
+                elif any(map(lambda cpp: cpp == 'cpp17', metas['cpp'])):
+                    cpp_version = '17'
+                elif any(map(lambda cpp: cpp == 'cpp20', metas['cpp'])):
+                    cpp_version = '20'
 
-        # names[:-1] が同じものをまとめる
+            indices.append((names, cpp_version, index))
+
+        # (names[0], cpp_version) が同じものをまとめる
         namespaces = {}
-        for names, index in indices:
-            xs = tuple(names[:-1])
-            if xs in namespaces:
-                namespaces[xs]['indexes'].append(index)
+        for names, cpp_version, index in indices:
+            key = (names[0], cpp_version)
+            if key in namespaces:
+                namespaces[key]['indexes'].append(index)
             else:
                 namespace = {
-                    'namespace': names[:-1],
-                    'path_prefixes': names[:-1],
+                    'namespace': [names[0]],
+                    'path_prefixes': [names[0]],
                     'indexes': [index],
                 }
-                namespaces[xs] = namespace
+                if cpp_version is not None:
+                    namespace['cpp_version'] = cpp_version
+                namespaces[key] = namespace
 
         namespaces = sorted(namespaces.values(), key=lambda ns: ns['namespace'])
 
@@ -274,12 +363,24 @@ class Generator(object):
             'base_url': 'https://cpprefjp.github.io',
             'database_name': 'cpprefjp',
             'namespaces': namespaces,
+            'ids': idgen.get_all(),
         }
         return result
 
 
+def get_files(base_dir):
+    for dirpath, dirnames, filenames in os.walk(base_dir):
+        for filename in filenames:
+            if filename[-3:] == ".md" and not filename[0].isupper():
+                yield os.path.join(dirpath, filename)
+
+
 def main():
-    pass
+    paths = list(get_files('site/article')) + list(get_files('site/lang')) + list(get_files('site/reference'))
+    result = Generator().generate('site', paths)
+    with open('crsearch.json', 'wb') as f:
+        f.write(json.dumps(result, separators=(',', ':'), ensure_ascii=False, sort_keys=True).encode('utf-8'))
+
 
 if __name__ == '__main__':
     main()

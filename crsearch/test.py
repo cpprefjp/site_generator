@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import json
-import textwrap
 import unittest
 
 import run
@@ -22,18 +20,19 @@ class TestRun(unittest.TestCase):
         value = {
             'base_url': 'https://cpprefjp.github.io',
             'database_name': 'cpprefjp',
+            'ids': [{
+                'type': 'header',
+                'key': ['vector'],
+                'cpp_namespace': ['std', 'experimental'],
+            }],
             'namespaces': [
                 {
                     'namespace': ['lang'],
                     'path_prefixes': ['lang', 'cpp14'],
                     'indexes': [
                         {
-                            'id': {
-                                'type': 'header',
-                                'key': ['vector'],
-                                'cpp_namespace': ['std', 'experimental'],
-                            },
-                            'page_id': 'operator_at',
+                            'id': 0,
+                            'page_id': ['operator_at'],
                         },
                     ],
                 },
@@ -51,8 +50,12 @@ class TestRun(unittest.TestCase):
             'test/reference/vector/swap_free.md',
         ]
         value = run.Generator().generate('test', paths)
-        # print(json.dumps(value))
         run.Validator().validate(value)
+
+    # def test_all(self):
+    #     paths = list(run.get_files('site/article')) + list(run.get_files('site/lang')) + list(run.get_files('site/reference'))
+    #     result = run.Generator().generate('site', paths)
+    #     run.Validator().validate(result)
 
 
 if __name__ == '__main__':
