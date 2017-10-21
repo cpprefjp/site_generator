@@ -48,6 +48,28 @@
         <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
         <![endif]-->
 
+<!-- begin crsearch -->
+<link href="/static/crsearch/css/font-awesome.css" rel="stylesheet">
+<link href="/static/crsearch/css/crsearch.css" rel="stylesheet">
+
+<script type="text/javascript" src="/static/crsearch/js/crsearch-vendor.js"></script>
+<script type="text/javascript" src="/static/crsearch/js/crsearch.js"></script>
+
+<script type="text/javascript">
+  document.addEventListener('DOMContentLoaded', function() {
+    var crs = new CRSearch;
+    crs.database("https://cpprefjp.github.io/static/crsearch/crsearch.json");
+    // crs.database("https://boostjp.github.io");
+    // crs.database("http://localhost:8001/crsearch.json");
+    crs.searchbox(document.getElementsByClassName('crsearch'));
+  });
+</script>
+<style type="text/css">
+.crsearch {
+}
+</style>
+<!-- end crsearch -->
+
         <script>
             document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
         </script>
@@ -289,6 +311,11 @@ function tree_onclick(e) {
       </div>
 
       <div class="collapse navbar-collapse" id="navbar-collapse">
+        <ul class="nav navbar-nav navbar-left">
+          <li>
+            <div class="crsearch"></div>
+          </li>
+        </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <div class="google-search">
