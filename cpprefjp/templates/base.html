@@ -233,8 +233,18 @@ a code {
   margin: 5px;
   padding: 3px;
 }
-ol.breadcrumb {
+.content-header {
+  display: flex;
   margin-bottom: 5px;
+}
+ol.breadcrumb {
+  flex-grow: 1;
+  margin-bottom: 0;
+  background: none;
+}
+.crsearch {
+  width: 260px;
+  margin: .5em 1.5em 0 0;
 }
 .footer {
   text-align: center;
@@ -311,11 +321,6 @@ function tree_onclick(e) {
       </div>
 
       <div class="collapse navbar-collapse" id="navbar-collapse">
-        <ul class="nav navbar-nav navbar-left">
-          <li>
-            <div class="crsearch"></div>
-          </li>
-        </ul>
         <ul class="nav navbar-nav navbar-right">
           <li>
             <div class="google-search">
