@@ -24,6 +24,7 @@ case "$1" in
       show_help
       exit 1
     fi
+    shift 1
     docker run -v `pwd`:/var/src -it cpprefjp/site_generator /bin/bash -c "cd /var/src && ./run.py $*" ;;
   "coding" )
     docker run -v `pwd`:/var/src -it cpprefjp/site_generator /bin/bash -c "cd /var/src && flake8 `find . -name '*.py'`" ;;
