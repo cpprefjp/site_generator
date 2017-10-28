@@ -5,6 +5,8 @@ function show_help() {
   echo "$0 run <run.py args>"
   echo "$0 coding"
   echo "$0 console"
+  echo "$0 localhost cpprefjp/cpprefjp.github.io"
+  echo "$0 localhost boostjp/boostjp.github.io"
 }
 
 if [ $# -lt 1 ]; then
@@ -34,6 +36,13 @@ case "$1" in
     docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && flake8 `find . -name '*.py'`" ;;
   "console" )
     docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && exec /bin/bash" ;;
+  "localhost" )
+    if [ $# -lt 2 ]; then
+      show_help
+      exit 1
+    fi
+    cd $2
+    docker run -v `pwd`:/var/src -p 8001:8001 $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && python -m SimpleHTTPServer 8001" ;;
   * )
     show_help
     exit 1 ;;
