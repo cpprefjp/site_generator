@@ -7,9 +7,36 @@ set -e
 cd site_generator
 git pull
 git submodule update -i
-source venv/bin/activate
 
-pushd cpprefjp/site && git pull && popd
+rm -rf cpprefjp/static/static/crsearch || true
+mkdir -p cpprefjp/static/static/crsearch
+
+# crsearch 用 JS, CSS 生成
+./crsearch/docker.sh build
+./crsearch/docker.sh install
+./crsearch/docker.sh run build
+cp -r crsearch/dist/* cpprefjp/static/static/crsearch/
+
+# crsearch.json 生成
+if [ ! -d crsearch.json/site ]; then
+  git clone git@github.com:cpprefjp/site.git crsearch.json/site
+else
+  pushd crsearch.json/site
+  git pull || (cd .. && rm -rf site && git clone git@github.com:cpprefjp/site.git)
+  popd
+fi
+./crsearch.json/docker.sh build
+./crsearch.json/docker.sh run
+cp crsearch.json/crsearch.json cpprefjp/static/static/crsearch/
+
+# サイト生成
+if [ ! -d cpprefjp/site ]; then
+  git clone git@github.com:cpprefjp/site.git cpprefjp/site
+else
+  pushd cpprefjp/site
+  git pull || (cd .. && rm -rf site && git clone git@github.com:cpprefjp/site.git)
+  popd
+fi
 
 ./docker.sh build
 ./docker.sh run settings.cpprefjp \"$@\"
