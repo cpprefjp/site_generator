@@ -12,6 +12,13 @@ rm -rf cpprefjp/static/static/crsearch || true
 mkdir -p cpprefjp/static/static/crsearch
 
 # crsearch 用 JS, CSS 生成
+if [ ! -d crsearch ]; then
+  git clone git@github.com:cpprefjp/crsearch.git
+else
+  pushd crsearch
+  git pull || (cd .. && rm -rf crsearch && git clone git@github.com:cpprefjp/crsearch.git)
+  popd
+fi
 ./crsearch/docker.sh build
 ./crsearch/docker.sh install
 ./crsearch/docker.sh run build
