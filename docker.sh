@@ -16,6 +16,15 @@ set -e
 
 cd "`dirname $0`"
 
+case "$-" in
+  *i*)
+    DOCKER_FLAG="-it"
+    echo This shell is interactive ;;
+  *)
+    DOCKER_FLAG=""
+    echo This shell is not interactive ;;
+esac
+
 case "$1" in
   "build" )
     docker build -t cpprefjp/site_generator docker ;;
@@ -25,11 +34,11 @@ case "$1" in
       exit 1
     fi
     shift 1
-    docker run -v `pwd`:/var/src -it cpprefjp/site_generator /bin/bash -c "cd /var/src && ./run.py $*" ;;
+    docker run -v `pwd`:/var/src $DOCKER_FLAG cpprefjp/site_generator /bin/bash -c "cd /var/src && ./run.py $*" ;;
   "coding" )
-    docker run -v `pwd`:/var/src -it cpprefjp/site_generator /bin/bash -c "cd /var/src && flake8 `find . -name '*.py'`" ;;
+    docker run -v `pwd`:/var/src $DOCKER_FLAG cpprefjp/site_generator /bin/bash -c "cd /var/src && flake8 `find . -name '*.py'`" ;;
   "console" )
-    docker run -v `pwd`:/var/src -it cpprefjp/site_generator /bin/bash -c "cd /var/src && exec /bin/bash" ;;
+    docker run -v `pwd`:/var/src $DOCKER_FLAG cpprefjp/site_generator /bin/bash -c "cd /var/src && exec /bin/bash" ;;
   * )
     show_help
     exit 1 ;;
