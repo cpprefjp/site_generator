@@ -11,7 +11,8 @@ source venv/bin/activate
 
 pushd boostjp/site && git pull && popd
 
-./run.py settings.boostjp \"$@\"
+./docker.sh build
+./docker.sh run settings.boostjp \"$@\"
 
 cd boostjp/boostjp.github.io
 git add ./ --all

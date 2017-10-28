@@ -11,7 +11,8 @@ source venv/bin/activate
 
 pushd cpprefjp/site && git pull && popd
 
-./run.py settings.cpprefjp \"$@\"
+./docker.sh build
+./docker.sh run settings.cpprefjp \"$@\"
 
 cd cpprefjp/cpprefjp.github.io
 git add ./ --all

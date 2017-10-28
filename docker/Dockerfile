@@ -1,9 +1,15 @@
-FROM python:3.6.2-alpine3.6
+FROM python:2.7.14-alpine3.6
 
 MAINTAINER melpon <shigemasa7watanabe+docker@gmail.com>
 
 COPY requirements.txt .
 
 RUN set -ex \
-  && apk add --no-cache bash \
+  && apk add --no-cache \
+    bash \
+    gcc \
+    git \
+    musl-dev
+
+RUN set -ex \
   && pip install -r requirements.txt
