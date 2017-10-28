@@ -11,6 +11,8 @@ git submodule update -i
 rm -rf cpprefjp/static/static/crsearch || true
 mkdir -p cpprefjp/static/static/crsearch
 
+export DOCKER_IT=""
+
 # crsearch 用 JS, CSS 生成
 if [ ! -d crsearch ]; then
   git clone git@github.com:cpprefjp/crsearch.git
