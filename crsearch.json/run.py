@@ -243,14 +243,17 @@ class Generator(object):
                 result[name].append(target)
         return result
 
-    def make_index(self, md, names, idgen):
+    def make_index(self, md, names, idgen, nojump):
         title, contents = self.split_title(md)
         metas = self.get_meta(md)
 
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
-        if 'id-type' not in metas and 'header' in metas:
+        if nojump:
+            # nojump だったら問答無用で meta
+            type = 'meta'
+        elif 'id-type' not in metas and 'header' in metas:
             type = 'header'
         elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
             # lang/ 直下は meta 扱いにする
@@ -312,6 +315,9 @@ class Generator(object):
             'page_id': names[1:-1] + [names[-1][:-3]],  # remove .md
         }
 
+        if nojump:
+            index['nojump'] = True
+
         related_to = []
         if 'class' in metas:
             related_to.append(idgen.get_indexid({
@@ -342,11 +348,13 @@ class Generator(object):
 
         return index
 
-    def generate(self, base_dir, file_paths):
+    def generate(self, base_dir, file_paths, all_file_paths):
         idgen = Generator.IndexIDGenerator()
 
+        file_path_set = set(file_paths)
+
         indices = []
-        for file_path in file_paths:
+        for file_path in all_file_paths:
             if not file_path.startswith(base_dir):
                 raise RuntimeError(f'{file_path} not starts with {base_dir}')
             if not file_path.endswith('.md'):
@@ -356,7 +364,8 @@ class Generator(object):
             names = list(filter(None, file_path[len(base_dir):].split('/')))
             with open(file_path) as f:
                 md = f.read()
-            index = self.make_index(md, names, idgen)
+            nojump = file_path not in file_path_set
+            index = self.make_index(md, names, idgen, nojump)
             # C++ のバージョン情報を入れる
             cpp_version = None
             metas = self.get_meta(md)
@@ -375,13 +384,14 @@ class Generator(object):
         # (names[0], cpp_version) が同じものをまとめる
         namespaces = {}
         for names, cpp_version, index in indices:
-            key = (names[0], cpp_version)
+            name = names[0] if len(names) >= 2 else None
+            key = (name, cpp_version)
             if key in namespaces:
                 namespaces[key]['indexes'].append(index)
             else:
                 namespace = {
-                    'namespace': [names[0]],
-                    'path_prefixes': [names[0]],
+                    'namespace': [name] if name is not None else [],
+                    'path_prefixes': [name] if name is not None else [],
                     'indexes': [index],
                 }
                 if cpp_version is not None:
@@ -408,7 +418,8 @@ def get_files(base_dir):
 
 def main():
     paths = list(get_files('site/article')) + list(get_files('site/lang')) + list(get_files('site/reference'))
-    result = Generator().generate('site', paths)
+    all_paths = list(get_files('site'))
+    result = Generator().generate('site', paths, all_paths)
     with open('crsearch.json', 'wb') as f:
         f.write(json.dumps(result, separators=(',', ':'), ensure_ascii=False, sort_keys=True).encode('utf-8'))
 
