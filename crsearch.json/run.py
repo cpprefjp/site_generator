@@ -297,9 +297,10 @@ class Generator(object):
             keys = metas['class template']
 
         # namespace 判別
-        if 'namespace' in metas:
+        if 'namespace' in metas and not nojump:
             cpp_namespaces = metas['namespace'][0].split('::')
         else:
+            # nojump だったら無条件に cpp_namespaces は None
             cpp_namespaces = None
 
         index_id = {
@@ -310,9 +311,15 @@ class Generator(object):
         if cpp_namespaces is not None:
             index_id['cpp_namespace'] = cpp_namespaces
 
+        if len(names) == 1:
+            # トップレベルの要素は page_id を空にする
+            page_id = ''
+        else:
+            page_id = names[1:-1] + [names[-1][:-3]]  # remove .md
+
         index = {
             'id': idgen.get_indexid(index_id),
-            'page_id': names[1:-1] + [names[-1][:-3]],  # remove .md
+            'page_id': page_id,
         }
 
         if nojump:
@@ -384,18 +391,22 @@ class Generator(object):
         # (names[0], cpp_version) が同じものをまとめる
         namespaces = {}
         for names, cpp_version, index in indices:
-            name = names[0] if len(names) >= 2 else None
+            name = names[0] if len(names) >= 2 else names[0][:-3]
             key = (name, cpp_version)
             if key in namespaces:
                 namespaces[key]['indexes'].append(index)
             else:
                 namespace = {
-                    'namespace': [name] if name is not None else [],
-                    'path_prefixes': [name] if name is not None else [],
+                    'namespace': [name],
+                    'path_prefixes': [name],
                     'indexes': [index],
                 }
                 if cpp_version is not None:
                     namespace['cpp_version'] = cpp_version
+                if len(names) == 1:
+                    # トップレベルの場合は name を追加
+                    namespace['name'] = idgen.get_all()[index['id']]['key'][0]
+
                 namespaces[key] = namespace
 
         namespaces = sorted(namespaces.values(), key=lambda ns: ns['namespace'])
