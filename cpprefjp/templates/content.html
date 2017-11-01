@@ -12,8 +12,8 @@
 {% macro sidebar_tree(children, parent_opened) %}
   {% for child in children %}
     {% if child.is_node %}
-      <li {{ 'style="display: none"' if not parent_opened }} class="parent_li {{ 'active' if child.opened }}">
-        <span class="treespan" onclick="tree_onclick.call(this, event)"><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
+      <li class="parent_li {{ 'active' if child.opened }}">
+        <span class="treespan"></span>
         {% if child.href %}
           <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
@@ -24,7 +24,7 @@
         </ul>
       </li>
     {% else %}
-      <li {{ 'style="display: none"' if not parent_opened }}>
+      <li>
         {% if child.href %}
           <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
@@ -51,14 +51,14 @@
           {% if not header.is_active and header.href %}
             <a href="{{ header.href }}" itemprop="url">
               {% if loop.index == 1 %}
-                <i class="glyphicon glyphicon-home"></i>
+                <i class="fa fa-fw fa-home"></i>
               {% else %}
                 <span itemprop="name">{{ header.title|e }}</span>
               {% endif %}
             </a>
           {% else %}
             {% if loop.index == 1 %}
-              <i class="glyphicon glyphicon-home"></i>
+              <i class="fa fa-fw fa-home"></i>
             {% else %}
               <span itemprop="name">{{ header.title|e }}</span>
             {% endif %}
