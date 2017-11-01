@@ -1,1 +1,124 @@
-../../cpprefjp/templates/content.html
+{% extends "base.html" %}
+{% block brand %}{{ brand|e }}{% endblock %}
+{% block title %}{{ title|e }}{% endblock %}
+
+{% block rss %}
+  <link rel="alternate" type="application/atom+xml" title="Atom" href="{{ rss }}" />
+{% endblock %}
+
+{% block edit_url %}{{ edit_url }}{% endblock %}
+{% block history_url %}{{ history_url }}{% endblock %}
+
+{% macro sidebar_tree(children, parent_opened) %}
+  {% for child in children %}
+    {% if child.is_node %}
+      <li {{ 'style="display: none"' if not parent_opened }} class="parent_li {{ 'active' if child.opened }}">
+        <span class="treespan" onclick="tree_onclick.call(this, event)"><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
+        {% if child.href %}
+          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
+        {% else %}
+          {{ child.title|e }}{{ child.encoded_cpp_meta }}
+        {% endif %}
+        <ul>
+          {{ sidebar_tree(child.children, child.opened) }}
+        </ul>
+      </li>
+    {% else %}
+      <li {{ 'style="display: none"' if not parent_opened }}>
+        {% if child.href %}
+          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
+        {% else %}
+          {{ child.title|e }}{{ child.encoded_cpp_meta }}
+        {% endif %}
+      </li>
+    {% endif %}
+  {% endfor %}
+{% endmacro %}
+
+{% block sidebar %}
+<div class="tree">
+  <ul>
+    {{ sidebar_tree(sidebar.children, True) }}
+  </ul>
+</div>
+{% endblock %}
+
+{% block content_header %}
+  <ol class="breadcrumb">
+    {% for header in content_header.headers %}
+      <li {{ 'class="active"' if header.is_active }} itemscope itemtype="http://www.schema.org/SiteNavigationElement">
+        <span>
+          {% if not header.is_active and header.href %}
+            <a href="{{ header.href }}" itemprop="url">
+              {% if loop.index == 1 %}
+                <i class="glyphicon glyphicon-home"></i>
+              {% else %}
+                <span itemprop="name">{{ header.title|e }}</span>
+              {% endif %}
+            </a>
+          {% else %}
+            {% if loop.index == 1 %}
+              <i class="glyphicon glyphicon-home"></i>
+            {% else %}
+              <span itemprop="name">{{ header.title|e }}</span>
+            {% endif %}
+          {% endif %}
+        </span>
+      </li>
+    {% endfor %}
+  </ol>
+{% endblock %}
+
+{% block project %}
+  <a href="{{ project_url }}">{{ project_name }}</a>
+{% endblock %}
+{% block body %}
+  {{ body|safe }}
+{% endblock %}
+
+{% block search %}
+  {{ search|safe }}
+{% endblock %}
+
+{% block analytics %}
+  {{ analytics|safe }}
+{% endblock %}
+
+{% block keywords %}
+  {{ keywords|safe }}
+{% endblock %}
+
+{% block latest_commit_info %}
+  {% if latest_commit_info %}
+    <p class="text-right"><small>
+      最終更新日時:
+      <span itemprop="datePublished" content="{{ latest_commit_info['last_updated'].strftime('%Y-%m-%dT%H:%M:%S'.encode('utf-8')).decode('utf-8') }}">
+        {{ latest_commit_info['last_updated'].strftime('%Y年%m月%d日 %H時%M分%S秒'.encode('utf-8')).decode('utf-8') }}
+      </span>
+      <br/>
+      <span itemprop="author" itemscope itemtype="http://schema.org/Person">
+        <span itemprop="name">{{ latest_commit_info['last_author'] }}</span>
+      </span>
+      が更新
+    </small></p>
+  {% endif %}
+{% endblock %}
+
+{% block mathjax %}
+  {% if mathjax %}
+    <script type="text/x-mathjax-config">
+      MathJax.Hub.Config({
+        extensions: ["tex2jax.js"],
+        jax: ["input/TeX", "output/HTML-CSS"],
+        tex2jax: {
+          inlineMath: [ ['$','$'] ],
+          displayMath: [ ['$$','$$'] ],
+          processEscapes: true
+        },
+        "HTML-CSS": { availableFonts: ["TeX"] },
+        displayAlign: "left",
+      });
+    </script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.0/MathJax.js"></script>
+  {% endif %}
+{% endblock %}
