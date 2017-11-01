@@ -42,7 +42,7 @@ case "$1" in
       exit 1
     fi
     cd $2/$2.github.io
-    docker run -v `pwd`:/var/src -p 8001:8001 $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && python -m SimpleHTTPServer 8001" ;;
+    docker run -v `pwd`:/var/src -p 8000:8000 $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && python -m SimpleHTTPServer 8000" ;;
   * )
     show_help
     exit 1 ;;

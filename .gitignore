@@ -4,3 +4,10 @@ cpprefjp/cpprefjp.github.io/
 boostjp/site/
 boostjp/boostjp.github.io/
 settings.*.cache
+
+/crsearch.json/crsearch.json
+/cpprefjp/static/static/kunai/*
+/cpprefjp/static/static/crsearch/*
+
+/kunai/
+

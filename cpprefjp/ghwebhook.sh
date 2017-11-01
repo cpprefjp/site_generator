@@ -8,23 +8,25 @@ cd site_generator
 git pull
 git submodule update -i
 
+rm -rf cpprefjp/static/static/kunai || true
+mkdir -p cpprefjp/static/static/kunai
 rm -rf cpprefjp/static/static/crsearch || true
 mkdir -p cpprefjp/static/static/crsearch
 
-export DOCKER_IT=""
+export DOCKER_IT=\"\"
 
-# crsearch 用 JS, CSS 生成
-if [ ! -d crsearch ]; then
-  git clone git@github.com:cpprefjp/crsearch.git
+# kunai 用 JS, CSS 生成
+if [ ! -d kunai ]; then
+  git clone git@github.com:cpprefjp/kunai.git
 else
-  pushd crsearch
-  git pull || (cd .. && rm -rf crsearch && git clone git@github.com:cpprefjp/crsearch.git)
+  pushd kunai
+  git pull || (cd .. && rm -rf kunai && git clone git@github.com:cpprefjp/kunai.git)
   popd
 fi
-./crsearch/docker.sh build
-./crsearch/docker.sh install
-./crsearch/docker.sh run build
-cp -r crsearch/dist/* cpprefjp/static/static/crsearch/
+./kunai/docker.sh build
+./kunai/docker.sh install
+./kunai/docker.sh run build
+cp -r ./kunai/dist/* ./cpprefjp/static/static/kunai/
 
 # crsearch.json 生成
 if [ ! -d crsearch.json/site ]; then

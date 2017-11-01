@@ -1,9 +1,5 @@
 <!doctype html>
-<!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
-<!--[if IE 7]>    <html class="no-js ie7 oldie" lang="en"> <![endif]-->
-<!--[if IE 8]>    <html class="no-js ie8 oldie" lang="en"> <![endif]-->
-<!--[if gt IE 8]><!-->
-<html class="no-js" lang="ja" itemscope="" itemtype="http://schema.org/WebPage"> <!--<![endif]-->
+<html class="cpprefjp" lang="ja" itemscope="" itemtype="http://schema.org/WebPage">
     <head>
         <meta charset="UTF-8">
 
@@ -38,272 +34,24 @@
 
 <script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
 <script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<!-- <script src="//platform.twitter.com/widgets.js"></script> -->
-
-<!-- <script src="/static/js/root.js"></script> -->
 
         {% block mathjax %}{% endblock %}
 
-        <!--[if lt IE 9]>
-        <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
-        <![endif]-->
+<link href="/static/kunai/css/kunai-stage-0.css" rel="stylesheet">
+<link href="/static/kunai/css/kunai-stage-1.css" rel="stylesheet">
+<link href="/static/kunai/css/kunai-stage-2.css" rel="stylesheet">
+<link href="/static/kunai/css/kunai-stage-3.css" rel="stylesheet">
 
-<!-- begin crsearch -->
-<link href="/static/crsearch/css/font-awesome.css" rel="stylesheet">
-<link href="/static/crsearch/css/crsearch.css" rel="stylesheet">
-
-<script type="text/javascript" src="/static/crsearch/js/crsearch-vendor.js"></script>
-<script type="text/javascript" src="/static/crsearch/js/crsearch.js"></script>
+<script type="text/javascript" src="/static/kunai/js/kunai-vendor.js"></script>
+<script type="text/javascript" src="/static/kunai/js/kunai.js"></script>
 
 <script type="text/javascript">
   document.addEventListener('DOMContentLoaded', function() {
-    var crs = new CRSearch.CRSearch;
-    crs.database("https://cpprefjp.github.io/static/crsearch/crsearch.json");
-    // crs.database("https://boostjp.github.io");
-    // crs.database("http://localhost:8001/crsearch.json");
-    crs.searchbox(document.getElementsByClassName('crsearch'));
+    var kn = new Kunai;
+    kn.cpprefjp();
   });
 </script>
-<style type="text/css">
-.crsearch {
-}
-</style>
-<!-- end crsearch -->
 
-        <script>
-            document.documentElement.className = document.documentElement.className.replace(/\bno-js\b/,'js');
-        </script>
-
-        <style type="text/css">
-.navbar-brand {
-  line-height: 32px;
-  padding: 0.5em 15px;
-}
-.navbar-brand > .title-wrapper:before {
-  content: "";
-  float: left;
-  display: inline-block;
-  overflow: hidden;
-  height: 0;
-  padding: 32px 32px 0 0;
-  margin: 0 4px 0 0;
-  background-image: url(/static/original-icons/cpprefjp-icon-v1.1-transparent.png);
-  background-size: contain;
-  background-repeat: no-repeat;
-}
-.navbar-brand > .title-wrapper > .title {
-  float: left;
-  display: inline-block;
-}
-.tree{
-  -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
-  -webkit-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
-  -moz-box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
-  box-shadow:inset 0 1px 1px rgba(0,0,0,0.05);
-  background-color:#fbfbfb;
-  border:1px solid #999;
-  margin-bottom:10px;
-  /*max-height:300px;*/
-  /*min-height:20px;*/
-  overflow-x:scroll;
-  padding:3px
-}
-.tree ul {
-  padding-left:32px
-}
-.tree > ul{
-  padding-left:0px
-}
-.tree a{
-  display:inline;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  width:90%
-}
-.tree li{
-  list-style-type:none;
-  margin:0;
-  padding:4px 0 0 2px;
-  position:relative
-}
-.tree li::before,.tree li::after{
-  content:'';
-  left:-20px;
-  position:absolute;
-  right:auto
-}
-.tree li::before{
-  border-left:1px solid #999;
-  bottom:50px;
-  height:100%;
-  top:0;
-  width:1px;
-  -webkit-transition:"border-color 0.1s ease 0.1s";
-  -moz-transition:"border-color 0.1s ease 0.1s";
-  -o-transition:"border-color 0.1s ease 0.1s";
-  transition:"border-color 0.1s ease 0.1s"
-}
-.tree li::after{
-  border-top:1px solid #999;
-  height:20px;
-  top:13px;
-  width:23px;
-  -webkit-transition:"border-color 0.1s ease 0.1s";
-  -moz-transition:"border-color 0.1s ease 0.1s";
-  -o-transition:"border-color 0.1s ease 0.1s";
-  transition:"border-color 0.1s ease 0.1s"
-}
-.tree li span.treespan{
-  -moz-border-radius:5px;
-  -webkit-border-radius:5px;
-  border:1px solid #999;
-  border-radius:5px;
-  display:inline-block;
-  line-height:14px;
-  padding:2px 4px;
-  text-decoration:none;
-  -webkit-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
-  -moz-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
-  -o-transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s;
-  transition:color .2s ease .1s,background-color .2s ease .1s,border-color .3s ease .2s
-}
-.tree li.parent_li>span.treespan{cursor:pointer}
-.tree li.parent_li>span.treespan:hover{
-  background-color:#df8505;
-  border:1px solid #c67605;
-  color:#fff
-}
-.tree li.parent_li>span.treespan:hover+ul li::after{border-top-color:#f89406}
-.tree li.parent_li>span.treespan:hover+ul li::before{border-left-color:#f89406}
-.tree li.parent_li>span.treespan:hover+ul li span.treespan{
-  background:#fddfb3;
-  border:1px solid #faa937;
-  color:#000
-}
-.tree li:last-child::before{height:13px}
-.tree>ul>li::before,.tree>ul>li::after{border:0}
-.google-search {
-    width: 250px;
-    margin-top: 2px;
-}
-.google-search-result .gsc-control-cse {
-    padding: 0px;
-    border: 0px;
-}
-/*
-.google-search-result .gsc-adBlock {
-    display:none !important;
-    visibility:hidden !important;
-}
-.google-search-result .gsc-adBlockVertical {
-    display:none !important;
-    visibility:hidden !important;
-}
-*/
-
-code {
-    color: #000000;
-}
-a code {
-    color: #428bca;
-}
-.content-body > h1:first-child {
-    margin-top: 0px;
-}
-.content-body h2 {
-  border-left: solid 8px skyblue;
-  padding-left: 5px;
-  border-bottom: solid 2px skyblue;
-}
-.edit {
-  -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
-  border:1px solid #999;
-  margin: 5px;
-  padding: 3px;
-}
-.history {
-  -webkit-border-radius:4px;
-  -moz-border-radius:4px;
-  border-radius:4px;
-  border:1px solid #999;
-  margin: 5px;
-  padding: 3px;
-}
-.content-header {
-  display: flex;
-  padding: 0 1em 0 0;
-  margin-bottom: 5px;
-  background: #f5f5f5;
-  border-radius: 4px;
-  align-items: center;
-}
-ol.breadcrumb {
-  flex-grow: 1;
-  margin-bottom: 0;
-  background: none;
-  border-radius: 0;
-}
-.crsearch {
-  width: 260px;
-}
-.footer {
-  text-align: center;
-}
-.footer.navbar {
-  min-height: 0;
-  margin-top: 20px;
-  margin-bottom: 0px;
-  padding-top: 10px;
-  padding-bottom: 10px;
-}
-div.identifier-type {
-  float: left;
-}
-div.header {
-  float: right;
-  text-align: right;
-}
-h1 .namespace {
-  font-size: 14px;
-}
-h1 .class {
-}
-h1 .cpp {
-  font-size: 14px;
-}
-.tree .cpp-sidebar {
-  font-size: 10px;
-}
-
-pre .err { border: 0px } /* Error */
-.syntax pre .err { border: 0px } /* Error */
-        </style>
-        <script>
-function tree_onclick(e) {
-    var children = $(this).parent('li.parent_li').find(' > ul > li');
-    if (children.is(':visible')) {
-        children.hide(100);
-        $(this)
-            .attr('title', 'Expand this branch')
-            .find(' > i')
-            .addClass('glyphicon-plus')
-            .removeClass('glyphicon-minus');
-    }
-    else {
-        children.show(100);
-        $(this)
-            .attr('title', 'Collapse this branch')
-            .find(' > i')
-            .addClass('glyphicon-minus')
-            .removeClass('glyphicon-plus');
-    }
-    e.stopPropagation();
-}
-        </script>
     {% block analytics %}{% endblock %}
     </head>
     <body>
@@ -357,10 +105,10 @@ function tree_onclick(e) {
         {% block latest_commit_info %}{% endblock %}
         <p class="text-right">
           <a class="history" target="_blank" href="{% block history_url %}{% endblock %}">
-            <span class="glyphicon glyphicon-time"></span>履歴
+            <span class="fa fa-fw fa-clock-o fa-flip-horizontal"></span>履歴
           </a>
           <a class="edit" target="_blank" href="{% block edit_url %}{% endblock %}">
-            <span class="glyphicon glyphicon-pencil"></span>編集
+            <span class="fa fa-fw fa-pencil"></span>編集
           </a>
         </p>
       </div>
@@ -387,11 +135,4 @@ function tree_onclick(e) {
   </div>
 </footer>
     </body>
-    <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.  chromium.org/developers/how-tos/chrome-frame-getting-started -->
-    <!--[if lt IE 7 ]>
-        <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
-        <script>
-            window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
-        </script>
-    <![endif]-->
 </html>
