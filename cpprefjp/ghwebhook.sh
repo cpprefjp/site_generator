@@ -10,6 +10,8 @@ git submodule update -i
 
 rm -rf cpprefjp/static/static/kunai || true
 mkdir -p cpprefjp/static/static/kunai
+rm -rf cpprefjp/static/static/crsearch || true
+mkdir -p cpprefjp/static/static/crsearch
 
 export DOCKER_IT=""
 
@@ -25,7 +27,6 @@ fi
 ./kunai/docker.sh install
 ./kunai/docker.sh run build
 cp -r ./kunai/dist/* ./cpprefjp/static/static/kunai/
-
 
 # crsearch.json 生成
 if [ ! -d crsearch.json/site ]; then
