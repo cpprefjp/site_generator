@@ -7,6 +7,7 @@ settings.*.cache
 
 /crsearch.json/crsearch.json
 /cpprefjp/static/static/kunai/*
+/cpprefjp/static/static/crsearch/*
 
 /kunai/
 
