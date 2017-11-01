@@ -13,7 +13,7 @@ mkdir -p cpprefjp/static/static/kunai
 rm -rf cpprefjp/static/static/crsearch || true
 mkdir -p cpprefjp/static/static/crsearch
 
-export DOCKER_IT=""
+export DOCKER_IT=\"\"
 
 # kunai 用 JS, CSS 生成
 if [ ! -d kunai ]; then
