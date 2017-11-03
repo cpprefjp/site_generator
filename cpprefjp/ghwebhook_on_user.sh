@@ -24,7 +24,7 @@ function clone_and_fallback() {
       popd
     else
       popd
-      rm_rf $2
+      rm_rf $1
       git clone $2 $1
     fi
   fi
