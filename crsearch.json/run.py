@@ -77,6 +77,15 @@ class Validator(object):
                                             'type': 'integer',
                                         },
                                     },
+                                    'nojump': {
+                                        'type': 'boolean',
+                                    },
+                                    'attributes': {
+                                        'type': 'array',
+                                        'items': {
+                                            'type': 'string',
+                                        },
+                                    },
                                 },
                             },
                         },
@@ -167,6 +176,7 @@ class Generator(object):
     _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
     _META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$')
+    _NOT_ATTRIBUTE_RE = re.compile(r'^cpp\d+[a-zA-Z]?$')
 
     def split_title(self, md):
         r"""先頭の見出し部分を（あるなら）取り出す
@@ -308,6 +318,11 @@ class Generator(object):
 
         if len(related_to) != 0:
             index['related_to'] = related_to
+
+        if 'cpp' in metas:
+            attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.match(cpp)]
+            if attributes:
+                index['attributes'] = attributes
 
         return index
 
