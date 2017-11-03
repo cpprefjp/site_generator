@@ -174,12 +174,17 @@ class Generator(object):
 
     _CPP_LATEST_VERSION = '20'
     _CPP_LATEST = 'cpp' + _CPP_LATEST_VERSION
+    _CPP_RE_RAW = r'cpp\d+[a-zA-Z]?'
+    _CPP_RE = re.compile(_CPP_RE_RAW)
+
+    _DEPRECATED_IN_CPP_RE = re.compile(r'^' + _CPP_RE_RAW + r'deprecated' + r'$')
+    _REMOVED_IN_CPP_RE = re.compile(r'^' + _CPP_RE_RAW + r'removed' + r'$')
 
     _HASH_HEADER_RE = re.compile(r'^( *?\n)*#(?P<header>.*?)#*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
     _META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$')
-    _NOT_ATTRIBUTE_RE = re.compile(r'^cpp\d+[a-zA-Z]?$')
+    _NOT_ATTRIBUTE_RE = re.compile(r'^' + _CPP_RE_RAW + r'$')
 
     def split_title(self, md):
         r"""先頭の見出し部分を（あるなら）取り出す
@@ -325,11 +330,13 @@ class Generator(object):
         if 'cpp' in metas:
             attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.match(cpp)]
             if attributes:
-                if self._CPP_LATEST + 'deprecated' in attributes:
-                    attributes.append('deprecated_in_latest')
+                removed = any([attr for attr in attributes if self._REMOVED_IN_CPP_RE.match(attr)])
 
-                if self._CPP_LATEST + 'removed' in attributes:
+                if removed:
                     attributes.append('removed_in_latest')
+
+                elif any([attr for attr in attributes if self._DEPRECATED_IN_CPP_RE.match(attr)]):
+                    attributes.append('deprecated_in_latest')
 
                 index['attributes'] = attributes
 
