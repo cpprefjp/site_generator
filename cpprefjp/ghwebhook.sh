@@ -25,7 +25,6 @@ else
 fi
 ./kunai/docker.sh build
 ./kunai/docker.sh install
-./kunai/docker.sh run build
 cp -r ./kunai/dist/* ./cpprefjp/static/static/kunai/
 
 # crsearch.json 生成
