@@ -172,6 +172,9 @@ class Generator(object):
         def get_all(self):
             return self._ids
 
+    _CPP_LATEST_VERSION = '20'
+    _CPP_LATEST = 'cpp' + _CPP_LATEST_VERSION
+
     _HASH_HEADER_RE = re.compile(r'^( *?\n)*#(?P<header>.*?)#*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
     _REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
@@ -322,6 +325,12 @@ class Generator(object):
         if 'cpp' in metas:
             attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.match(cpp)]
             if attributes:
+                if self._CPP_LATEST + 'deprecated' in attributes:
+                    attributes.append('deprecated_in_latest')
+
+                if self._CPP_LATEST + 'removed' in attributes:
+                    attributes.append('removed_in_latest')
+
                 index['attributes'] = attributes
 
         return index
