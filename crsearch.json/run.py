@@ -317,7 +317,7 @@ class Generator(object):
 
         if len(names) == 1:
             # トップレベルの要素は page_id を空にする
-            page_id = ''
+            page_id = ['']
         else:
             page_id = names[1:-1] + [names[-1][:-3]]  # remove .md
 
