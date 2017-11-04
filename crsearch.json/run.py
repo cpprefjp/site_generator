@@ -3,6 +3,7 @@
 import json
 import os
 import re
+from itertools import chain
 
 import jsonschema
 
@@ -251,8 +252,10 @@ class Generator(object):
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
         if nojump:
-            # nojump だったら問答無用で meta
             type = 'meta'
+        elif names[0] == 'editors_doc':
+            type = 'meta'
+            nojump = True
         elif 'id-type' not in metas and 'header' in metas:
             type = 'header'
         elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
@@ -270,6 +273,7 @@ class Generator(object):
             type = 'article'
         elif 'id-type' not in metas:
             raise RuntimeError(f'unexpected meta: {metas}')
+
         elif metas['id-type'][0] == 'class' or metas['id-type'][0] == 'class template':
             type = 'class'
         elif metas['id-type'][0] == 'function' or metas['id-type'][0] == 'function template':
@@ -428,7 +432,11 @@ def get_files(base_dir):
 
 
 def main():
-    paths = list(get_files('site/article')) + list(get_files('site/lang')) + list(get_files('site/reference'))
+    _KNOWN_DIRS = [
+        'site/article', 'site/lang', 'site/reference', 'site/editors_doc'
+    ]
+
+    paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])
     all_paths = list(get_files('site'))
     result = Generator().generate('site', paths, all_paths)
     with open('crsearch.json', 'wb') as f:
