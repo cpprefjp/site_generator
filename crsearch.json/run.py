@@ -3,6 +3,7 @@
 import json
 import os
 import re
+from itertools import chain
 
 import jsonschema
 
@@ -243,14 +244,19 @@ class Generator(object):
                 result[name].append(target)
         return result
 
-    def make_index(self, md, names, idgen):
+    def make_index(self, md, names, idgen, nojump):
         title, contents = self.split_title(md)
         metas = self.get_meta(md)
 
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
-        if 'id-type' not in metas and 'header' in metas:
+        if nojump:
+            type = 'meta'
+        elif names[0] == 'editors_doc':
+            type = 'meta'
+            nojump = True
+        elif 'id-type' not in metas and 'header' in metas:
             type = 'header'
         elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
             # lang/ 直下は meta 扱いにする
@@ -267,6 +273,7 @@ class Generator(object):
             type = 'article'
         elif 'id-type' not in metas:
             raise RuntimeError(f'unexpected meta: {metas}')
+
         elif metas['id-type'][0] == 'class' or metas['id-type'][0] == 'class template':
             type = 'class'
         elif metas['id-type'][0] == 'function' or metas['id-type'][0] == 'function template':
@@ -294,9 +301,10 @@ class Generator(object):
             keys = metas['class template']
 
         # namespace 判別
-        if 'namespace' in metas:
+        if 'namespace' in metas and not nojump:
             cpp_namespaces = metas['namespace'][0].split('::')
         else:
+            # nojump だったら無条件に cpp_namespaces は None
             cpp_namespaces = None
 
         index_id = {
@@ -307,10 +315,19 @@ class Generator(object):
         if cpp_namespaces is not None:
             index_id['cpp_namespace'] = cpp_namespaces
 
+        if len(names) == 1:
+            # トップレベルの要素は page_id を空にする
+            page_id = ''
+        else:
+            page_id = names[1:-1] + [names[-1][:-3]]  # remove .md
+
         index = {
             'id': idgen.get_indexid(index_id),
-            'page_id': names[1:-1] + [names[-1][:-3]],  # remove .md
+            'page_id': page_id,
         }
+
+        if nojump:
+            index['nojump'] = True
 
         related_to = []
         if 'class' in metas:
@@ -342,11 +359,13 @@ class Generator(object):
 
         return index
 
-    def generate(self, base_dir, file_paths):
+    def generate(self, base_dir, file_paths, all_file_paths):
         idgen = Generator.IndexIDGenerator()
 
+        file_path_set = set(file_paths)
+
         indices = []
-        for file_path in file_paths:
+        for file_path in all_file_paths:
             if not file_path.startswith(base_dir):
                 raise RuntimeError(f'{file_path} not starts with {base_dir}')
             if not file_path.endswith('.md'):
@@ -356,7 +375,8 @@ class Generator(object):
             names = list(filter(None, file_path[len(base_dir):].split('/')))
             with open(file_path) as f:
                 md = f.read()
-            index = self.make_index(md, names, idgen)
+            nojump = file_path not in file_path_set
+            index = self.make_index(md, names, idgen, nojump)
             # C++ のバージョン情報を入れる
             cpp_version = None
             metas = self.get_meta(md)
@@ -375,17 +395,22 @@ class Generator(object):
         # (names[0], cpp_version) が同じものをまとめる
         namespaces = {}
         for names, cpp_version, index in indices:
-            key = (names[0], cpp_version)
+            name = names[0] if len(names) >= 2 else names[0][:-3]
+            key = (name, cpp_version)
             if key in namespaces:
                 namespaces[key]['indexes'].append(index)
             else:
                 namespace = {
-                    'namespace': [names[0]],
-                    'path_prefixes': [names[0]],
+                    'namespace': [name],
+                    'path_prefixes': [name],
                     'indexes': [index],
                 }
                 if cpp_version is not None:
                     namespace['cpp_version'] = cpp_version
+                if len(names) == 1:
+                    # トップレベルの場合は name を追加
+                    namespace['name'] = idgen.get_all()[index['id']]['key'][0]
+
                 namespaces[key] = namespace
 
         namespaces = sorted(namespaces.values(), key=lambda ns: ns['namespace'])
@@ -407,8 +432,13 @@ def get_files(base_dir):
 
 
 def main():
-    paths = list(get_files('site/article')) + list(get_files('site/lang')) + list(get_files('site/reference'))
-    result = Generator().generate('site', paths)
+    _KNOWN_DIRS = [
+        'site/article', 'site/lang', 'site/reference', 'site/editors_doc'
+    ]
+
+    paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])
+    all_paths = list(get_files('site'))
+    result = Generator().generate('site', paths, all_paths)
     with open('crsearch.json', 'wb') as f:
         f.write(json.dumps(result, separators=(',', ':'), ensure_ascii=False, sort_keys=True).encode('utf-8'))
 

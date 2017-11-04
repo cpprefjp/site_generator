@@ -49,7 +49,7 @@ class TestRun(unittest.TestCase):
             'test/reference/vector/push_back.md',
             'test/reference/vector/swap_free.md',
         ]
-        value = run.Generator().generate('test', paths)
+        value = run.Generator().generate('test', paths, paths)
         run.Validator().validate(value)
 
     # def test_all(self):
