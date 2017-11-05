@@ -48,6 +48,7 @@ class TestRun(unittest.TestCase):
             'test/reference/vector.md',
             'test/reference/vector/push_back.md',
             'test/reference/vector/swap_free.md',
+            'test/reference/ios/ios_base/failure/op_constructor.md',
         ]
         value = run.Generator().generate('test', paths, paths)
         run.Validator().validate(value)
