@@ -39,7 +39,7 @@ class Validator(object):
                             'minItems': 1,
                             'items': {
                                 'type': 'string',
-                                'pattern': '[^/]+',
+                                'pattern': '^[^/]+$',
                             },
                         },
                         'path_prefixes': {
@@ -47,7 +47,7 @@ class Validator(object):
                             'minItems': 1,
                             'items': {
                                 'type': 'string',
-                                'pattern': '[^/]+',
+                                'pattern': '^[^/]+$',
                             },
                         },
                         'cpp_version': {
@@ -69,7 +69,7 @@ class Validator(object):
                                         'minItems': 1,
                                         'items': {
                                             'type': 'string',
-                                            'pattern': '[^/]+',
+                                            'pattern': '^[^/]+$',
                                         },
                                     },
                                     'related_to': {
@@ -114,14 +114,14 @@ class Validator(object):
                         'type': 'array',
                         'items': {
                             'type': 'string',
-                            'pattern': '[^"<>]+',
+                            'pattern': '^[^"<>]+$',
                         },
                     },
                     'cpp_namespace': {
                         'type': 'array',
                         'items': {
                             'type': 'string',
-                            'pattern': '[^:]+',
+                            'pattern': '^[^:]+$',
                         },
                     },
                 },
@@ -138,14 +138,14 @@ class Validator(object):
                         'type': 'array',
                         'items': {
                             'type': 'string',
-                            'pattern': '[^:]+',
+                            'pattern': '^[^:]+$',
                         },
                     },
                     'cpp_namespace': {
                         'type': 'array',
                         'items': {
                             'type': 'string',
-                            'pattern': '[^:]+',
+                            'pattern': '^[^:]+$',
                         },
                     },
                 },
@@ -237,11 +237,14 @@ class Generator(object):
         for line in lines:
             m = self._META_RE.match(line)
             if m is not None:
-                target = m.group('target')
                 name = m.group('name')
                 if name not in result:
                     result[name] = []
-                result[name].append(target)
+                if name == 'class':
+                    result[name] += m.group('target').split('::')
+                else:
+                    result[name].append(m.group('target'))
+
         return result
 
     def make_index(self, md, names, idgen, nojump):
