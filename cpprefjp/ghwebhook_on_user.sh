@@ -29,9 +29,23 @@ function clone_and_fallback() {
     fi
   fi
 }
+function clone_and_initsubmodule_and_fallback() {
+  clone_and_fallback "$@"
+  pushd $1
+  if git submodule update -i; then
+    popd
+  else
+    popd
+    rm_rf $1
+    git clone $2 $1
+    pushd $1
+    git submodule update -i
+    popd
+  fi
+}
 
 # kunai 用 JS, CSS 生成
-clone_and_fallback kunai git@github.com:cpprefjp/kunai.git
+clone_and_initsubmodule_and_fallback kunai git@github.com:cpprefjp/kunai.git
 ./kunai/docker.sh build
 ./kunai/docker.sh install
 cp -r ./kunai/dist/* ./cpprefjp/static/static/kunai/

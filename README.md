@@ -27,6 +27,9 @@ git clone https://github.com/cpprefjp/site.git cpprefjp/site
 
 # kunai 用のデータを生成する
 git clone https://github.com/cpprefjp/kunai.git
+cd kunai
+git submodule update -i
+cd ..
 ./kunai/docker.sh build
 ./kunai/docker.sh install
 ./kunai/docker.sh run build
