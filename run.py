@@ -6,6 +6,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import datetime
+import time
 import glob
 import importlib
 import json
@@ -34,6 +35,8 @@ CONVERT_ALL = '--all' in sys.argv[2:]
 CACHE_FILE = sys.argv[1] + '.cache'
 TARGET_PREFIX = [x[len('--prefix='):] for x in sys.argv[2:] if x.startswith('--prefix=')]
 TARGET_PREFIX = TARGET_PREFIX[0] if TARGET_PREFIX else ''
+
+_CACHEBUST = int(round(time.time() * 1000))
 
 
 def make_md_path(path):
@@ -501,6 +504,7 @@ def main():
                 pageinfo['title'] + settings.TITLE_SUFFIX),
             'url': settings.BASE_URL + '/' + pageinfo['href'],
             'description': pageinfo['description'],
+            'cachebust': '?cachebust=' + str(_CACHEBUST),
             'sidebar': sidebar,
             'content_header': content_header,
             'brand': settings.BRAND,
