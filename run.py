@@ -505,6 +505,7 @@ def main():
             'url': settings.BASE_URL + '/' + pageinfo['href'],
             'description': pageinfo['description'],
             'cachebust': '?cachebust=' + str(_CACHEBUST),
+            'disable_sidebar': settings.DISABLE_SIDEBAR,
             'sidebar': sidebar,
             'content_header': content_header,
             'brand': settings.BRAND,

@@ -29,8 +29,11 @@ TITLE_SUFFIX = ' - cpprefjp C++日本語リファレンス'
 # テンプレートディレクトリ
 PAGE_TEMPLATE_DIR = 'cpprefjp/templates'
 
+# サイドバーの出力を無しにするか
+DISABLE_SIDEBAR = True
+
 # HTML の minify を行なうか
-USE_MINIFY = True
+USE_MINIFY = False
 
 # 検索用 HTML
 GOOGLE_SITE_SEARCH = '''

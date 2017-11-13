@@ -36,11 +36,16 @@
 {% endmacro %}
 
 {% block sidebar %}
-<div class="tree">
-  <ul>
-    {{ sidebar_tree(sidebar.children, True) }}
-  </ul>
-</div>
+  {% if disable_sidebar %}
+    <div id="sidebar">
+    </div>
+  {% else %}
+    <div class="tree">
+      <ul>
+        {{ sidebar_tree(sidebar.children, True) }}
+      </ul>
+    </div>
+  {% endif %}
 {% endblock %}
 
 {% block content_header %}

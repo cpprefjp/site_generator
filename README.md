@@ -58,7 +58,7 @@ popd
 # この辺は必要に応じて実行する
 (cd crsearch.json/site && git pull)
 ./crsearch.json/docker.sh run
-./crsearch/docker.sh run
+./kunai/docker.sh run build
 
 ./docker.sh run settings.cpprefjp_local
 ./docker.sh localhost cpprefjp

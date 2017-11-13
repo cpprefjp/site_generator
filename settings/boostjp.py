@@ -29,6 +29,9 @@ TITLE_SUFFIX = ' - boostjp'
 # テンプレートディレクトリ
 PAGE_TEMPLATE_DIR = 'boostjp/templates'
 
+# サイドバーの出力を無しにするか
+DISABLE_SIDEBAR = False
+
 # HTML の minify を行なうか
 USE_MINIFY = True
 
