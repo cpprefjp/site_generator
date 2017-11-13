@@ -37,13 +37,15 @@
 
 {% block sidebar %}
   {% if disable_sidebar %}
-    <div id="sidebar">
+    <div id="sidebar" class="col-sm-3 col-sm-pull-9">
     </div>
   {% else %}
-    <div class="tree">
-      <ul>
-        {{ sidebar_tree(sidebar.children, True) }}
-      </ul>
+    <div class="col-sm-3 col-sm-pull-9">
+      <div class="tree">
+        <ul>
+          {{ sidebar_tree(sidebar.children, True) }}
+        </ul>
+      </div>
     </div>
   {% endif %}
 {% endblock %}
