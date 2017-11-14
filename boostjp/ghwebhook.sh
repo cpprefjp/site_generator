@@ -7,7 +7,6 @@ set -e
 cd site_generator
 git pull
 git submodule update -i
-source venv/bin/activate
 
 pushd boostjp/site && git pull && popd
 
