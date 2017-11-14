@@ -27,7 +27,7 @@ import sitemap
 
 
 if len(sys.argv) < 2:
-    print('{} <setting> [--all] [--prefix=<target>]'.format(sys.argv[0]).encode('utf-8'))
+    print('{} <setting> [--all] [--prefix=<target>] [--concurrency=<num>]'.format(sys.argv[0]).encode('utf-8'))
     sys.exit(0)
 
 settings = importlib.import_module(sys.argv[1])
@@ -35,6 +35,8 @@ CONVERT_ALL = '--all' in sys.argv[2:]
 CACHE_FILE = sys.argv[1] + '.cache'
 TARGET_PREFIX = [x[len('--prefix='):] for x in sys.argv[2:] if x.startswith('--prefix=')]
 TARGET_PREFIX = TARGET_PREFIX[0] if TARGET_PREFIX else ''
+CONCURRENCY = [int(x[len('--concurrency='):]) for x in sys.argv[2:] if x.startswith('--concurrency=')]
+CONCURRENCY = CONCURRENCY[0] if CONCURRENCY else 2
 
 _CACHEBUST = int(round(time.time() * 1000))
 
@@ -465,6 +467,37 @@ def remove_not_target_paths(paths):
                 pass
 
 
+def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list):
+    print(pageinfo['path'])
+    latest_commit_info = get_latest_commit_info(pageinfo['path'])
+
+    if not settings.DISABLE_SIDEBAR:
+        sidebar.set_active(pageinfo['paths'])
+
+    content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
+    convert(pageinfo['path'], template, {
+        'title': (
+            pageinfo['title'] if pageinfo['is_index'] else
+            pageinfo['title'] + settings.TITLE_SUFFIX),
+        'url': settings.BASE_URL + '/' + pageinfo['href'],
+        'description': pageinfo['description'],
+        'cachebust': '?cachebust=' + str(_CACHEBUST),
+        'disable_sidebar': settings.DISABLE_SIDEBAR,
+        'sidebar': sidebar,
+        'content_header': content_header,
+        'brand': settings.BRAND,
+        'search': settings.GOOGLE_SITE_SEARCH,
+        'analytics': settings.GOOGLE_ANALYTICS,
+        'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
+        'edit_url': settings.EDIT_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
+        'history_url': settings.HISTORY_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
+        'project_url': settings.PROJECT_URL,
+        'project_name': settings.PROJECT_NAME,
+        'latest_commit_info': latest_commit_info,
+        'keywords': settings.META_KEYWORDS,
+    }, hrefs, global_qualify_list)
+
+
 def main():
     pageinfos = [make_pageinfo(path) for path in target_paths()]
     sidebar = make_sidebar(pageinfos)
@@ -483,6 +516,8 @@ def main():
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
     template = env.get_template('content.html')
     hrefs = {pageinfo['href'] for pageinfo in pageinfos}
+
+    target_pageinfos = []
     for pageinfo in pageinfos:
         if not pageinfo['path'].startswith(TARGET_PREFIX):
             continue
@@ -490,35 +525,35 @@ def main():
         if not CONVERT_ALL and not required:
             # print(pageinfo['path'] + ' -- already converted')
             continue
-        if CONVERT_ALL and not required:
-            print(pageinfo['path'] + ' -- force converting')
-        else:
-            print(pageinfo['path'])
-        latest_commit_info = get_latest_commit_info(pageinfo['path'])
+        target_pageinfos.append(pageinfo)
 
-        sidebar.set_active(pageinfo['paths'])
-        content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
-        convert(pageinfo['path'], template, {
-            'title': (
-                pageinfo['title'] if pageinfo['is_index'] else
-                pageinfo['title'] + settings.TITLE_SUFFIX),
-            'url': settings.BASE_URL + '/' + pageinfo['href'],
-            'description': pageinfo['description'],
-            'cachebust': '?cachebust=' + str(_CACHEBUST),
-            'disable_sidebar': settings.DISABLE_SIDEBAR,
-            'sidebar': sidebar,
-            'content_header': content_header,
-            'brand': settings.BRAND,
-            'search': settings.GOOGLE_SITE_SEARCH,
-            'analytics': settings.GOOGLE_ANALYTICS,
-            'rss': settings.BASE_URL + '/' + settings.RSS_PATH,
-            'edit_url': settings.EDIT_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
-            'history_url': settings.HISTORY_URL_FORMAT.format(path=pageinfo['path'] + '.md'),
-            'project_url': settings.PROJECT_URL,
-            'project_name': settings.PROJECT_NAME,
-            'latest_commit_info': latest_commit_info,
-            'keywords': settings.META_KEYWORDS,
-        }, hrefs, global_qualify_list)
+    if settings.DISABLE_SIDEBAR:
+        def run(pageinfos):
+            for pageinfo in pageinfos:
+                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list)
+
+        target_pageinfos_list = [[] for n in range(CONCURRENCY)]
+        for i, pageinfo in enumerate(target_pageinfos):
+            target_pageinfos_list[i % CONCURRENCY].append(pageinfo)
+
+        import multiprocessing
+        processes = []
+        for i in range(CONCURRENCY):
+            process = multiprocessing.Process(target=run, args=(target_pageinfos_list[i],))
+            process.start()
+            processes.append(process)
+        for process in processes:
+            process.join()
+        for process in processes:
+            if process.exitcode != 0:
+                sys.exit(process.exitcode)
+
+    else:
+        # サイドバーを出力する場合は sidebar への書き込みが発生して怖いので普通に出力する
+        for pageinfo in target_pageinfos:
+            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list)
+
+    for pageinfo in pageinfos:
         cache.converted(pageinfo['path'])
     cache.flush()
     remove_not_target_paths(pageinfo['path'] for pageinfo in pageinfos)
