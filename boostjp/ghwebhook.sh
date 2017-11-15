@@ -8,6 +8,8 @@ cd site_generator
 git pull
 git submodule update -i
 
+export DOCKER_IT=\"\"
+
 pushd boostjp/site && git pull && popd
 
 ./docker.sh build
