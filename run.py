@@ -70,7 +70,7 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
     # )
 
     md = markdown.Markdown([
-        'tables',
+        'markdown_to_html.tables',
         'markdown_to_html.meta',
         'markdown_to_html.mathjax',
         qualified_fenced_code,
