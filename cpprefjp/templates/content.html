@@ -9,6 +9,8 @@
 {% block edit_url %}{{ edit_url }}{% endblock %}
 {% block history_url %}{{ history_url }}{% endblock %}
 
+{% block header_attributes %}data-kunai-mdinfo="{{ mdinfo | e }}"{% endblock %}
+
 {% macro sidebar_tree(children, parent_opened) %}
   {% for child in children %}
     {% if child.is_node %}
