@@ -78,6 +78,9 @@ http://localhost:8000 を開けば `index.html` が表示されます。
 
 ```bash
 git clone https://github.com/boostjp/site.git boostjp/site
+
+# site_generator 用の docker イメージを生成する
+./docker.sh build
 ```
 
 実行:
