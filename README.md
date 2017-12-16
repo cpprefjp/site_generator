@@ -50,6 +50,9 @@ mkdir cpprefjp/static/static/crsearch || true
 pushd cpprefjp/static/static/crsearch
 ln -s ../../../../crsearch.json/crsearch.json crsearch.json
 popd
+
+# site_generator 用の docker イメージを生成する
+./docker.sh build
 ```
 
 実行:
