@@ -38,7 +38,16 @@ TARGET_PREFIX = TARGET_PREFIX[0] if TARGET_PREFIX else ''
 CONCURRENCY = [int(x[len('--concurrency='):]) for x in sys.argv[2:] if x.startswith('--concurrency=')]
 CONCURRENCY = CONCURRENCY[0] if CONCURRENCY else 2
 
-_CACHEBUST = int(round(time.time() * 1000))
+if settings.CACHEBUST_TYPE == 'none':
+    _CACHEBUST = ''
+elif settings.CACHEBUST_TYPE == 'time':
+    _CACHEBUST = '?cachebust=' + str(int(round(time.time() * 1000)))
+elif settings.CACHEBUST_TYPE == 'git':
+    stdout = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=settings.CACHEBUST_DIR)
+    stdout = unicode(stdout, encoding='utf-8', errors='ignore')
+    _CACHEBUST = '?cachebust=' + stdout.strip()
+else:
+    raise RuntimeError('Invalid _CACHEBUST {}'.format(_CACHEBUST))
 
 
 def make_md_path(path):
@@ -481,7 +490,7 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
             pageinfo['title'] + settings.TITLE_SUFFIX),
         'url': settings.BASE_URL + '/' + pageinfo['href'],
         'description': pageinfo['description'],
-        'cachebust': '?cachebust=' + str(_CACHEBUST),
+        'cachebust': _CACHEBUST,
         'disable_sidebar': settings.DISABLE_SIDEBAR,
         'sidebar': sidebar,
         'content_header': content_header,

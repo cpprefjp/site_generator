@@ -75,6 +75,12 @@ SITEMAP_PATH = 'sitemap.xml'
 # キーワード
 META_KEYWORDS = 'C++,Boost,リファレンス,ドキュメント'
 
+# cachebust の生成方法
+# 'none' => 生成しない
+# 'time' => 時間ベース
+# 'git' => CACHEBUST_DIR のディレクトリの git rev-parse HEAD の結果を使う
+CACHEBUST_TYPE = 'time'
+
 
 # 並び替えルール
 def get_order_priority(name):

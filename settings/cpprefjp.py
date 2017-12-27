@@ -74,6 +74,13 @@ SITEMAP_PATH = 'sitemap.xml'
 # キーワード
 META_KEYWORDS = 'C++,標準ライブラリ,リファレンス,ドキュメント,STL,std'
 
+# cachebust の生成方法
+# 'none' => 生成しない
+# 'time' => 時間ベース
+# 'git' => CACHEBUST_DIR のディレクトリの git rev-parse HEAD の結果を使う
+CACHEBUST_TYPE = 'git'
+CACHEBUST_DIR = 'kunai'
+
 # 並び替えルール
 ORDER_PRIORITY_LIST = [
     'op_constructor',
