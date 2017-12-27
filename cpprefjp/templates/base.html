@@ -51,7 +51,7 @@
     {% block analytics %}{% endblock %}
     </head>
     <body>
-<header>
+<header {% block header_attributes %}{% endblock %}>
   <nav class="navbar navbar-default" role="navigation">
     <div class="container-fluid">
       <div class="navbar-header">

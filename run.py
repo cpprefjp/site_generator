@@ -6,7 +6,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from datetime import datetime
-import time
 import glob
 import importlib
 import json
@@ -14,6 +13,7 @@ import os
 import re
 import subprocess
 import sys
+import time
 
 import atom
 
@@ -92,6 +92,7 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
     html = _MERGE_ADJACENT_CODE_RE.sub(r'\1', html)
     return html, {
         'meta_result': md._meta_result,
+        'example_codes': md._example_codes,
         'mathjax_enabled': md._mathjax_enabled
     }
 
@@ -107,10 +108,16 @@ def convert(path, template, context, hrefs, global_qualify_list):
     md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
     body, info = md_to_html(md_data, path, hrefs, global_qualify_list)
     meta = info['meta_result']
+    codes = info['example_codes']
+    mdinfo = {
+        'meta': meta,
+        'sources': [{'id': code['id'], 'source': code['code']} for code in codes],
+    }
 
     if 'class' in meta:
         context['title'] = meta['class'][0] + '::' + context['title']
     context['keywords'] += ',' + ','.join(value[0] for value in meta.values())
+    context['mdinfo'] = json.dumps(mdinfo)
 
     if context['description'] is None:
         context['description'] = remove_tags(body)
