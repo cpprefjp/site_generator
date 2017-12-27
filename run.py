@@ -112,6 +112,7 @@ def convert(path, template, context, hrefs, global_qualify_list):
     mdinfo = {
         'meta': meta,
         'sources': [{'id': code['id'], 'source': code['code']} for code in codes],
+        'page_id': path.split('/'),
     }
 
     if 'class' in meta:
