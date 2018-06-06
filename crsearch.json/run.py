@@ -419,7 +419,7 @@ class Generator(object):
         namespaces = sorted(namespaces.values(), key=lambda ns: ns['namespace'])
 
         result = {
-            'base_url': 'https://cpprefjp.github.io',
+            'base_url': '/',
             'database_name': 'cpprefjp',
             'namespaces': namespaces,
             'ids': idgen.get_all(),
