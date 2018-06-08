@@ -314,15 +314,11 @@ class Generator(object):
         if cpp_namespaces is not None:
             index_id['cpp_namespace'] = cpp_namespaces
 
-        if len(names) == 1:
-            # トップレベルの要素は page_id を空にする
-            page_id = ['']
-        else:
-            page_id = names[1:-1] + [names[-1][:-3]]  # remove .md
 
         index = {
             'id': idgen.get_indexid(index_id),
-            'page_id': page_id,
+            # トップレベルの要素は page_id を空にする
+            'page_id': [''] if len(names) == 1 else names[1:],
         }
 
         if nojump:
@@ -364,7 +360,7 @@ class Generator(object):
         indices = []
         for file_path in all_file_paths:
             print(f'processing {file_path}...')
-            names = list(filter(None, file_path[len(base_dir):].split('/')))
+            names = list(file_path[len(base_dir) + 1:-3].split('/'))
             with open(file_path) as f:
                 md = f.read()
             nojump = file_path not in file_path_set
@@ -386,7 +382,7 @@ class Generator(object):
         # (names[0], cpp_version) が同じものをまとめる
         namespaces = {}
         for names, cpp_version, index in indices:
-            name = names[0] if len(names) >= 2 else names[0][:-3]
+            name = names[0]
             key = (name, cpp_version)
             if key in namespaces:
                 namespaces[key]['indexes'].append(index)
