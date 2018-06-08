@@ -284,27 +284,21 @@ class Generator(object):
             else:
                 raise RuntimeError(f'unexpected meta: {metas}')
 
-        keys = []
         if 'class' in metas:
             keys = metas['class']
         elif 'class template' in metas:
             keys = metas['class template']
-
-        # namespace 判別
-        if 'namespace' in metas and not nojump:
-            cpp_namespaces = metas['namespace'][0].split('::')
         else:
-            # nojump だったら無条件に cpp_namespaces は None
-            cpp_namespaces = None
+            keys = []
 
         index_id = {
             'type': type,
             'key': keys + [title],
         }
 
-        if cpp_namespaces is not None:
-            index_id['cpp_namespace'] = cpp_namespaces
-
+        # namespace 判別
+        if 'namespace' in metas and not nojump:
+            index_id['cpp_namespace'] = metas['namespace'][0].split('::')
 
         index = {
             'id': idgen.get_indexid(index_id),
