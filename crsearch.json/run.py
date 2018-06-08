@@ -354,7 +354,7 @@ class Generator(object):
 
                 index['attributes'] = attributes
 
-        return index
+        return index, metas
 
     def generate(self, base_dir, file_paths, all_file_paths):
         idgen = Generator.IndexIDGenerator()
@@ -373,10 +373,9 @@ class Generator(object):
             with open(file_path) as f:
                 md = f.read()
             nojump = file_path not in file_path_set
-            index = self.make_index(md, names, idgen, nojump)
+            index, metas = self.make_index(md, names, idgen, nojump)
             # C++ のバージョン情報を入れる
             cpp_version = None
-            metas = self.get_meta(md)
             if 'cpp' in metas:
                 if any(map(lambda cpp: cpp == 'cpp11', metas['cpp'])):
                     cpp_version = '11'
