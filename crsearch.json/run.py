@@ -176,16 +176,15 @@ class Generator(object):
     _CPP_LATEST_VERSION = '20'
     _CPP_LATEST = 'cpp' + _CPP_LATEST_VERSION
     _CPP_RE_RAW = r'cpp\d+[a-zA-Z]?'
-    _CPP_RE = re.compile(_CPP_RE_RAW)
 
-    _DEPRECATED_IN_CPP_RE = re.compile(r'^' + _CPP_RE_RAW + r'deprecated' + r'$')
-    _REMOVED_IN_CPP_RE = re.compile(r'^' + _CPP_RE_RAW + r'removed' + r'$')
+    _NOT_ATTRIBUTE_RE = re.compile(_CPP_RE_RAW)
+    _DEPRECATED_IN_CPP_RE = re.compile(_CPP_RE_RAW + r'deprecated')
+    _REMOVED_IN_CPP_RE = re.compile(_CPP_RE_RAW + r'removed')
 
-    _HASH_HEADER_RE = re.compile(r'^( *?\n)*#(?P<header>.*?)#*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
-    _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
+    _HASH_HEADER_RE   = re.compile(r'(?:[ \t]*\n)*#(.*)#*(?:\n|\Z)')
+    _SETEXT_HEADER_RE = re.compile(r'(?:[ \t]*\n)*(.*)\n=+ *(?:\n|\Z)')
     _REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
-    _META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$')
-    _NOT_ATTRIBUTE_RE = re.compile(r'^' + _CPP_RE_RAW + r'$')
+    _META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$', re.MULTILINE)
 
     def split_title(self, md):
         r"""先頭の見出し部分を（あるなら）取り出す
@@ -216,7 +215,7 @@ class Generator(object):
             m = self._SETEXT_HEADER_RE.match(md)
         if m is None:
             return None, md
-        return self._REMOVE_ESCAPE_RE.sub(r'\1', m.group('header').strip()), m.group('remain')
+        return self._REMOVE_ESCAPE_RE.sub(r'\1', m.group(1).strip()), md[m.end():]
 
     def get_meta(self, md):
         """メタ情報を取り出す
@@ -233,17 +232,14 @@ class Generator(object):
         {'text': ['foo', 'piyo'], 'text2': ['bar']}
         """
         result = {}
-        lines = md.split('\n')
-        for line in lines:
-            m = self._META_RE.match(line)
-            if m is not None:
-                name = m.group('name')
-                if name not in result:
-                    result[name] = []
-                if name == 'class':
-                    result[name] += m.group('target').split('::')
-                else:
-                    result[name].append(m.group('target'))
+        for m in self._META_RE.finditer(md):
+            name = m.group('name')
+            if name not in result:
+                result[name] = []
+            if name == 'class':
+                result[name] += m.group('target').split('::')
+            else:
+                result[name].append(m.group('target'))
 
         return result
 
@@ -348,14 +344,12 @@ class Generator(object):
             index['related_to'] = related_to
 
         if 'cpp' in metas:
-            attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.match(cpp)]
+            attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.fullmatch(cpp)]
             if attributes:
-                removed = any([attr for attr in attributes if self._REMOVED_IN_CPP_RE.match(attr)])
-
-                if removed:
+                if any([attr for attr in attributes if self._REMOVED_IN_CPP_RE.fullmatch(attr)]):
                     attributes.append('removed_in_latest')
 
-                elif any([attr for attr in attributes if self._DEPRECATED_IN_CPP_RE.match(attr)]):
+                elif any([attr for attr in attributes if self._DEPRECATED_IN_CPP_RE.fullmatch(attr)]):
                     attributes.append('deprecated_in_latest')
 
                 index['attributes'] = attributes
