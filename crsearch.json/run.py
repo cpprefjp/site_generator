@@ -354,7 +354,7 @@ class Generator(object):
 
         file_path_set = set(file_paths)
 
-        indices = []
+        namespaces = {}
         for file_path in all_file_paths:
             print(f'processing {file_path}...')
             names = list(file_path[len(base_dir) + 1:-3].split('/'))
@@ -374,11 +374,7 @@ class Generator(object):
                 elif any(map(lambda cpp: cpp == 'cpp20', metas['cpp'])):
                     cpp_version = '20'
 
-            indices.append((names, cpp_version, index))
-
-        # (names[0], cpp_version) が同じものをまとめる
-        namespaces = {}
-        for names, cpp_version, index in indices:
+            # (names[0], cpp_version) が同じものをまとめる
             name = names[0]
             key = (name, cpp_version)
             if key in namespaces:
