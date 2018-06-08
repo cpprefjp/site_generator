@@ -252,43 +252,37 @@ class Generator(object):
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
         if nojump:
             type = 'meta'
-        elif 'id-type' not in metas and 'header' in metas:
-            type = 'header'
-        elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
-            # lang/ 直下は meta 扱いにする
-            if names[0] == 'lang' and len(names) == 2:
-                type = 'meta'
-            else:
-                # それ以外の article/ と lang/ の下は article 扱いにする
-                type = 'article'
-        elif 'id-type' not in metas and '/'.join(names).startswith('reference/concepts'):
-            # 特殊扱い
-            type = 'article'
-        elif 'id-type' not in metas and '/'.join(names).startswith('reference/container_concepts'):
-            # 特殊扱い
-            type = 'article'
         elif 'id-type' not in metas:
-            raise RuntimeError(f'unexpected meta: {metas}')
-
-        elif metas['id-type'][0] == 'class' or metas['id-type'][0] == 'class template':
-            type = 'class'
-        elif metas['id-type'][0] == 'function' or metas['id-type'][0] == 'function template':
-            if 'class' in metas or 'class template' in metas:
-                type = 'mem_fun'
+            if 'header' in metas:
+                type = 'header'
+            elif names[0] == 'article':
+                # それ以外の article/ の下は article 扱いにする
+                type = 'article'
+            elif names[0] == 'lang':
+                # lang/ 直下は meta 扱いにする
+                if len(names) == 2:
+                    type = 'meta'
+                else:
+                    # それ以外の lang/ の下は article 扱いにする
+                    type = 'article'
+            elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'concepts', 'container_concepts'}:
+                # 特殊扱い
+                type = 'article'
             else:
-                type = 'function'
-        elif metas['id-type'][0] == 'enum':
-            type = 'enum'
-        elif metas['id-type'][0] == 'variable':
-            type = 'variable'
-        elif metas['id-type'][0] == 'type-alias':
-            type = 'type-alias'
-        elif metas['id-type'][0] == 'macro':
-            type = 'macro'
-        elif metas['id-type'][0] == 'namespace':
-            type = 'namespace'
+                raise RuntimeError(f'unexpected meta: {metas}')
         else:
-            raise RuntimeError(f'unexpected meta: {metas}')
+            id_type = metas['id-type'][0]
+            if id_type in {'class', 'class template'}:
+                type = 'class'
+            elif id_type in {'function', 'function template'}:
+                if 'class' in metas or 'class template' in metas:
+                    type = 'mem_fun'
+                else:
+                    type = 'function'
+            elif id_type in {'enum', 'variable', 'type-alias', 'macro', 'namespace'}:
+                type = id_type
+            else:
+                raise RuntimeError(f'unexpected meta: {metas}')
 
         keys = []
         if 'class' in metas:
