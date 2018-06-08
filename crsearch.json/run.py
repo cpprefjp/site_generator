@@ -363,11 +363,6 @@ class Generator(object):
 
         indices = []
         for file_path in all_file_paths:
-            if not file_path.startswith(base_dir):
-                raise RuntimeError(f'{file_path} not starts with {base_dir}')
-            if not file_path.endswith('.md'):
-                raise RuntimeError(f'{file_path} not ends with .md')
-
             print(f'processing {file_path}...')
             names = list(filter(None, file_path[len(base_dir):].split('/')))
             with open(file_path) as f:
