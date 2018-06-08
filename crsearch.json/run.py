@@ -252,9 +252,6 @@ class Generator(object):
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
         if nojump:
             type = 'meta'
-        elif names[0] == 'editors_doc':
-            type = 'meta'
-            nojump = True
         elif 'id-type' not in metas and 'header' in metas:
             type = 'header'
         elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
@@ -420,7 +417,7 @@ def get_files(base_dir):
 
 def main():
     _KNOWN_DIRS = [
-        'site/article', 'site/lang', 'site/reference', 'site/editors_doc'
+        'site/article', 'site/lang', 'site/reference',
     ]
 
     paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])
