@@ -245,7 +245,7 @@ class Generator(object):
 
     def make_index(self, md, names, idgen, nojump):
         title, contents = self.split_title(md)
-        metas = self.get_meta(md)
+        metas = self.get_meta(contents)
 
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
