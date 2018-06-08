@@ -7,3 +7,5 @@ COPY requirements.txt .
 RUN set -ex \
   && apk add --no-cache bash \
   && pip install -r requirements.txt
+
+WORKDIR /var/src

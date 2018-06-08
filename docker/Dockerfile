@@ -13,3 +13,5 @@ RUN set -ex \
 
 RUN set -ex \
   && pip install -r requirements.txt
+
+WORKDIR /var/src

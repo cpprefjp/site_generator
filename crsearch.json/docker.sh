@@ -26,11 +26,11 @@ case "$1" in
   "build" )
     docker build -t cpprefjp/site_generator-crsearch docker ;;
   "run" )
-    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash -c 'cd /var/src && python run.py' ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch python run.py ;;
   "test" )
-    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash -c 'cd /var/src && python -m unittest' ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch python -m unittest ;;
   "console" )
-    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash -c 'cd /var/src; exec /bin/bash' ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash ;;
   * )
     show_help
     exit 1 ;;
