@@ -395,7 +395,7 @@ class Generator(object):
 def get_files(base_dir):
     for dirpath, dirnames, filenames in os.walk(base_dir):
         for filename in filenames:
-            if filename[-3:] == ".md" and not filename[0].isupper():
+            if filename[-3:] == ".md" and not filename[:-3].isupper():
                 yield os.path.join(dirpath, filename)
 
 
