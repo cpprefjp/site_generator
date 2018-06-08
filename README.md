@@ -42,7 +42,6 @@ done
 popd
 
 # crsearch 用のデータを生成する
-git clone https://github.com/cpprefjp/site.git crsearch.json/site
 ./crsearch.json/docker.sh build
 ./crsearch.json/docker.sh run
 # 生成した crsearch の静的ファイルに対するシンボリックリンクを作る
@@ -59,7 +58,7 @@ popd
 
 ```bash
 # この辺は必要に応じて実行する
-(cd crsearch.json/site && git pull)
+(cd cpprefjp/site && git pull)
 ./crsearch.json/docker.sh run
 ./kunai/docker.sh run build
 
