@@ -297,7 +297,7 @@ class Generator(object):
         }
 
         # namespace 判別
-        if 'namespace' in metas and not nojump:
+        if 'namespace' in metas:
             index_id['cpp_namespace'] = metas['namespace'][0].split('::')
 
         index = {
@@ -314,6 +314,7 @@ class Generator(object):
             related_to.append(idgen.get_indexid({
                 'type': 'class',
                 'key': metas['class'][0].split('::'),
+                'cpp_namespace': index_id['cpp_namespace'],
             }))
         if 'header' in metas:
             related_to.append(idgen.get_indexid({
