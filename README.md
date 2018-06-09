@@ -34,11 +34,8 @@ cd ..
 ./kunai/docker.sh install
 ./kunai/docker.sh run build
 # 生成した kunai の静的ファイルに対するシンボリックリンクを作る
-mkdir cpprefjp/static/static/kunai || true
-pushd cpprefjp/static/static/kunai
-for file in `ls -1 ../../../../kunai/dist`; do
-  ln -s ../../../../kunai/dist/$file $file
-done
+pushd cpprefjp/static/static
+ln -s ../../../../kunai/dist kunai
 popd
 
 # crsearch 用のデータを生成する
