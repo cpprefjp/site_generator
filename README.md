@@ -32,7 +32,6 @@ git submodule update -i
 cd ..
 ./kunai/docker.sh build
 ./kunai/docker.sh install
-./kunai/docker.sh run build
 # 生成した kunai の静的ファイルに対するシンボリックリンクを作る
 pushd cpprefjp/static/static
 ln -s ../../../../kunai/dist kunai
