@@ -22,6 +22,8 @@ if [ -z "$DOCKER_IT" ] && [ "${DOCKER_IT:-A}" = "${DOCKER_IT-A}" ]; then
   DOCKER_IT="-it"
 fi
 
+DOCKER_RM=${DOCKER_RM---rm}
+
 case "$1" in
   "build" )
     docker build -t cpprefjp/site_generator docker ;;
@@ -31,18 +33,18 @@ case "$1" in
       exit 1
     fi
     shift 1
-    docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && ./run.py $*" ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator ./run.py "$@" ;;
   "coding" )
-    docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && flake8 *.py markdown_to_html/*.py" ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator flake8 *.py markdown_to_html/*.py ;;
   "console" )
-    docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && exec /bin/bash" ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash ;;
   "localhost" )
     if [ $# -lt 2 ]; then
       show_help
       exit 1
     fi
     cd $2/$2.github.io
-    docker run -v `pwd`:/var/src -p 8000:8000 $DOCKER_IT cpprefjp/site_generator /bin/bash -c "cd /var/src && python -m SimpleHTTPServer 8000" ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src -p 8000:8000 $DOCKER_IT cpprefjp/site_generator python -m SimpleHTTPServer 8000 ;;
   * )
     show_help
     exit 1 ;;

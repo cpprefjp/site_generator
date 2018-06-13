@@ -20,15 +20,17 @@ if [ -z "$DOCKER_IT" ] && [ "${DOCKER_IT:-A}" = "${DOCKER_IT-A}" ]; then
   DOCKER_IT="-it"
 fi
 
+DOCKER_RM=${DOCKER_RM---rm}
+
 case "$1" in
   "build" )
     docker build -t cpprefjp/site_generator-crsearch docker ;;
   "run" )
-    docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash -c 'cd /var/src && python run.py' ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src -v `pwd`/../cpprefjp/site:/var/src/site $DOCKER_IT cpprefjp/site_generator-crsearch python run.py ;;
   "test" )
-    docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash -c 'cd /var/src && python -m unittest' ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src -v `pwd`/../cpprefjp/site:/var/src/site $DOCKER_IT cpprefjp/site_generator-crsearch python -m unittest ;;
   "console" )
-    docker run -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash -c 'cd /var/src; exec /bin/bash' ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src -v `pwd`/../cpprefjp/site:/var/src/site $DOCKER_IT cpprefjp/site_generator-crsearch /bin/bash ;;
   * )
     show_help
     exit 1 ;;

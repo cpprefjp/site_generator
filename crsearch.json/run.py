@@ -176,16 +176,15 @@ class Generator(object):
     _CPP_LATEST_VERSION = '20'
     _CPP_LATEST = 'cpp' + _CPP_LATEST_VERSION
     _CPP_RE_RAW = r'cpp\d+[a-zA-Z]?'
-    _CPP_RE = re.compile(_CPP_RE_RAW)
 
-    _DEPRECATED_IN_CPP_RE = re.compile(r'^' + _CPP_RE_RAW + r'deprecated' + r'$')
-    _REMOVED_IN_CPP_RE = re.compile(r'^' + _CPP_RE_RAW + r'removed' + r'$')
+    _NOT_ATTRIBUTE_RE = re.compile(_CPP_RE_RAW)
+    _DEPRECATED_IN_CPP_RE = re.compile(_CPP_RE_RAW + r'deprecated')
+    _REMOVED_IN_CPP_RE = re.compile(_CPP_RE_RAW + r'removed')
 
-    _HASH_HEADER_RE = re.compile(r'^( *?\n)*#(?P<header>.*?)#*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
-    _SETEXT_HEADER_RE = re.compile(r'^( *?\n)*(?P<header>.*?)\n=+[ ]*(\n|$)(?P<remain>(.|\n)*)', re.MULTILINE)
+    _HASH_HEADER_RE   = re.compile(r'(?:[ \t]*\n)*#(.*)#*(?:\n|\Z)')
+    _SETEXT_HEADER_RE = re.compile(r'(?:[ \t]*\n)*(.*)\n=+ *(?:\n|\Z)')
     _REMOVE_ESCAPE_RE = re.compile(r'\\(.)')
-    _META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$')
-    _NOT_ATTRIBUTE_RE = re.compile(r'^' + _CPP_RE_RAW + r'$')
+    _META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$', re.MULTILINE)
 
     def split_title(self, md):
         r"""先頭の見出し部分を（あるなら）取り出す
@@ -216,7 +215,7 @@ class Generator(object):
             m = self._SETEXT_HEADER_RE.match(md)
         if m is None:
             return None, md
-        return self._REMOVE_ESCAPE_RE.sub(r'\1', m.group('header').strip()), m.group('remain')
+        return self._REMOVE_ESCAPE_RE.sub(r'\1', m.group(1).strip()), md[m.end():]
 
     def get_meta(self, md):
         """メタ情報を取り出す
@@ -233,100 +232,78 @@ class Generator(object):
         {'text': ['foo', 'piyo'], 'text2': ['bar']}
         """
         result = {}
-        lines = md.split('\n')
-        for line in lines:
-            m = self._META_RE.match(line)
-            if m is not None:
-                name = m.group('name')
-                if name not in result:
-                    result[name] = []
-                if name == 'class':
-                    result[name] += m.group('target').split('::')
-                else:
-                    result[name].append(m.group('target'))
+        for m in self._META_RE.finditer(md):
+            name = m.group('name')
+            if name not in result:
+                result[name] = []
+            if name == 'class':
+                result[name] += m.group('target').split('::')
+            else:
+                result[name].append(m.group('target'))
 
         return result
 
     def make_index(self, md, names, idgen, nojump):
         title, contents = self.split_title(md)
-        metas = self.get_meta(md)
+        metas = self.get_meta(contents)
 
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
         if nojump:
             type = 'meta'
-        elif names[0] == 'editors_doc':
-            type = 'meta'
-            nojump = True
-        elif 'id-type' not in metas and 'header' in metas:
-            type = 'header'
-        elif 'id-type' not in metas and (names[0] == 'article' or names[0] == 'lang'):
-            # lang/ 直下は meta 扱いにする
-            if names[0] == 'lang' and len(names) == 2:
-                type = 'meta'
-            else:
-                # それ以外の article/ と lang/ の下は article 扱いにする
-                type = 'article'
-        elif 'id-type' not in metas and '/'.join(names).startswith('reference/concepts'):
-            # 特殊扱い
-            type = 'article'
-        elif 'id-type' not in metas and '/'.join(names).startswith('reference/container_concepts'):
-            # 特殊扱い
-            type = 'article'
         elif 'id-type' not in metas:
-            raise RuntimeError(f'unexpected meta: {metas}')
-
-        elif metas['id-type'][0] == 'class' or metas['id-type'][0] == 'class template':
-            type = 'class'
-        elif metas['id-type'][0] == 'function' or metas['id-type'][0] == 'function template':
-            if 'class' in metas or 'class template' in metas:
-                type = 'mem_fun'
+            if 'header' in metas:
+                type = 'header'
+            elif names[0] == 'article':
+                # それ以外の article/ の下は article 扱いにする
+                type = 'article'
+            elif names[0] == 'lang':
+                # lang/ 直下は meta 扱いにする
+                if len(names) == 2:
+                    type = 'meta'
+                else:
+                    # それ以外の lang/ の下は article 扱いにする
+                    type = 'article'
+            elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'concepts', 'container_concepts'}:
+                # 特殊扱い
+                type = 'article'
             else:
-                type = 'function'
-        elif metas['id-type'][0] == 'enum':
-            type = 'enum'
-        elif metas['id-type'][0] == 'variable':
-            type = 'variable'
-        elif metas['id-type'][0] == 'type-alias':
-            type = 'type-alias'
-        elif metas['id-type'][0] == 'macro':
-            type = 'macro'
-        elif metas['id-type'][0] == 'namespace':
-            type = 'namespace'
+                raise RuntimeError(f'unexpected meta: {metas}')
         else:
-            raise RuntimeError(f'unexpected meta: {metas}')
+            id_type = metas['id-type'][0]
+            if id_type in {'class', 'class template'}:
+                type = 'class'
+            elif id_type in {'function', 'function template'}:
+                if 'class' in metas or 'class template' in metas:
+                    type = 'mem_fun'
+                else:
+                    type = 'function'
+            elif id_type in {'enum', 'variable', 'type-alias', 'macro', 'namespace'}:
+                type = id_type
+            else:
+                raise RuntimeError(f'unexpected meta: {metas}')
 
-        keys = []
         if 'class' in metas:
             keys = metas['class']
         elif 'class template' in metas:
             keys = metas['class template']
-
-        # namespace 判別
-        if 'namespace' in metas and not nojump:
-            cpp_namespaces = metas['namespace'][0].split('::')
         else:
-            # nojump だったら無条件に cpp_namespaces は None
-            cpp_namespaces = None
+            keys = []
 
         index_id = {
             'type': type,
             'key': keys + [title],
         }
 
-        if cpp_namespaces is not None:
-            index_id['cpp_namespace'] = cpp_namespaces
-
-        if len(names) == 1:
-            # トップレベルの要素は page_id を空にする
-            page_id = ['']
-        else:
-            page_id = names[1:-1] + [names[-1][:-3]]  # remove .md
+        # namespace 判別
+        if 'namespace' in metas:
+            index_id['cpp_namespace'] = metas['namespace'][0].split('::')
 
         index = {
             'id': idgen.get_indexid(index_id),
-            'page_id': page_id,
+            # トップレベルの要素は page_id を空にする
+            'page_id': [''] if len(names) == 1 else names[1:],
         }
 
         if nojump:
@@ -337,6 +314,7 @@ class Generator(object):
             related_to.append(idgen.get_indexid({
                 'type': 'class',
                 'key': metas['class'][0].split('::'),
+                'cpp_namespace': index_id['cpp_namespace'],
             }))
         if 'header' in metas:
             related_to.append(idgen.get_indexid({
@@ -348,41 +326,33 @@ class Generator(object):
             index['related_to'] = related_to
 
         if 'cpp' in metas:
-            attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.match(cpp)]
+            attributes = [cpp for cpp in metas['cpp'] if not self._NOT_ATTRIBUTE_RE.fullmatch(cpp)]
             if attributes:
-                removed = any([attr for attr in attributes if self._REMOVED_IN_CPP_RE.match(attr)])
-
-                if removed:
+                if any([attr for attr in attributes if self._REMOVED_IN_CPP_RE.fullmatch(attr)]):
                     attributes.append('removed_in_latest')
 
-                elif any([attr for attr in attributes if self._DEPRECATED_IN_CPP_RE.match(attr)]):
+                elif any([attr for attr in attributes if self._DEPRECATED_IN_CPP_RE.fullmatch(attr)]):
                     attributes.append('deprecated_in_latest')
 
                 index['attributes'] = attributes
 
-        return index
+        return index, metas
 
     def generate(self, base_dir, file_paths, all_file_paths):
         idgen = Generator.IndexIDGenerator()
 
         file_path_set = set(file_paths)
 
-        indices = []
+        namespaces = {}
         for file_path in all_file_paths:
-            if not file_path.startswith(base_dir):
-                raise RuntimeError(f'{file_path} not starts with {base_dir}')
-            if not file_path.endswith('.md'):
-                raise RuntimeError(f'{file_path} not ends with .md')
-
             print(f'processing {file_path}...')
-            names = list(filter(None, file_path[len(base_dir):].split('/')))
+            names = list(file_path[len(base_dir) + 1:-3].split('/'))
             with open(file_path) as f:
                 md = f.read()
             nojump = file_path not in file_path_set
-            index = self.make_index(md, names, idgen, nojump)
+            index, metas = self.make_index(md, names, idgen, nojump)
             # C++ のバージョン情報を入れる
             cpp_version = None
-            metas = self.get_meta(md)
             if 'cpp' in metas:
                 if any(map(lambda cpp: cpp == 'cpp11', metas['cpp'])):
                     cpp_version = '11'
@@ -393,12 +363,8 @@ class Generator(object):
                 elif any(map(lambda cpp: cpp == 'cpp20', metas['cpp'])):
                     cpp_version = '20'
 
-            indices.append((names, cpp_version, index))
-
-        # (names[0], cpp_version) が同じものをまとめる
-        namespaces = {}
-        for names, cpp_version, index in indices:
-            name = names[0] if len(names) >= 2 else names[0][:-3]
+            # (names[0], cpp_version) が同じものをまとめる
+            name = names[0]
             key = (name, cpp_version)
             if key in namespaces:
                 namespaces[key]['indexes'].append(index)
@@ -430,13 +396,13 @@ class Generator(object):
 def get_files(base_dir):
     for dirpath, dirnames, filenames in os.walk(base_dir):
         for filename in filenames:
-            if filename[-3:] == ".md" and not filename[0].isupper():
+            if filename[-3:] == ".md" and not filename[:-3].isupper():
                 yield os.path.join(dirpath, filename)
 
 
 def main():
     _KNOWN_DIRS = [
-        'site/article', 'site/lang', 'site/reference', 'site/editors_doc'
+        'site/article', 'site/lang', 'site/reference',
     ]
 
     paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])

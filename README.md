@@ -32,17 +32,12 @@ git submodule update -i
 cd ..
 ./kunai/docker.sh build
 ./kunai/docker.sh install
-./kunai/docker.sh run build
 # 生成した kunai の静的ファイルに対するシンボリックリンクを作る
-mkdir cpprefjp/static/static/kunai || true
-pushd cpprefjp/static/static/kunai
-for file in `ls -1 ../../../../kunai/dist`; do
-  ln -s ../../../../kunai/dist/$file $file
-done
+pushd cpprefjp/static/static
+ln -s ../../../../kunai/dist kunai
 popd
 
 # crsearch 用のデータを生成する
-git clone https://github.com/cpprefjp/site.git crsearch.json/site
 ./crsearch.json/docker.sh build
 ./crsearch.json/docker.sh run
 # 生成した crsearch の静的ファイルに対するシンボリックリンクを作る
@@ -59,7 +54,7 @@ popd
 
 ```bash
 # この辺は必要に応じて実行する
-(cd crsearch.json/site && git pull)
+(cd cpprefjp/site && git pull)
 ./crsearch.json/docker.sh run
 ./kunai/docker.sh run build
 
