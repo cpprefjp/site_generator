@@ -239,7 +239,7 @@ class Generator(object):
             name = m.group('name')
             if name not in result:
                 result[name] = []
-            if name == 'class':
+            if name in {'class', 'namespace'}:
                 result[name] += m.group('target').split('::')
             else:
                 result[name].append(m.group('target'))
@@ -301,7 +301,7 @@ class Generator(object):
 
         # namespace 判別
         if 'namespace' in metas:
-            index_id['cpp_namespace'] = metas['namespace'][0].split('::')
+            index_id['cpp_namespace'] = metas['namespace']
 
         index = {
             'id': idgen.get_indexid(index_id),
