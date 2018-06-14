@@ -163,6 +163,9 @@ class Generator(object):
             self._ids = []
 
         def get_indexid(self, indexid):
+            if 'cpp_namespace' in indexid and indexid['cpp_namespace'] == ['std']:
+                indexid = indexid.copy()
+                del indexid['cpp_namespace']
             for n, id in enumerate(self._ids):
                 if indexid == id:
                     return n
