@@ -246,46 +246,49 @@ class Generator(object):
 
         return result
 
-    def make_index(self, md, names, idgen, nojump):
-        title, contents = self.split_title(md)
-        metas = self.get_meta(contents)
-
+    @staticmethod
+    def identify_type(metas, names, nojump):
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
         # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
         if nojump:
-            type = 'meta'
+            return 'meta'
         elif 'id-type' not in metas:
             if 'header' in metas:
-                type = 'header'
+                return 'header'
             elif names[0] == 'article':
                 # それ以外の article/ の下は article 扱いにする
-                type = 'article'
+                return 'article'
             elif names[0] == 'lang':
                 # lang/ 直下は meta 扱いにする
                 if len(names) == 2:
-                    type = 'meta'
+                    return 'meta'
                 else:
                     # それ以外の lang/ の下は article 扱いにする
-                    type = 'article'
+                    return 'article'
             elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'concepts', 'container_concepts'}:
                 # 特殊扱い
-                type = 'article'
+                return 'article'
             else:
                 raise RuntimeError(f'unexpected meta: {metas}')
         else:
             id_type = metas['id-type'][0]
             if id_type in {'class', 'class template'}:
-                type = 'class'
+                return 'class'
             elif id_type in {'function', 'function template'}:
                 if 'class' in metas or 'class template' in metas:
-                    type = 'mem_fun'
+                    return 'mem_fun'
                 else:
-                    type = 'function'
+                    return 'function'
             elif id_type in {'enum', 'variable', 'type-alias', 'macro', 'namespace'}:
-                type = id_type
+                return id_type
             else:
                 raise RuntimeError(f'unexpected meta: {metas}')
+
+    def make_index(self, md, names, idgen, nojump):
+        title, contents = self.split_title(md)
+        metas = self.get_meta(contents)
+        type = Generator.identify_type(metas, names, nojump)
 
         if 'class' in metas:
             keys = metas['class']
