@@ -316,7 +316,7 @@ class Generator(object):
         if 'class' in metas:
             related_to.append(idgen.get_indexid({
                 'type': 'class',
-                'key': metas['class'][0].split('::'),
+                'key': metas['class'],
                 'cpp_namespace': index_id['cpp_namespace'],
             }))
         if 'header' in metas:
