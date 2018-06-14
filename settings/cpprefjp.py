@@ -49,7 +49,7 @@ GOOGLE_SITE_SEARCH = '''
     s.parentNode.insertBefore(gcse, s);
   })();
 </script>
-<gcse:searchbox></gcse:searchbox>
+<div class="gcse-search"></div>
 '''
 
 # Google Analytics
