@@ -33,9 +33,9 @@ case "$1" in
       exit 1
     fi
     shift 1
-    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator ./run.py "$@" ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src cpprefjp/site_generator ./run.py "$@" ;;
   "coding" )
-    docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator flake8 *.py markdown_to_html/*.py ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src cpprefjp/site_generator flake8 *.py markdown_to_html/*.py ;;
   "console" )
     docker run $DOCKER_RM -v `pwd`:/var/src $DOCKER_IT cpprefjp/site_generator /bin/bash ;;
   "localhost" )
@@ -44,7 +44,7 @@ case "$1" in
       exit 1
     fi
     cd $2/$2.github.io
-    docker run $DOCKER_RM -v `pwd`:/var/src -p 8000:8000 $DOCKER_IT cpprefjp/site_generator python -m SimpleHTTPServer 8000 ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src -p 8000:8000 cpprefjp/site_generator python -m SimpleHTTPServer 8000 ;;
   * )
     show_help
     exit 1 ;;
