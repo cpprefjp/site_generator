@@ -1,9 +1,5 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 from datetime import datetime
 import glob
@@ -27,7 +23,7 @@ import sitemap
 
 
 if len(sys.argv) < 2:
-    print('{} <setting> [--all] [--prefix=<target>] [--concurrency=<num>]'.format(sys.argv[0]).encode('utf-8'))
+    print('{} <setting> [--all] [--prefix=<target>] [--concurrency=<num>]'.format(sys.argv[0]))
     sys.exit(0)
 
 settings = importlib.import_module(sys.argv[1])
@@ -43,8 +39,7 @@ if settings.CACHEBUST_TYPE == 'none':
 elif settings.CACHEBUST_TYPE == 'time':
     _CACHEBUST = '?cachebust=' + str(int(round(time.time() * 1000)))
 elif settings.CACHEBUST_TYPE == 'git':
-    stdout = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=settings.CACHEBUST_DIR)
-    stdout = unicode(stdout, encoding='utf-8', errors='ignore')
+    stdout = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=settings.CACHEBUST_DIR, text=True, errors='ignore')
     _CACHEBUST = '?cachebust=' + stdout.strip()
 else:
     raise RuntimeError('Invalid _CACHEBUST {}'.format(_CACHEBUST))
@@ -105,7 +100,8 @@ def remove_tags(html):
 
 
 def convert(path, template, context, hrefs, global_qualify_list):
-    md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
+    with open(make_md_path(path), encoding='utf-8') as f:
+        md_data = f.read()
     body, info = md_to_html(md_data, path, hrefs, global_qualify_list)
     meta = info['meta_result']
     codes = info['example_codes']
@@ -132,7 +128,8 @@ def convert(path, template, context, hrefs, global_qualify_list):
     if settings.USE_MINIFY:
         import htmlmin
         html_data = htmlmin.minify(html_data)
-    open(make_html_path(path), 'w').write(html_data.encode('utf-8'))
+    with open(make_html_path(path), 'w', encoding='utf-8') as f:
+        f.write(html_data)
 
 
 def is_target(path):
@@ -207,7 +204,7 @@ def get_meta(md):
     return result
 
 
-_DESCRIPTION_RE = re.compile(ur'#.*?概要.*?\n(?P<description>.*?)(\n#|$)', re.MULTILINE)
+_DESCRIPTION_RE = re.compile(r'#.*?概要.*?\n(?P<description>.*?)(\n#|$)', re.MULTILINE)
 
 
 def get_description(md):
@@ -220,7 +217,8 @@ def make_pageinfo(path):
     paths = path.split('/')
     md_data = None
     try:
-        md_data = unicode(open(make_md_path(path)).read(), encoding='utf-8')
+        with open(make_md_path(path), encoding='utf-8') as f:
+            md_data = f.read()
     except Exception:
         print('open file error : {}'.format(path))
         raise
@@ -380,7 +378,7 @@ def make_sitemap(pageinfos):
         if pageinfo['path'] == 'index':
             return 1.0
         depth = len(pageinfo['paths'])
-        return 1.0 - depth * 0.1
+        return (10 - depth) / 10
 
     info = get_self_latest_commit_info()
 
@@ -398,7 +396,8 @@ class Cache(object):
 
     def __init__(self, cache_file):
         try:
-            self._cache = json.loads(open(cache_file).read())
+            with open(cache_file, encoding='utf-8') as f:
+                self._cache = json.loads(f.read())
         except Exception:
             self._cache = {}
         self._cache_file = cache_file
@@ -436,15 +435,15 @@ class Cache(object):
         }
 
     def flush(self):
-        with open(self._cache_file, 'w') as f:
+        with open(self._cache_file, 'w', encoding='utf-8') as f:
             f.write(json.dumps(self._cache))
 
 
 def get_latest_commit_info(path):
-    commit_log = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at %an', path + '.md'], cwd=settings.INPUT_DIR)
+    commit_log = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at %an', path + '.md'], cwd=settings.INPUT_DIR, text=True, errors='ignore')
     if not commit_log:
         return None
-    timestamp, author = unicode(commit_log, encoding='utf-8').split(' ', 1)
+    timestamp, author = commit_log.split(' ', 1)
     return {
         'last_updated': datetime.fromtimestamp(int(timestamp)),
         'last_author': author,
@@ -452,7 +451,7 @@ def get_latest_commit_info(path):
 
 
 def get_self_latest_commit_info():
-    last_updated = subprocess.check_output(['git', 'log', '-1', '--format=%ai']).strip()
+    last_updated = subprocess.check_output(['git', 'log', '-1', '--format=%ai'], text=True, errors='ignore').strip()
     return {
         'last_updated': last_updated,
     }
@@ -469,7 +468,7 @@ def remove_not_target_paths(paths):
         for f in files:
             target_file_path = os.path.join(root, f)
             if target_file_path not in html_path_set:
-                print('remove: {}'.format(target_file_path).encode('utf-8'))
+                print('remove: {}'.format(target_file_path))
                 os.remove(target_file_path)
     # 空ディレクトリの削除
     for root, dirs, files in os.walk(settings.OUTPUT_DIR, topdown=False):
@@ -479,7 +478,7 @@ def remove_not_target_paths(paths):
         if len(files) == 0:
             try:
                 os.rmdir(root)
-                print('remove directory: {}'.format(root).encode('utf-8'))
+                print('remove directory: {}'.format(root))
             except Exception:
                 pass
 
@@ -524,10 +523,8 @@ def main():
     else:
         sidebar_index = None
 
-    global_qualify_list = []
-    for line in open('{}/GLOBAL_QUALIFY_LIST.txt'.format(settings.INPUT_DIR)):
-        global_qualify_list.append(line.lstrip())
-    global_qualify_list = "\n".join(global_qualify_list)
+    with open('{}/GLOBAL_QUALIFY_LIST.txt'.format(settings.INPUT_DIR), encoding='utf-8') as f:
+        global_qualify_list = '\n'.join([line.strip() for line in f])
 
     cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
@@ -575,11 +572,11 @@ def main():
     cache.flush()
     remove_not_target_paths(pageinfo['path'] for pageinfo in pageinfos)
 
-    with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w') as f:
-        f.write(make_atom().encode('utf-8'))
+    with open(os.path.join(settings.OUTPUT_DIR, settings.RSS_PATH), 'w', encoding='utf-8') as f:
+        f.write(make_atom())
 
-    with open(os.path.join(settings.OUTPUT_DIR, settings.SITEMAP_PATH), 'w') as f:
-        f.write(make_sitemap(pageinfos).encode('utf-8'))
+    with open(os.path.join(settings.OUTPUT_DIR, settings.SITEMAP_PATH), 'w', encoding='utf-8') as f:
+        f.write(make_sitemap(pageinfos))
 
     # 静的ファイルをコピーする
     subprocess.call(['cp', '-v', '-RL'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])
