@@ -266,7 +266,7 @@ class Generator(object):
                 else:
                     # それ以外の lang/ の下は article 扱いにする
                     return 'article'
-            elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'concepts', 'container_concepts'}:
+            elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'concepts', 'container_concepts', 'node_handle'}:
                 # 特殊扱い
                 return 'article'
             else:
