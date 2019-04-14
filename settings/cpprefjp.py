@@ -115,6 +115,7 @@ ORDER_PRIORITY_LIST = [
     'op_less_equal',  # operator<=(a, b)
     'op_greater',  # operator>(a, b)
     'op_greater_equal',  # operator>=(a, b)
+    'op_compare_3way', # operator<=>(a, b)
     'op_plus',  # operator+(a, b)
     'op_minus',  # operator-(a, b)
     'op_multiply',  # operator*(a, b)
