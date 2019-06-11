@@ -132,7 +132,7 @@ class Validator(object):
                 'properties': {
                     'type': {
                         'type': 'string',
-                        'enum': ['class', 'function', 'mem_fun', 'macro', 'enum', 'variable', 'type-alias', 'article'],
+                        'enum': ['class', 'function', 'mem_fun', 'macro', 'enum', 'variable', 'type-alias', 'concept', 'article'],
                     },
                     'key': {
                         'type': 'array',
@@ -249,8 +249,8 @@ class Generator(object):
     @staticmethod
     def identify_type(metas, names, nojump):
         # type 判別
-        # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, macro, namespace
-        # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "article"
+        # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, concept, macro, namespace
+        # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept"/ "article"
         if nojump:
             return 'meta'
         elif 'id-type' not in metas:
@@ -266,7 +266,7 @@ class Generator(object):
                 else:
                     # それ以外の lang/ の下は article 扱いにする
                     return 'article'
-            elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'concepts', 'container_concepts', 'node_handle'}:
+            elif names[0] == 'reference' and len(names) >= 2 and names[1] in {'container_concepts', 'node_handle'}:
                 # 特殊扱い
                 return 'article'
             else:
@@ -280,7 +280,7 @@ class Generator(object):
                     return 'mem_fun'
                 else:
                     return 'function'
-            elif id_type in {'enum', 'variable', 'type-alias', 'macro', 'namespace'}:
+            elif id_type in {'enum', 'variable', 'type-alias', 'concept', 'macro', 'namespace'}:
                 return id_type
             else:
                 raise RuntimeError(f'unexpected meta: {metas}')
