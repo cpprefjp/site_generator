@@ -52,7 +52,7 @@ class Validator(object):
                         },
                         'cpp_version': {
                             'type': 'string',
-                            'enum': ['98', '03', '11', '14', '17', '20'],
+                            'enum': ['98', '03', '11', '14', '17', '20', '23'],
                         },
                         'indexes': {
                             'type': 'array',
@@ -176,7 +176,7 @@ class Generator(object):
         def get_all(self):
             return self._ids
 
-    _CPP_LATEST_VERSION = '20'
+    _CPP_LATEST_VERSION = '23'
     _CPP_LATEST = 'cpp' + _CPP_LATEST_VERSION
     _CPP_RE_RAW = r'cpp\d+[a-zA-Z]?'
 
@@ -368,6 +368,8 @@ class Generator(object):
                     cpp_version = '17'
                 elif any(map(lambda cpp: cpp == 'cpp20', metas['cpp'])):
                     cpp_version = '20'
+                elif any(map(lambda cpp: cpp == 'cpp23', metas['cpp'])):
+                    cpp_version = '23'
 
             # (names[0], cpp_version) が同じものをまとめる
             name = names[0]
