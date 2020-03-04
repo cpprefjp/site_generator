@@ -70,7 +70,7 @@ def run_with_output(command, shell=True, check=True):
     stdout, stderr = p.communicate()
     if check:
         if p.returncode != 0:
-            raise Exception('return code is non-zero: {}'.format(p.returncode))
+            raise Exception('return code is non-zero: {}, stdout={}, stderr={}'.format(p.returncode, stdout, stderr))
     return p.returncode, stdout, stderr
 
 
