@@ -34,14 +34,14 @@ cd ..
 ./kunai/docker.sh install
 # 生成した kunai の静的ファイルに対するシンボリックリンクを作る
 pushd cpprefjp/static/static
-ln -s ../../../../kunai/dist kunai
+ln -s ../../../kunai/dist kunai
 popd
 
 # crsearch 用のデータを生成する
 ./crsearch.json/docker.sh build
 ./crsearch.json/docker.sh run
 # 生成した crsearch の静的ファイルに対するシンボリックリンクを作る
-mkdir cpprefjp/static/static/crsearch || true
+mkdir -p cpprefjp/static/static/crsearch
 pushd cpprefjp/static/static/crsearch
 ln -s ../../../../crsearch.json/crsearch.json crsearch.json
 popd
