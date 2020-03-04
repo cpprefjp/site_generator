@@ -2,7 +2,7 @@ flake8==2.2.4
 flake8-import-order==0.7
 hacking==0.10.2
 htmlmin==0.1.5
-Jinja2==2.7.3
+Jinja2==2.11.1
 Markdown==2.3.1
 MarkupSafe==0.23
 mccabe==0.2.1
