@@ -48,6 +48,7 @@ function clone_and_initsubmodule_and_fallback() {
 clone_and_initsubmodule_and_fallback kunai git@github.com:cpprefjp/kunai.git
 ./kunai/docker.sh build
 ./kunai/docker.sh install
+./kunai/docker.sh dist
 cp -r ./kunai/dist/* ./cpprefjp/static/static/kunai/
 
 # crsearch.json 生成
