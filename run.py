@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 from datetime import datetime
@@ -60,26 +60,33 @@ _MERGE_ADJACENT_CODE_RE = re.compile(r'</code>( ?)<code>')
 def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
     paths = path.split('/')
 
-    qualified_fenced_code = 'markdown_to_html.qualified_fenced_code(global_qualify_list={})'.format(global_qualify_list)
-    html_attribute = 'markdown_to_html.html_attribute(base_url={base_url}, base_path={base_path}, full_path={full_path}, extension={extension})'.format(
-        base_url=settings.BASE_URL,
-        base_path='/'.join(paths[:-1]),
-        full_path=path + '.md',
-        extension='.html',
-    )
+    extension_configs = {}
+    extension_configs['markdown_to_html.qualified_fenced_code'] = {
+        'global_qualify_list': global_qualify_list
+    }
+    extension_configs['markdown_to_html.html_attribute'] = {
+        'base_url': settings.BASE_URL,
+        'base_path': '/'.join(paths[:-1]),
+        'full_path': path + '.md',
+        'extension': '.html',
+    }
+    extension_configs['codehilite'] = {
+        'noclasses': False
+    }
     # footer = 'markdown_to_html.footer(url={url})'.format(
     #     url=settings.EDIT_URL_FORMAT.format(
     #         paths=path + '.md',
     #     )
     # )
 
-    md = markdown.Markdown([
-        'markdown_to_html.tables',
+    md = markdown.Markdown(extensions=[
+        'tables',
         'markdown_to_html.meta',
         'markdown_to_html.mathjax',
-        qualified_fenced_code,
-        'codehilite(noclasses=False)',
-        html_attribute])
+        'markdown_to_html.qualified_fenced_code',
+        'codehilite',
+        'markdown_to_html.html_attribute'],
+        extension_configs=extension_configs)
     md._html_attribute_hrefs = hrefs
 
     html = md.convert(md_data)
