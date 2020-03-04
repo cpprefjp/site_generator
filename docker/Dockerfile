@@ -1,4 +1,4 @@
-FROM python:2.7.14-alpine3.6
+FROM python:3.7.2-alpine3.8
 
 MAINTAINER melpon <shigemasa7watanabe+docker@gmail.com>
 

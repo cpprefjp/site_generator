@@ -1,8 +1,4 @@
 # -*- coding: utf-8 -*-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
 
 import datetime
 import os
@@ -70,12 +66,12 @@ def run(command, shell=True, check=True):
 
 
 def run_with_output(command, shell=True, check=True):
-    p = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    p = subprocess.Popen(command, shell=shell, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True, errors='ignore')
     stdout, stderr = p.communicate()
     if check:
         if p.returncode != 0:
             raise Exception('return code is non-zero: {}'.format(p.returncode))
-    return p.returncode, unicode(stdout, encoding='utf-8', errors='ignore'), unicode(stderr, encoding='utf-8', errors='ignore')
+    return p.returncode, stdout, stderr
 
 
 class GitAtom(object):
