@@ -491,7 +491,10 @@ def remove_not_target_paths(paths):
 
 
 def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list):
-    print(pageinfo['path'])
+    path = pageinfo['path']
+    if path.count("/") <= 1:
+        print(path)
+
     latest_commit_info = get_latest_commit_info(pageinfo['path'])
 
     if not settings.DISABLE_SIDEBAR:
