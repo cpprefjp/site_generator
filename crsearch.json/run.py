@@ -351,7 +351,8 @@ class Generator(object):
 
         namespaces = {}
         for file_path in all_file_paths:
-            print(f'processing {file_path}...')
+            if file_path.count("/") <= 2:
+                print(f'processing {file_path}...')
             names = list(file_path[len(base_dir) + 1:-3].split('/'))
             with open(file_path) as f:
                 md = f.read()
