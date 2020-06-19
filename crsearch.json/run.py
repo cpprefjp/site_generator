@@ -132,7 +132,7 @@ class Validator(object):
                 'properties': {
                     'type': {
                         'type': 'string',
-                        'enum': ['class', 'function', 'mem_fun', 'macro', 'enum', 'variable', 'type-alias', 'concept', 'article'],
+                        'enum': ['class', 'function', 'mem_fun', 'macro', 'enum', 'variable', 'type-alias', 'concept', 'cpo', 'article'],
                     },
                     'key': {
                         'type': 'array',
@@ -280,7 +280,7 @@ class Generator(object):
                     return 'mem_fun'
                 else:
                     return 'function'
-            elif id_type in {'enum', 'variable', 'type-alias', 'concept', 'macro', 'namespace'}:
+            elif id_type in {'enum', 'variable', 'type-alias', 'concept', 'macro', 'namespace', 'cpo'}:
                 return id_type
             else:
                 raise RuntimeError(f'unexpected meta: {metas}')
