@@ -99,6 +99,7 @@ class Validator(object):
                 'type': 'object',
                 'oneOf': [
                     {'$ref': '#/definitions/header'},
+                    {'$ref': '#/definitions/category'},
                     {'$ref': '#/definitions/common'},
                 ],
             },
@@ -109,6 +110,30 @@ class Validator(object):
                     'type': {
                         'type': 'string',
                         'enum': ['header'],
+                    },
+                    'key': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string',
+                            'pattern': '^[^"<>]+$',
+                        },
+                    },
+                    'cpp_namespace': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string',
+                            'pattern': '^[^:]+$',
+                        },
+                    },
+                },
+            },
+            'category': {
+                'require': ['type', 'key'],
+                'additionalProperties': False,
+                'properties': {
+                    'type': {
+                        'type': 'string',
+                        'enum': ['category'],
                     },
                     'key': {
                         'type': 'array',
@@ -250,12 +275,14 @@ class Generator(object):
     def identify_type(metas, names, nojump):
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, concept, named requirement, macro, namespace
-        # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept" / "named requirement" / "article"
+        # type: "header" / "category" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept" / "named requirement" / "article"
         if nojump:
             return 'meta'
         elif 'id-type' not in metas:
             if 'header' in metas:
                 return 'header'
+            elif 'category' in metas:
+                return 'category'
             elif names[0] == 'article':
                 # それ以外の article/ の下は article 扱いにする
                 return 'article'
@@ -326,6 +353,11 @@ class Generator(object):
             related_to.append(idgen.get_indexid({
                 'type': 'header',
                 'key': metas['header'][0].split('/'),
+            }))
+        if 'category' in metas:
+            related_to.append(idgen.get_indexid({
+                'type': 'category',
+                'key': metas['category'][0].split('/'),
             }))
 
         if len(related_to) != 0:
