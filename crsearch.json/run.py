@@ -132,7 +132,7 @@ class Validator(object):
                 'properties': {
                     'type': {
                         'type': 'string',
-                        'enum': ['class', 'function', 'mem_fun', 'macro', 'enum', 'variable', 'type-alias', 'concept', 'cpo', 'article'],
+                        'enum': ['class', 'function', 'mem_fun', 'macro', 'enum', 'variable', 'type-alias', 'concept', 'named requirement', 'cpo', 'article'],
                     },
                     'key': {
                         'type': 'array',
@@ -249,8 +249,8 @@ class Generator(object):
     @staticmethod
     def identify_type(metas, names, nojump):
         # type 判別
-        # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, concept, macro, namespace
-        # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept"/ "article"
+        # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, concept, named requirement, macro, namespace
+        # type: "header" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept" / "named requirement" / "article"
         if nojump:
             return 'meta'
         elif 'id-type' not in metas:
@@ -280,7 +280,7 @@ class Generator(object):
                     return 'mem_fun'
                 else:
                     return 'function'
-            elif id_type in {'enum', 'variable', 'type-alias', 'concept', 'macro', 'namespace', 'cpo'}:
+            elif id_type in {'enum', 'variable', 'type-alias', 'concept', 'named requirement', 'macro', 'namespace', 'cpo'}:
                 return id_type
             else:
                 raise RuntimeError(f'unexpected meta: {metas}')
