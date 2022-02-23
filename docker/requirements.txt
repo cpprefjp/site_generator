@@ -4,5 +4,5 @@ hacking==2.0.0
 htmlmin==0.1.12
 Jinja2==3.0.3
 Markdown==3.2.1
-Pygments==2.5.2
+Pygments==2.7.4
 regex==2020.2.20
