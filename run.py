@@ -57,7 +57,7 @@ _SWAP_A_AND_CODE_RE = re.compile(r'<(a|span)\b([^>]*)><code>([^<]*)</code>(</\1>
 _MERGE_ADJACENT_CODE_RE = re.compile(r'</code>( ?)<code>')
 
 
-def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
+def md_to_html(md_data, path, hrefs=None, global_qualify_list=None, global_defined_words=None):
     paths = path.split('/')
 
     extension_configs = {}
@@ -73,6 +73,13 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
     extension_configs['codehilite'] = {
         'noclasses': False
     }
+    extension_configs['markdown_to_html.defined_words'] = {
+        'base_url': settings.BASE_URL,
+        'base_path': '/'.join(paths[:-1]),
+        'full_path': path + '.md',
+        'extension': '.html',
+        'dict': global_defined_words
+    }
     # footer = 'markdown_to_html.footer(url={url})'.format(
     #     url=settings.EDIT_URL_FORMAT.format(
     #         paths=path + '.md',
@@ -85,6 +92,7 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
         'markdown_to_html.mathjax',
         'markdown_to_html.qualified_fenced_code',
         'codehilite',
+        'markdown_to_html.defined_words',
         'markdown_to_html.html_attribute'],
         extension_configs=extension_configs)
     md._html_attribute_hrefs = hrefs
@@ -106,10 +114,10 @@ def remove_tags(html):
     return _TAG_RE.sub('', html)
 
 
-def convert(path, template, context, hrefs, global_qualify_list):
+def convert(path, template, context, hrefs, global_qualify_list, global_defined_words):
     with open(make_md_path(path), encoding='utf-8') as f:
         md_data = f.read()
-    body, info = md_to_html(md_data, path, hrefs, global_qualify_list)
+    body, info = md_to_html(md_data, path, hrefs, global_qualify_list, global_defined_words)
     meta = info['meta_result']
     codes = info['example_codes']
     mdinfo = {
@@ -490,7 +498,7 @@ def remove_not_target_paths(paths):
                 pass
 
 
-def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list):
+def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words):
     path = pageinfo['path']
     if path.count("/") <= 1:
         print(path)
@@ -521,7 +529,7 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         'project_name': settings.PROJECT_NAME,
         'latest_commit_info': latest_commit_info,
         'keywords': settings.META_KEYWORDS,
-    }, hrefs, global_qualify_list)
+    }, hrefs, global_qualify_list, global_defined_words)
 
 
 def main():
@@ -535,6 +543,13 @@ def main():
 
     with open('{}/GLOBAL_QUALIFY_LIST.txt'.format(settings.INPUT_DIR), encoding='utf-8') as f:
         global_qualify_list = '\n'.join([line.strip() for line in f])
+
+    filename = '{}/GLOBAL_DEFINED_WORDS.json'.format(settings.INPUT_DIR)
+    if os.path.isfile(filename):
+        with open(filename, encoding='utf-8') as f:
+            global_defined_words = json.load(f)
+    else:
+        global_defined_words = {}
 
     cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
@@ -554,7 +569,7 @@ def main():
     if settings.DISABLE_SIDEBAR:
         def run(pageinfos):
             for pageinfo in pageinfos:
-                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list)
+                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words)
 
         target_pageinfos_list = [[] for n in range(CONCURRENCY)]
         for i, pageinfo in enumerate(target_pageinfos):
@@ -575,7 +590,7 @@ def main():
     else:
         # サイドバーを出力する場合は sidebar への書き込みが発生して怖いので普通に出力する
         for pageinfo in target_pageinfos:
-            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list)
+            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words)
 
     for pageinfo in pageinfos:
         cache.converted(pageinfo['path'])
