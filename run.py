@@ -6,6 +6,7 @@ import glob
 import importlib
 import json
 import os
+import posixpath
 import re
 import subprocess
 import sys
@@ -69,6 +70,7 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
         'base_path': '/'.join(paths[:-1]),
         'full_path': path + '.md',
         'extension': '.html',
+        'use_relative_link': settings.USE_RELATIVE_LINK,
     }
     extension_configs['codehilite'] = {
         'noclasses': False
@@ -501,11 +503,11 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         sidebar.set_active(pageinfo['paths'])
 
     content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
-    convert(pageinfo['path'], template, {
+    context = {
         'title': (
             pageinfo['title'] if pageinfo['is_index'] else
             pageinfo['title'] + settings.TITLE_SUFFIX),
-        'url': settings.BASE_URL + '/' + pageinfo['href'],
+        'url': settings.BASE_URL + pageinfo['href'],
         'description': pageinfo['description'],
         'cachebust': _CACHEBUST,
         'disable_sidebar': settings.DISABLE_SIDEBAR,
@@ -521,7 +523,15 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         'project_name': settings.PROJECT_NAME,
         'latest_commit_info': latest_commit_info,
         'keywords': settings.META_KEYWORDS,
-    }, hrefs, global_qualify_list)
+        'relative_base': ''
+    }
+    if settings.USE_RELATIVE_LINK:
+        url_current_dir = posixpath.dirname(context['url'])
+        context['relative_base'] = posixpath.relpath(settings.BASE_URL, url_current_dir)
+        # 以下は <meta /> で埋め込む情報なので敢えて相対パスにはしない。
+        # context['url'] = posixpath.relpath(context['url'], url_current_dir)
+        # context['rss'] = posixpath.relpath(context['rss'], url_current_dir)
+    convert(pageinfo['path'], template, context, hrefs, global_qualify_list)
 
 
 def main():

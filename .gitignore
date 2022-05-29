@@ -1,8 +1,10 @@
 *.pyc
 cpprefjp/site/
 cpprefjp/cpprefjp.github.io/
+cpprefjp/cpprefjp.relative/
 boostjp/site/
 boostjp/boostjp.github.io/
+boostjp/boostjp.relative/
 settings.*.cache
 
 /crsearch.json/crsearch.json

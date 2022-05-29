@@ -81,6 +81,8 @@ META_KEYWORDS = 'C++,標準ライブラリ,リファレンス,ドキュメント
 CACHEBUST_TYPE = 'git'
 CACHEBUST_DIR = 'kunai'
 
+USE_RELATIVE_LINK = False
+
 # 並び替えルール
 ORDER_PRIORITY_LIST = [
     'op_constructor',

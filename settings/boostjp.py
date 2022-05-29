@@ -81,6 +81,7 @@ META_KEYWORDS = 'C++,Boost,リファレンス,ドキュメント'
 # 'git' => CACHEBUST_DIR のディレクトリの git rev-parse HEAD の結果を使う
 CACHEBUST_TYPE = 'time'
 
+USE_RELATIVE_LINK = False
 
 # 並び替えルール
 def get_order_priority(name):
