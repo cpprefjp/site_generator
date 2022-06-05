@@ -10,6 +10,10 @@ INPUT_DIR = 'boostjp/site'
 # 静的ファイルディレクトリ
 STATIC_DIR = 'boostjp/static'
 
+# 画像ファイルディレクトリ / GitHubリポジトリ
+IMAGE_DIR = 'boostjp/image'
+IMAGE_REPO = 'boostjp/image'
+
 # 出力ディレクトリ
 OUTPUT_DIR = 'boostjp/boostjp.github.io'
 

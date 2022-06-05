@@ -71,6 +71,8 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None):
         'full_path': path + '.md',
         'extension': '.html',
         'use_relative_link': settings.USE_RELATIVE_LINK,
+        'image_repo': settings.IMAGE_REPO,
+        'use_static_image': settings.IMAGE_DIR is not None,
     }
     extension_configs['codehilite'] = {
         'noclasses': False
@@ -600,6 +602,13 @@ def main():
 
     # 静的ファイルをコピーする
     subprocess.call(['cp', '-v', '-RL'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])
+
+    # 画像リポジトリ (image) の画像ファイル (*.png, *.jpg, *.svg) をコピーする
+    if settings.IMAGE_DIR is not None:
+        os.system("cd '%s' && find . -name '*.png' -or -name '*.jpg' -or -name '*.svg' | tee /dev/stderr | cpio -updmv '%s'" % (
+            settings.IMAGE_DIR,
+            os.path.relpath(os.path.join(settings.OUTPUT_DIR, 'static/image'), settings.IMAGE_DIR)
+        ))
 
 
 if __name__ == '__main__':
