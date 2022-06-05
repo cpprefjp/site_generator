@@ -449,8 +449,11 @@ def main():
     paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])
     all_paths = list(get_files('site'))
     result = Generator().generate('site', paths, all_paths)
+    crsearch_json = json.dumps(result, separators=(',', ':'), ensure_ascii=False, sort_keys=True)
     with open('crsearch.json', 'wb') as f:
-        f.write(json.dumps(result, separators=(',', ':'), ensure_ascii=False, sort_keys=True).encode('utf-8'))
+        f.write(crsearch_json.encode('utf-8'))
+    with open('crsearch.js', 'wb') as f:
+        f.write(('callback(%s)' % crsearch_json).encode('utf-8'))
 
 
 if __name__ == '__main__':
