@@ -525,12 +525,15 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         'project_name': settings.PROJECT_NAME,
         'latest_commit_info': latest_commit_info,
         'keywords': settings.META_KEYWORDS,
-        'relative_base': ''
+        'relative_base': '',
+        'relative_index': '/'
     }
     if settings.USE_RELATIVE_LINK:
         url_current_dir = posixpath.dirname(context['url'])
         context['relative_base'] = posixpath.relpath(settings.BASE_URL, url_current_dir)
-        # 以下は <meta /> で埋め込む情報なので敢えて相対パスにはしない。
+        # Note: ローカル (file:///) で閲覧時にディレクトリを開いてしまわないように "/" で終わらず "index.html"も明示する。
+        context['relative_index'] = posixpath.relpath(settings.BASE_URL, url_current_dir) + '/index.html'
+        # Note: 以下は <meta /> で埋め込む情報なので敢えて相対パスにはしない。
         # context['url'] = posixpath.relpath(context['url'], url_current_dir)
         # context['rss'] = posixpath.relpath(context['rss'], url_current_dir)
     convert(pageinfo['path'], template, context, hrefs, global_qualify_list)
