@@ -60,6 +60,7 @@ cp crsearch.json/crsearch.json cpprefjp/static/static/crsearch/
 # サイト生成
 clone_and_fallback cpprefjp/cpprefjp.github.io git@github.com:cpprefjp/cpprefjp.github.io.git
 clone_and_fallback cpprefjp/site git@github.com:cpprefjp/site.git
+clone_and_fallback cpprefjp/image git@github.com:cpprefjp/image.git
 ./docker.sh build
 ./docker.sh run settings.cpprefjp "$@"
 

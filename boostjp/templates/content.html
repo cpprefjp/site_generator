@@ -15,7 +15,7 @@
       <li {{ 'style="display: none"' if not parent_opened }} class="parent_li {{ 'active' if child.opened }}">
         <span class="treespan" onclick="tree_onclick.call(this, event)"><i class="glyphicon {{ 'glyphicon-minus' if child.opened else 'glyphicon-plus' }}"></i></span>
         {% if child.href %}
-          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
+          <a href="{{ relative_base }}{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
           {{ child.title|e }}{{ child.encoded_cpp_meta }}
         {% endif %}
@@ -26,7 +26,7 @@
     {% else %}
       <li {{ 'style="display: none"' if not parent_opened }}>
         {% if child.href %}
-          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
+          <a href="{{ relative_base }}{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
           {{ child.title|e }}{{ child.encoded_cpp_meta }}
         {% endif %}
@@ -49,7 +49,7 @@
       <li {{ 'class="active"' if header.is_active }} itemscope itemtype="http://www.schema.org/SiteNavigationElement">
         <span>
           {% if not header.is_active and header.href %}
-            <a href="{{ header.href }}" itemprop="url">
+            <a href="{{ relative_base }}{{ header.href }}" itemprop="url">
               {% if loop.index == 1 %}
                 <i class="glyphicon glyphicon-home"></i>
               {% else %}

@@ -6,6 +6,7 @@ import glob
 import importlib
 import json
 import os
+import posixpath
 import re
 import subprocess
 import sys
@@ -69,6 +70,9 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None, global_defin
         'base_path': '/'.join(paths[:-1]),
         'full_path': path + '.md',
         'extension': '.html',
+        'use_relative_link': settings.USE_RELATIVE_LINK,
+        'image_repo': settings.IMAGE_REPO,
+        'use_static_image': settings.IMAGE_DIR is not None,
     }
     extension_configs['codehilite'] = {
         'noclasses': False
@@ -510,11 +514,11 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         sidebar.set_active(pageinfo['paths'])
 
     content_header = ContentHeader(pageinfo['paths'], sidebar, sidebar_index)
-    convert(pageinfo['path'], template, {
+    context = {
         'title': (
             pageinfo['title'] if pageinfo['is_index'] else
             pageinfo['title'] + settings.TITLE_SUFFIX),
-        'url': settings.BASE_URL + '/' + pageinfo['href'],
+        'url': settings.BASE_URL + pageinfo['href'],
         'description': pageinfo['description'],
         'cachebust': _CACHEBUST,
         'disable_sidebar': settings.DISABLE_SIDEBAR,
@@ -530,7 +534,18 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         'project_name': settings.PROJECT_NAME,
         'latest_commit_info': latest_commit_info,
         'keywords': settings.META_KEYWORDS,
-    }, hrefs, global_qualify_list, global_defined_words)
+        'relative_base': '',
+        'relative_index': '/'
+    }
+    if settings.USE_RELATIVE_LINK:
+        url_current_dir = posixpath.dirname(context['url'])
+        context['relative_base'] = posixpath.relpath(settings.BASE_URL, url_current_dir)
+        # Note: ローカル (file:///) で閲覧時にディレクトリを開いてしまわないように "/" で終わらず "index.html"も明示する。
+        context['relative_index'] = posixpath.relpath(settings.BASE_URL, url_current_dir) + '/index.html'
+        # Note: 以下は <meta /> で埋め込む情報なので敢えて相対パスにはしない。
+        # context['url'] = posixpath.relpath(context['url'], url_current_dir)
+        # context['rss'] = posixpath.relpath(context['rss'], url_current_dir)
+    convert(pageinfo['path'], template, context, hrefs, global_qualify_list, global_defined_words)
 
 
 def main():
@@ -606,6 +621,13 @@ def main():
 
     # 静的ファイルをコピーする
     subprocess.call(['cp', '-v', '-RL'] + glob.glob(os.path.join(settings.STATIC_DIR, '*')) + [settings.OUTPUT_DIR])
+
+    # 画像リポジトリ (image) の画像ファイル (*.png, *.jpg, *.svg) をコピーする
+    if settings.IMAGE_DIR is not None:
+        os.system("cd '%s' && find . -name '*.png' -or -name '*.jpg' -or -name '*.svg' | tee /dev/stderr | cpio -updmv '%s'" % (
+            settings.IMAGE_DIR,
+            os.path.relpath(os.path.join(settings.OUTPUT_DIR, 'static/image'), settings.IMAGE_DIR)
+        ))
 
 
 if __name__ == '__main__':
