@@ -17,7 +17,7 @@
       <li class="parent_li {{ 'active' if child.opened }}">
         <span class="treespan"></span>
         {% if child.href %}
-          <a href="{{ relative_base }}{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
+          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
           {{ child.title|e }}{{ child.encoded_cpp_meta }}
         {% endif %}
@@ -28,7 +28,7 @@
     {% else %}
       <li>
         {% if child.href %}
-          <a href="{{ relative_base }}{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
+          <a href="{{ child.href }}">{{ child.title|e }}</a>{{ child.encoded_cpp_meta }}
         {% else %}
           {{ child.title|e }}{{ child.encoded_cpp_meta }}
         {% endif %}
@@ -58,7 +58,7 @@
       <li {{ 'class="active"' if header.is_active }} itemscope itemtype="http://www.schema.org/SiteNavigationElement">
         <span>
           {% if not header.is_active and header.href %}
-            <a href="{{ relative_base }}{{ header.href }}" itemprop="url">
+            <a href="{{ header.href }}" itemprop="url">
               {% if loop.index == 1 %}
                 <i class="fa fa-fw fa-home"></i>
               {% else %}
