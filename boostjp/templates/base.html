@@ -25,15 +25,15 @@
 
         {% block rss %}{% endblock %}
 
-<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
-<link rel="stylesheet" href="/static/pygments/default.css">
-<!-- <link rel="stylesheet" href="/static/css/root.css"> -->
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+<link rel="stylesheet" href="{{ relative_base }}/static/pygments/default.css">
+<!-- <link rel="stylesheet" href="{{ relative_base }}/static/css/root.css"> -->
 
-<script src="//code.jquery.com/jquery-2.1.1.min.js"></script>
-<script src="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
-<!-- <script src="//platform.twitter.com/widgets.js"></script> -->
+<script src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.2.0/js/bootstrap.min.js"></script>
+<!-- <script src="https://platform.twitter.com/widgets.js"></script> -->
 
-<!-- <script src="/static/js/root.js"></script> -->
+<!-- <script src="{{ relative_base }}/static/js/root.js"></script> -->
 
         {% block mathjax %}{% endblock %}
 
@@ -254,7 +254,7 @@ function tree_onclick(e) {
           <span class="icon-bar"></span>
           <span class="icon-bar"></span>
         </button>
-        <a class="navbar-brand" href="/">
+        <a class="navbar-brand" href="{{ relative_index }}">
           <div class="title-wrapper clearfix">
             <div class="title">{% block brand %}{% endblock %}</div>
           </div>
@@ -326,7 +326,7 @@ function tree_onclick(e) {
     </body>
     <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.  chromium.org/developers/how-tos/chrome-frame-getting-started -->
     <!--[if lt IE 7 ]>
-        <script src="//ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
+        <script src="https://ajax.googleapis.com/ajax/libs/chrome-frame/1.0.3/CFInstall.min.js"></script>
         <script>
             window.attachEvent('onload',function(){CFInstall.check({mode:'overlay'})})
         </script>
