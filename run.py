@@ -73,13 +73,14 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None, global_defin
     extension_configs['codehilite'] = {
         'noclasses': False
     }
-    extension_configs['markdown_to_html.defined_words'] = {
-        'base_url': settings.BASE_URL,
-        'base_path': '/'.join(paths[:-1]),
-        'full_path': path + '.md',
-        'extension': '.html',
-        'dict': global_defined_words
-    }
+    if global_defined_words:
+        extension_configs['markdown_to_html.defined_words'] = {
+            'base_url': settings.BASE_URL,
+            'base_path': '/'.join(paths[:-1]),
+            'full_path': path + '.md',
+            'extension': '.html',
+            'dict': global_defined_words
+        }
     # footer = 'markdown_to_html.footer(url={url})'.format(
     #     url=settings.EDIT_URL_FORMAT.format(
     #         paths=path + '.md',
@@ -549,7 +550,7 @@ def main():
         with open(filename, encoding='utf-8') as f:
             global_defined_words = json.load(f)
     else:
-        global_defined_words = {}
+        global_defined_words = None
 
     cache = Cache(CACHE_FILE)
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
