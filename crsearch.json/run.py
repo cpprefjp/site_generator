@@ -52,7 +52,7 @@ class Validator(object):
                         },
                         'cpp_version': {
                             'type': 'string',
-                            'enum': ['98', '03', '11', '14', '17', '20', '23'],
+                            'enum': ['98', '03', '11', '14', '17', '20', '23', '26'],
                         },
                         'indexes': {
                             'type': 'array',
@@ -100,6 +100,7 @@ class Validator(object):
                 'oneOf': [
                     {'$ref': '#/definitions/header'},
                     {'$ref': '#/definitions/category'},
+                    {'$ref': '#/definitions/module'},
                     {'$ref': '#/definitions/common'},
                 ],
             },
@@ -134,6 +135,30 @@ class Validator(object):
                     'type': {
                         'type': 'string',
                         'enum': ['category'],
+                    },
+                    'key': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string',
+                            'pattern': '^[^"<>]+$',
+                        },
+                    },
+                    'cpp_namespace': {
+                        'type': 'array',
+                        'items': {
+                            'type': 'string',
+                            'pattern': '^[^:]+$',
+                        },
+                    },
+                },
+            },
+            'module': {
+                'require': ['type', 'key'],
+                'additionalProperties': False,
+                'properties': {
+                    'type': {
+                        'type': 'string',
+                        'enum': ['module'],
                     },
                     'key': {
                         'type': 'array',
@@ -201,7 +226,7 @@ class Generator(object):
         def get_all(self):
             return self._ids
 
-    _CPP_LATEST_VERSION = '23'
+    _CPP_LATEST_VERSION = '26'
     _CPP_LATEST = 'cpp' + _CPP_LATEST_VERSION
     _CPP_RE_RAW = r'cpp\d+[a-zA-Z]?'
 
@@ -275,7 +300,7 @@ class Generator(object):
     def identify_type(metas, names, nojump):
         # type 判別
         # metas['id-type']: class, class template, function, function template, enum, variable, type-alias, concept, named requirement, macro, namespace
-        # type: "header" / "category" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept" / "named requirement" / "article"
+        # type: "header" / "category" / "module" / "class" / "function" / "mem_fun" / "macro" / "enum" / "variable"/ "type-alias" / "concept" / "named requirement" / "article"
         if nojump:
             return 'meta'
         elif 'id-type' not in metas:
@@ -283,6 +308,8 @@ class Generator(object):
                 return 'header'
             elif 'category' in metas:
                 return 'category'
+            elif 'module' in metas:
+                return 'module'
             elif names[0] == 'article':
                 # それ以外の article/ の下は article 扱いにする
                 return 'article'
@@ -359,6 +386,11 @@ class Generator(object):
                 'type': 'category',
                 'key': metas['category'][0].split('/'),
             }))
+        if 'module' in metas:
+            related_to.append(idgen.get_indexid({
+                'type': 'module',
+                'key': metas['module'][0].split('/'),
+            }))
 
         if len(related_to) != 0:
             index['related_to'] = related_to
@@ -403,6 +435,8 @@ class Generator(object):
                     cpp_version = '20'
                 elif any(map(lambda cpp: cpp == 'cpp23', metas['cpp'])):
                     cpp_version = '23'
+                elif any(map(lambda cpp: cpp == 'cpp26', metas['cpp'])):
+                    cpp_version = '26'
 
             # (names[0], cpp_version) が同じものをまとめる
             name = names[0]
@@ -443,7 +477,7 @@ def get_files(base_dir):
 
 def main():
     _KNOWN_DIRS = [
-        'site/article', 'site/lang', 'site/reference',
+        'site/article', 'site/lang', 'site/reference', 'site/module',
     ]
 
     paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])
