@@ -52,7 +52,7 @@ class Validator(object):
                         },
                         'cpp_version': {
                             'type': 'string',
-                            'enum': ['98', '03', '11', '14', '17', '20', '23', '26'],
+                            'enum': ['future', 'archive', '98', '03', '11', '14', '17', '20', '23', '26'],
                         },
                         'indexes': {
                             'type': 'array',
@@ -425,7 +425,11 @@ class Generator(object):
             # C++ のバージョン情報を入れる
             cpp_version = None
             if 'cpp' in metas:
-                if any(map(lambda cpp: cpp == 'cpp11', metas['cpp'])):
+                if any(map(lambda cpp: cpp == 'future', metas['cpp'])):
+                    cpp_version = 'future'
+                elif any(map(lambda cpp: cpp == 'archive', metas['cpp'])):
+                    cpp_version = 'archive'
+                elif any(map(lambda cpp: cpp == 'cpp11', metas['cpp'])):
                     cpp_version = '11'
                 elif any(map(lambda cpp: cpp == 'cpp14', metas['cpp'])):
                     cpp_version = '14'
