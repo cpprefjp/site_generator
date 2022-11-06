@@ -5,6 +5,7 @@
 <!--[if gt IE 8]><!-->
 <html class="no-js" lang="ja" itemscope="" itemtype="http://schema.org/WebPage"> <!--<![endif]-->
     <head>
+        {% block analytics %}{% endblock %}
         <meta charset="UTF-8">
 
         <title>{% block title %}{% endblock %}</title>
@@ -241,7 +242,6 @@ function tree_onclick(e) {
     e.stopPropagation();
 }
         </script>
-    {% block analytics %}{% endblock %}
     </head>
     <body>
 <header>
