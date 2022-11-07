@@ -24,6 +24,7 @@ $ git submodule update -i
 
 ```bash
 git clone https://github.com/cpprefjp/site.git cpprefjp/site
+git clone https://github.com/cpprefjp/image.git cpprefjp/image
 
 # kunai 用のデータを生成する
 git clone https://github.com/cpprefjp/kunai.git
@@ -45,6 +46,7 @@ popd
 mkdir -p cpprefjp/static/static/crsearch
 pushd cpprefjp/static/static/crsearch
 ln -s ../../../../crsearch.json/crsearch.json crsearch.json
+ln -s ../../../../crsearch.json/crsearch.js crsearch.js # Optional (ローカル file:///... で閲覧する場合に必要)
 popd
 
 # site_generator 用の docker イメージを生成する
@@ -56,6 +58,7 @@ popd
 ```bash
 # この辺は必要に応じて実行する
 (cd cpprefjp/site && git pull)
+(cd cpprefjp/image && git pull)
 ./crsearch.json/docker.sh run
 ./kunai/docker.sh run build
 
@@ -74,6 +77,7 @@ http://localhost:8000 を開けば `index.html` が表示されます。
 
 ```bash
 git clone https://github.com/boostjp/site.git boostjp/site
+git clone https://github.com/boostjp/image.git boostjp/image
 
 # site_generator 用の docker イメージを生成する
 ./docker.sh build
