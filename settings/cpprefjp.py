@@ -54,13 +54,14 @@ GOOGLE_SITE_SEARCH = '''
 
 # Google Analytics
 GOOGLE_ANALYTICS = '''
-<!-- Global site tag (gtag.js) - Google Analytics -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=UA-56896607-1"></script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-NXNBNVBTJS"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
   gtag('js', new Date());
-  gtag('config', 'UA-56896607-1');
+
+  gtag('config', 'G-NXNBNVBTJS');
 </script>
 '''
 
