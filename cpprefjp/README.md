@@ -4,4 +4,4 @@ cpprefjpサイトのアイコンは、[クリエイティブ・コモンズ 表�
 
 ![](https://komtmt.files.wordpress.com/2015/04/by-nc-nd.png?w=150&h=52)
 
-`static/static/favicons`ディレクトリ以下に、アイコン画像のfaviconを配置してあります。これらのアイコン画像は、[元の画像](https://github.com/cpprefjp/image/blob/master/cpprefjp/icon/cpprefjp-icon-v1.0-transparent.png)に対して、[Favicon Generator. For real.](https://realfavicongenerator.net/)のサービスを使用して自動生成しています。
+`static/static/favicons`ディレクトリ以下に、アイコン画像のfaviconを配置してあります。これらのアイコン画像は、[元の画像](https://github.com/cpprefjp/image/blob/master/cpprefjp/icon/cpprefjp-icon-v2.0-transparent.png)に対して、[Favicon Generator. For real.](https://realfavicongenerator.net/)のサービスを使用して自動生成しています。
