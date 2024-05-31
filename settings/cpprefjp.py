@@ -85,7 +85,8 @@ META_KEYWORDS = 'C++,標準ライブラリ,リファレンス,ドキュメント
 CACHEBUST_TYPE = 'git'
 CACHEBUST_DIR = 'kunai'
 
-USE_RELATIVE_LINK = False
+# 内部リンクを相対リンクで生成する
+USE_RELATIVE_LINK = True
 
 # 並び替えルール
 ORDER_PRIORITY_LIST = [
