@@ -10,6 +10,10 @@ INPUT_DIR = 'cpprefjp/site'
 # 静的ファイルディレクトリ
 STATIC_DIR = 'cpprefjp/static'
 
+# 画像ファイルディレクトリ / GitHubリポジトリ
+IMAGE_DIR = 'cpprefjp/image'
+IMAGE_REPO = 'cpprefjp/image'
+
 # 出力ディレクトリ
 OUTPUT_DIR = 'cpprefjp/cpprefjp.github.io'
 
@@ -80,6 +84,9 @@ META_KEYWORDS = 'C++,標準ライブラリ,リファレンス,ドキュメント
 # 'git' => CACHEBUST_DIR のディレクトリの git rev-parse HEAD の結果を使う
 CACHEBUST_TYPE = 'git'
 CACHEBUST_DIR = 'kunai'
+
+# 内部リンクを相対リンクで生成する
+USE_RELATIVE_LINK = True
 
 # 並び替えルール
 ORDER_PRIORITY_LIST = [

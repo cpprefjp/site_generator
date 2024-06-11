@@ -10,6 +10,10 @@ INPUT_DIR = 'boostjp/site'
 # 静的ファイルディレクトリ
 STATIC_DIR = 'boostjp/static'
 
+# 画像ファイルディレクトリ / GitHubリポジトリ
+IMAGE_DIR = 'boostjp/image'
+IMAGE_REPO = 'boostjp/image'
+
 # 出力ディレクトリ
 OUTPUT_DIR = 'boostjp/boostjp.github.io'
 
@@ -80,6 +84,8 @@ META_KEYWORDS = 'C++,Boost,リファレンス,ドキュメント'
 # 'git' => CACHEBUST_DIR のディレクトリの git rev-parse HEAD の結果を使う
 CACHEBUST_TYPE = 'time'
 
+# 内部リンクを相対リンクで生成する
+USE_RELATIVE_LINK = True
 
 # 並び替えルール
 def get_order_priority(name):
