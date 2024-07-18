@@ -99,7 +99,8 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None, global_defin
         'codehilite',
         'markdown_to_html.defined_words',
         'markdown_to_html.html_attribute',
-        'markdown_to_html.mark'],
+        'markdown_to_html.mark',
+        'markdown_to_html.sponsor'],
         extension_configs=extension_configs)
     md._html_attribute_hrefs = hrefs
 
