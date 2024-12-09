@@ -3,6 +3,10 @@ flake8-import-order==0.18.1
 hacking==2.0.0
 htmlmin==0.1.12
 Jinja2==3.0.3
+# markdown_to_html/html_attribute.py が HTML 実体参照の処理のために Markdown の
+# 内部実装に依存しているので、Markdown バージョンを更新するときは動作確認が必要。
+# 詳細については html_attribute.py の _tohtml(element) のコードコメントを参照の
+# こと
 Markdown==3.2.1
 Pygments==2.5.2
 regex==2020.2.20
