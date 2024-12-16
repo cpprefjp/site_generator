@@ -93,6 +93,7 @@ def md_to_html(md_data, path, hrefs=None, global_qualify_list=None, global_defin
 
     md = markdown.Markdown(extensions=[
         'tables',
+        'markdown_to_html.fix_display_error',
         'markdown_to_html.meta',
         'markdown_to_html.mathjax',
         'markdown_to_html.qualified_fenced_code',
