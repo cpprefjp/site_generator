@@ -8,7 +8,7 @@ site_generator
 ```bash
 $ git clone https://github.com/cpprefjp/site_generator.git
 $ cd site_generator
-$ git submodule update -i
+$ git submodule update --init
 ```
 
 ## ローカルで動作を確認する
@@ -29,7 +29,7 @@ git clone https://github.com/cpprefjp/image.git cpprefjp/image
 # kunai 用のデータを生成する
 git clone https://github.com/cpprefjp/kunai.git
 cd kunai
-git submodule update -i
+git submodule update --init
 cd ..
 ./kunai/docker.sh build
 ./kunai/docker.sh install
