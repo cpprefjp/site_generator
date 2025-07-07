@@ -324,7 +324,7 @@ class Generator(object):
                 # 特殊扱い
                 return 'article'
             else:
-                raise RuntimeError(f'unexpected meta: {metas}')
+                raise RuntimeError(f'unexpected meta: {metas}, file: {"/".join(names)}.md')
         else:
             id_type = metas['id-type'][0]
             if id_type in {'class', 'class template'}:
@@ -337,7 +337,7 @@ class Generator(object):
             elif id_type in {'enum', 'variable', 'type-alias', 'concept', 'named requirement', 'macro', 'namespace', 'cpo'}:
                 return id_type
             else:
-                raise RuntimeError(f'unexpected meta: {metas}')
+                raise RuntimeError(f'unexpected meta: {metas}, file: {"/".join(names)}.md')
 
     def make_index(self, md, names, idgen, nojump):
         title, contents = self.split_title(md)
