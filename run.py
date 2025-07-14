@@ -563,7 +563,12 @@ def main():
         sidebar_index = None
 
     with open('{}/GLOBAL_QUALIFY_LIST.txt'.format(settings.INPUT_DIR), encoding='utf-8') as f:
-        global_qualify_list = '\n'.join([line.strip() for line in f])
+        ls = []
+        for line in f:
+            stripped_line = line.strip()
+            if stripped_line and not stripped_line.startswith('#'):
+                ls.append(stripped_line)
+        global_qualify_list = '\n'.join(ls)
 
     filename = '{}/GLOBAL_DEFINED_WORDS.json'.format(settings.INPUT_DIR)
     if os.path.isfile(filename):
