@@ -147,8 +147,7 @@ def convert(path, template, context, hrefs, global_qualify_list, global_defined_
 
     context['mathjax'] = info['mathjax_enabled']
     dst_dir = os.path.dirname(os.path.join(settings.OUTPUT_DIR, path))
-    if not os.path.exists(dst_dir):
-        os.makedirs(dst_dir)
+    os.makedirs(dst_dir, exist_ok=True)
     html_data = template.render(body=body, **context)
     if settings.USE_MINIFY:
         import htmlmin
