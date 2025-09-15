@@ -268,7 +268,10 @@ class Generator(object):
             m = self._SETEXT_HEADER_RE.match(md)
         if m is None:
             return None, md
-        return self._REMOVE_ESCAPE_RE.sub(r'\1', m.group(1).strip()), md[m.end():]
+        title = self._REMOVE_ESCAPE_RE.sub(r'\1', m.group(1).strip())
+        # Remove paired grave accents from title
+        title = re.sub(r'`([^`]*)`', r'\1', title)
+        return title, md[m.end():]
 
     def get_meta(self, md):
         """メタ情報を取り出す
