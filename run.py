@@ -210,7 +210,10 @@ def split_title(md):
         m = _SETEXT_HEADER_RE.match(md)
     if m is None:
         return None, md
-    return _REMOVE_ESCAPE_RE.sub(r'\1', m.group('header').strip()), m.group('remain')
+    title = _REMOVE_ESCAPE_RE.sub(r'\1', m.group('header').strip())
+    # Remove paired grave accents from title
+    title = re.sub(r'`([^`]*)`', r'\1', title)
+    return title, m.group('remain')
 
 
 def get_meta(md):
@@ -250,7 +253,6 @@ def make_pageinfo(path):
     title, md = split_title(md_data)
     if title is None:
         title = paths[-1]
-    title = title
     meta = get_meta(md_data)
     description = get_description(md)
     return {
