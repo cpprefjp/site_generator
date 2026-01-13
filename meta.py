@@ -198,6 +198,11 @@ class MetaPostprocessor(postprocessors.Postprocessor):
                 text = '<div class="identifier-type">{}</div>'.format('customization point object') + text
             else:
                 text = '<div class="identifier-type">{}</div>'.format(id_type) + text
+        if 'exposition-only' in meta:
+            # 見出しを斜体にするためのクラスを追加
+            text = text.replace('<h1>', '<h1 class="exposition-only">')
+            # 説明専用バッジを追加
+            text = text.replace('</h1>', '<span class="cpp exposition-only" title="説明専用"></span></h1>')
         return text
 
 
