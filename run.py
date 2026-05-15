@@ -138,6 +138,8 @@ def convert(path, template, context, hrefs, global_qualify_list, global_defined_
 
     if 'class' in meta:
         context['title'] = meta['class'][0] + '::' + context['title']
+    if 'namespace' in meta:
+        context['title'] = meta['namespace'][0] + '::' + context['title']
     context['keywords'] += ',' + ','.join(value[0] for value in meta.values())
     context['mdinfo'] = json.dumps(mdinfo)
 
