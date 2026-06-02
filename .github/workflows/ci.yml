@@ -2,6 +2,8 @@ name: CI
 
 on:
   push:
+    branches:
+      - master
   workflow_dispatch:
   pull_request:
     branches:
@@ -16,14 +18,15 @@ jobs:
         submodules: 'recursive'
     - name: cpprefjp
       run: |
+        set -eux -o pipefail
         git clone https://github.com/cpprefjp/site.git cpprefjp/site
         git clone https://github.com/cpprefjp/image.git cpprefjp/image
 
         # kunai 用のデータを生成する
         git clone https://github.com/cpprefjp/kunai.git
-        cd kunai
+        pushd kunai
         git submodule update --init
-        cd ..
+        popd
         ./kunai/docker.sh build
         ./kunai/docker.sh install
         ./kunai/docker.sh dist
@@ -48,6 +51,7 @@ jobs:
         ./docker.sh run settings.cpprefjp_local
     - name: boostjp
       run: |
+        set -eux -o pipefail
         git clone https://github.com/boostjp/site.git boostjp/site
         git clone https://github.com/boostjp/image.git boostjp/image
 
