@@ -19,6 +19,8 @@ jobs:
     - name: cpprefjp
       run: |
         set -eux -o pipefail
+        export DOCKER_IT=""
+
         git clone https://github.com/cpprefjp/site.git cpprefjp/site
         git clone https://github.com/cpprefjp/image.git cpprefjp/image
 
@@ -52,6 +54,8 @@ jobs:
     - name: boostjp
       run: |
         set -eux -o pipefail
+        export DOCKER_IT=""
+
         git clone https://github.com/boostjp/site.git boostjp/site
         git clone https://github.com/boostjp/image.git boostjp/image
 
