@@ -14,6 +14,11 @@ RUN set -ex \
 RUN set -ex \
   && pip install -r requirements.txt
 
-RUN git config --global --add safe.directory /var/src/kunai
+RUN \
+  git config --global --add safe.directory /var/src/kunai && \
+  git config --global --add safe.directory /var/src/cpprefjp/site && \
+  git config --global --add safe.directory /var/src/boostjp/site && \
+  :
+
 
 WORKDIR /var/src
