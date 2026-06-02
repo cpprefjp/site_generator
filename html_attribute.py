@@ -130,11 +130,11 @@ class SafeRawHtmlPostprocessor(postprocessors.Postprocessor):
     HTML_TAG_RE = re.compile(r'^\<\/?([a-zA-Z0-9]+)[^\>]*\>$')
 
     def run(self, text):
-        for i in range(self.markdown.htmlStash.html_counter):
-            html = self.markdown.htmlStash.rawHtmlBlocks[i]
+        for i in range(self.md.htmlStash.html_counter):
+            html = self.md.htmlStash.rawHtmlBlocks[i]
             # if not safe:
             #     html = self.escape(html)
-            text = text.replace(self.markdown.htmlStash.get_placeholder(i), html)
+            text = text.replace(self.md.htmlStash.get_placeholder(i), html)
         return text
 
     def escape(self, html):
