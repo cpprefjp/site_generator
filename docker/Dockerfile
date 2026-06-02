@@ -14,4 +14,6 @@ RUN set -ex \
 RUN set -ex \
   && pip install -r requirements.txt
 
+RUN git config --global --add safe.directory /var/src/kunai
+
 WORKDIR /var/src
