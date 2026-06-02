@@ -35,7 +35,7 @@ META_RE = re.compile(r'^\s*\*\s*(?P<target>.*?)\[meta\s+(?P<name>.*?)\]\s*$')
 
 class MetaExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         metapre = MetaPreprocessor(md)
         metapost = MetaPostprocessor(md)
 

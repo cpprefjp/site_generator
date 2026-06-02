@@ -24,7 +24,7 @@ MATHJAX_INLINE_RE = re.compile(r'\$[^\\\$]*(?:\\\$[^\\\$]*)*\$')
 
 class MathJaxExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         mathjaxpre = MathJaxPreprocessor(md)
 
         md.registerExtension(self)
@@ -57,7 +57,7 @@ class MathJaxPreprocessor(Preprocessor):
             if not m:
                 break
             tex = m.group(0)
-            placeholder = self.markdown.htmlStash.store(code_escape(tex))
+            placeholder = self.md.htmlStash.store(code_escape(tex))
             text = text[:m.start()] + placeholder + text[m.end():]
 
         lines3 = []
@@ -68,7 +68,7 @@ class MathJaxPreprocessor(Preprocessor):
                 if not m:
                     break
                 tex = m.group(0)
-                placeholder = self.markdown.htmlStash.store(code_escape(tex))
+                placeholder = self.md.htmlStash.store(code_escape(tex))
                 line = line[:m.start()] + placeholder + line[m.end():]
             lines3.append(line)
 

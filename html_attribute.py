@@ -387,10 +387,11 @@ class AttributeExtension(markdown.Extension):
 
         super().__init__(**kwargs)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         attr = AttributePostprocessor(md, self.getConfigs())
-        md.postprocessors.add('html_attribute', attr, '_end')
-        md.postprocessors['raw_html'] = SafeRawHtmlPostprocessor(md)
+        md.postprocessors.register(attr, 'html_attribute', 0)
+        md.postprocessors.deregister('raw_html')
+        md.postprocessors.register(SafeRawHtmlPostprocessor(md), 'raw_html', 30)
 
 
 def makeExtension(**kwargs):

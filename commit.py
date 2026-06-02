@@ -35,7 +35,7 @@ def replace_commit_line(line: str) -> str:
 
 class CommitExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         pre = CommitPreprocessor(md)
 
         md.registerExtension(self)

@@ -317,7 +317,7 @@ class DefinedWordExtension(Extension):
             if key in self.config:
                 self.setConfig(key, value)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         """Add DefinedWordTreeprocessor to Markdown instance."""
         proc = DefinedWordTreeprocessor(md, self.getConfigs())
         md.postprocessors.register(proc, 'defined_words', 1)

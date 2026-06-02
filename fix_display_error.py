@@ -34,7 +34,7 @@ def is_item_end_line(line: str) -> bool:
 
 class FixDisplayErrorExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         pre = FixDisplayErrorPreprocessor(md)
 
         md.registerExtension(self)

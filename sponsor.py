@@ -76,7 +76,7 @@ def replace_sponsor_line(line: str, now: datetime.datetime) -> str:
 
 class SponsorExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         pre = SponsorPreprocessor(md)
 
         md.registerExtension(self)
