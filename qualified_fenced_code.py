@@ -61,7 +61,7 @@ class QualifiedFencedCodeExtension(Extension):
     def __init__(self, global_qualify_list):
         self.global_qualify_list = global_qualify_list
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         fenced_block = QualifiedFencedBlockPreprocessor(md, self.global_qualify_list)
         md.registerExtension(self)
 
@@ -263,7 +263,7 @@ class QualifiedFencedBlockPreprocessor(Preprocessor):
     def run(self, lines):
         # Check for code hilite extension
         if not self.checked_for_codehilite:
-            for ext in self.markdown.registeredExtensions:
+            for ext in self.md.registeredExtensions:
                 if isinstance(ext, CodeHiliteExtension):
                     self.codehilite_conf = ext.config
                     break
@@ -288,7 +288,7 @@ class QualifiedFencedBlockPreprocessor(Preprocessor):
                 # サンプルコードだったら、self.markdown の中にコードの情報と ID を入れておく
                 if is_example:
                     example_id = hashlib.sha1((str(example_counter) + code).encode('utf-8')).hexdigest()
-                    self.markdown._example_codes.append({"id": example_id, "code": code})
+                    self.md._example_codes.append({"id": example_id, "code": code})
                     example_counter += 1
 
                 qualifier_list = QualifierList(qualifies)
@@ -319,7 +319,7 @@ class QualifiedFencedBlockPreprocessor(Preprocessor):
 
                 code = qualifier_list.qualify(code)
 
-                placeholder = self.markdown.htmlStash.store(code)
+                placeholder = self.md.htmlStash.store(code)
                 text = '%s\n%s\n%s' % (text[:m.start()], placeholder, text[m.end():])
             else:
                 break

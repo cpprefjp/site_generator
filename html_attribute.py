@@ -130,11 +130,11 @@ class SafeRawHtmlPostprocessor(postprocessors.Postprocessor):
     HTML_TAG_RE = re.compile(r'^\<\/?([a-zA-Z0-9]+)[^\>]*\>$')
 
     def run(self, text):
-        for i in range(self.markdown.htmlStash.html_counter):
-            html = self.markdown.htmlStash.rawHtmlBlocks[i]
+        for i in range(self.md.htmlStash.html_counter):
+            html = self.md.htmlStash.rawHtmlBlocks[i]
             # if not safe:
             #     html = self.escape(html)
-            text = text.replace(self.markdown.htmlStash.get_placeholder(i), html)
+            text = text.replace(self.md.htmlStash.get_placeholder(i), html)
         return text
 
     def escape(self, html):
@@ -387,10 +387,11 @@ class AttributeExtension(markdown.Extension):
 
         super().__init__(**kwargs)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         attr = AttributePostprocessor(md, self.getConfigs())
-        md.postprocessors.add('html_attribute', attr, '_end')
-        md.postprocessors['raw_html'] = SafeRawHtmlPostprocessor(md)
+        md.postprocessors.register(attr, 'html_attribute', 0)
+        md.postprocessors.deregister('raw_html')
+        md.postprocessors.register(SafeRawHtmlPostprocessor(md), 'raw_html', 30)
 
 
 def makeExtension(**kwargs):

@@ -27,7 +27,7 @@ MARK_DICT = {
 
 class MarkExtension(Extension):
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         markpre = MarkPreprocessor(md)
 
         md.registerExtension(self)

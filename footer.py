@@ -16,7 +16,7 @@ class FooterExtension(markdown.Extension):
         for key, value in configs:
             self.setConfig(key, value)
 
-    def extendMarkdown(self, md, md_globals):
+    def extendMarkdown(self, md):
         footer = FooterTreeprocessor()
         footer.config = self.getConfigs()
         md.registerExtension(self)
