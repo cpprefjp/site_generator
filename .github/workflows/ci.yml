@@ -1,0 +1,66 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - master
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        submodules: 'recursive'
+    - name: cpprefjp
+      run: |
+        set -eux -o pipefail
+        export DOCKER_IT=""
+
+        git clone https://github.com/cpprefjp/site.git cpprefjp/site
+        git clone https://github.com/cpprefjp/image.git cpprefjp/image
+
+        # kunai 用のデータを生成する
+        git clone https://github.com/cpprefjp/kunai.git
+        pushd kunai
+        git submodule update --init
+        popd
+        ./kunai/docker.sh build
+        ./kunai/docker.sh install
+        ./kunai/docker.sh dist
+        # 生成した kunai の静的ファイルに対するシンボリックリンクを作る
+        pushd cpprefjp/static/static
+        ln -s ../../../kunai/dist kunai
+        popd
+
+        # crsearch 用のデータを生成する
+        ./crsearch.json/docker.sh build
+        ./crsearch.json/docker.sh run
+        # 生成した crsearch の静的ファイルに対するシンボリックリンクを作る
+        mkdir -p cpprefjp/static/static/crsearch
+        pushd cpprefjp/static/static/crsearch
+        ln -s ../../../../crsearch.json/crsearch.json crsearch.json
+        ln -s ../../../../crsearch.json/crsearch.js crsearch.js # Optional (ローカル file:///... で閲覧する場合に必要)
+        popd
+
+        # site_generator 用の docker イメージを生成する
+        ./docker.sh build
+
+        ./docker.sh run settings.cpprefjp_local
+    - name: boostjp
+      run: |
+        set -eux -o pipefail
+        export DOCKER_IT=""
+
+        git clone https://github.com/boostjp/site.git boostjp/site
+        git clone https://github.com/boostjp/image.git boostjp/image
+
+        # site_generator 用の docker イメージを生成する
+        ./docker.sh build
+
+        ./docker.sh run settings.boostjp_local
+

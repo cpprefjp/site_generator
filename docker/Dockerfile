@@ -1,4 +1,4 @@
-FROM python:3.8.2-alpine
+FROM python:3.12-alpine
 
 MAINTAINER melpon <shigemasa7watanabe+docker@gmail.com>
 
@@ -13,5 +13,13 @@ RUN set -ex \
 
 RUN set -ex \
   && pip install -r requirements.txt
+
+RUN \
+  git config --global --add safe.directory /var/src && \
+  git config --global --add safe.directory /var/src/kunai && \
+  git config --global --add safe.directory /var/src/cpprefjp/site && \
+  git config --global --add safe.directory /var/src/boostjp/site && \
+  :
+
 
 WORKDIR /var/src
