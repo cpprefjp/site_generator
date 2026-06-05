@@ -1,6 +1,3 @@
-[submodule "markdown_to_html"]
-	path = markdown_to_html
-	url = https://github.com/cpprefjp/markdown_to_html.git
 [submodule "crsearch"]
 	path = crsearch
 	url = git@github.com:cpprefjp/crsearch.git
