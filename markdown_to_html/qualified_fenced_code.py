@@ -105,19 +105,28 @@ class QualifyDictionary(object):
         }
 
 
+# 修飾行のパース用正規表現。QualifyDictionary のコマンド一覧は不変なので、
+# モジュール読み込み時に一度だけ構築し Qualifier ごとの再コンパイルを避ける。
+_QUALIFY_DICTIONARY = QualifyDictionary()
+_QUALIFY_LINE_RE = re.compile(
+    r'^[ \t]*\*[ \t]+(?P<target>.*?)(?P<commands>({commands})+)$'.format(
+        commands='|'.join(r'(\[{cmd}(\]|.*?\]))'.format(cmd=cmd) for cmd in _QUALIFY_DICTIONARY.qualify_dic)))
+
+# 同一の修飾行から作られる Qualifier はコンパイル済み正規表現ごと使い回せる
+# (target/commands は行文字列から決まる不変値で find_match は状態を持たない)。
+# GLOBAL_QUALIFY_LIST の各行は全コードブロックで共通なので、ここで共有すること
+# でコードブロック単位に発生していた大量の正規表現コンパイルを削減する。
+# パースに失敗した行は None を記憶して再試行しない。
+_QUALIFIER_CACHE = {}
+
+
 class Qualifier(object):
 
     """修飾１個分のデータを保持するクラス"""
 
-    def __init__(self, line, qdic):
-        command_res = [r'(\[{cmd}(\]|.*?\]))'.format(cmd=cmd) for cmd in qdic.qualify_dic]
-
-        qualify_re_str = r'^[ \t]*\*[ \t]+(?P<target>.*?)(?P<commands>({commands})+)$'.format(
-            commands='|'.join(command_res))
-        qualify_re = re.compile(qualify_re_str)
-
+    def __init__(self, line, qdic=None):
         # parsing
-        m = qualify_re.search(line)
+        m = _QUALIFY_LINE_RE.search(line)
         if not m:
             raise ValueError('Failed parse')
         self.target = m.group('target')
@@ -156,19 +165,26 @@ class Qualifier(object):
 class QualifierList(object):
 
     def __init__(self, lines):
-        self._qdic = QualifyDictionary()
+        self._qdic = _QUALIFY_DICTIONARY
 
-        # Qualifier を作るが、エラーになったデータは取り除く
+        # Qualifier を作るが、エラーになったデータは取り除く。同一行はキャッシュ
+        # から共有し正規表現の再コンパイルを避ける (エラー行は None を記憶)。
         def unique(xs):
             seen = set()
             results = []
             for x in xs:
-                if x not in seen:
-                    seen.add(x)
+                if x in seen:
+                    continue
+                seen.add(x)
+                q = _QUALIFIER_CACHE.get(x, False)
+                if q is False:
                     try:
-                        results.append(Qualifier(x, self._qdic))
+                        q = Qualifier(x)
                     except Exception:
-                        pass
+                        q = None
+                    _QUALIFIER_CACHE[x] = q
+                if q is not None:
+                    results.append(q)
             return results
 
         self._qs = unique(lines)
