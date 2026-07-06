@@ -472,16 +472,30 @@ class Cache(object):
 _JST = timezone(timedelta(hours=9), 'JST')
 
 
-def get_latest_commit_info(path):
-    commit_log = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at %an', path + '.md'], cwd=settings.INPUT_DIR, text=True, errors='ignore')
-    if not commit_log:
-        return None
-    timestamp, author = commit_log.split(' ', 1)
-    return {
-        # git の %at は Unix 時刻 (UTC の瞬間) なので JST に変換して返す。
-        'last_updated': datetime.fromtimestamp(int(timestamp), _JST),
-        'last_author': author,
-    }
+def make_commit_info_dict():
+    commit_info_dict = {}
+    # 以下の git コマンドを実行すると、すべてのコミットの情報（タイムスタンプ、著者、編集されたファイル一覧）が新しい順に出力される。
+    #   1767193200 Author Name
+    #   path/to/file1.md
+    #   path/to/file2.md
+    # これを解析してファイルごとの最新のコミット情報を得る。
+    log = subprocess.check_output(['git', 'log', '--date=iso', '--pretty=format:%at %an', '--name-only'], cwd=settings.INPUT_DIR, text=True, errors='ignore')
+    timestamp_and_author = ''
+    for line in log.split('\n'):
+        if len(line) == 0:
+            continue
+        if line[0].isdecimal():  # 数字から始まるパスは無いと仮定して、先頭が数字なら、タイムスタンプと著者の行
+            timestamp_and_author = line
+        else:  # 編集されたファイルの行
+            path = line
+            if path not in commit_info_dict:
+                timestamp, author = timestamp_and_author.split(' ', 1)
+                commit_info_dict[path] = {
+                    # git の %at は Unix 時刻 (UTC の瞬間) なので JST に変換して返す。
+                    'last_updated': datetime.fromtimestamp(int(timestamp), _JST),
+                    'last_author': author,
+                }
+    return commit_info_dict
 
 
 def get_self_latest_commit_info():
@@ -517,12 +531,12 @@ def remove_not_target_paths(paths):
                 pass
 
 
-def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words):
+def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict):
     path = pageinfo['path']
     if path.count("/") <= 1:
         print(path)
 
-    latest_commit_info = get_latest_commit_info(pageinfo['path'])
+    latest_commit_info = commit_info_dict.get(pageinfo['path'] + '.md')
 
     if not settings.DISABLE_SIDEBAR:
         sidebar.set_active(pageinfo['paths'])
@@ -591,6 +605,8 @@ def main():
     template = env.get_template('content.html')
     hrefs = {pageinfo['href'] for pageinfo in pageinfos}
 
+    commit_info_dict = make_commit_info_dict()
+
     target_pageinfos = []
     for pageinfo in pageinfos:
         if not pageinfo['path'].startswith(TARGET_PREFIX):
@@ -604,7 +620,7 @@ def main():
     if settings.DISABLE_SIDEBAR:
         def run(pageinfos):
             for pageinfo in pageinfos:
-                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words)
+                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict)
 
         target_pageinfos_list = [[] for n in range(CONCURRENCY)]
         for i, pageinfo in enumerate(target_pageinfos):
@@ -625,7 +641,7 @@ def main():
     else:
         # サイドバーを出力する場合は sidebar への書き込みが発生して怖いので普通に出力する
         for pageinfo in target_pageinfos:
-            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words)
+            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict)
 
     for pageinfo in pageinfos:
         cache.converted(pageinfo['path'])
