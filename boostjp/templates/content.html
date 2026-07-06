@@ -92,8 +92,8 @@
   {% if latest_commit_info %}
     <p class="text-right"><small>
       最終更新日時:
-      <span itemprop="datePublished" content="{{ latest_commit_info['last_updated'].strftime('%Y-%m-%dT%H:%M:%S') }}">
-        {{ latest_commit_info['last_updated'].strftime('%Y年%m月%d日 %H時%M分%S秒') }}
+      <span itemprop="datePublished" content="{{ latest_commit_info['last_updated'].strftime('%Y-%m-%dT%H:%M:%S%z') }}">
+        {{ latest_commit_info['last_updated'].strftime('%Y年%m月%d日 %H時%M分%S秒') }} (JST)
       </span>
       <br/>
       <span itemprop="author" itemscope itemtype="http://schema.org/Person">

@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from datetime import datetime
+from datetime import datetime, timedelta, timezone
 import glob
 import importlib
 import json
@@ -469,13 +469,17 @@ class Cache(object):
             f.write(json.dumps(self._cache))
 
 
+_JST = timezone(timedelta(hours=9), 'JST')
+
+
 def get_latest_commit_info(path):
     commit_log = subprocess.check_output(['git', 'log', '-1', '--date=iso', '--pretty=format:%at %an', path + '.md'], cwd=settings.INPUT_DIR, text=True, errors='ignore')
     if not commit_log:
         return None
     timestamp, author = commit_log.split(' ', 1)
     return {
-        'last_updated': datetime.fromtimestamp(int(timestamp)),
+        # git の %at は Unix 時刻 (UTC の瞬間) なので JST に変換して返す。
+        'last_updated': datetime.fromtimestamp(int(timestamp), _JST),
         'last_author': author,
     }
 
