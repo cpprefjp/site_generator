@@ -113,6 +113,11 @@ class MetaPostprocessor(postprocessors.Postprocessor):
             'title': 'C++26で追加',
             'text': '(C++26)',
         },
+        'cpp29': {
+            'class_name': 'cpp29',
+            'title': 'C++29で追加',
+            'text': '(C++29)',
+        },
         'cpp11deprecated': {
             'class_name': 'cpp11deprecated text-warning',
             'title': 'C++11で非推奨',
@@ -172,6 +177,16 @@ class MetaPostprocessor(postprocessors.Postprocessor):
             'class_name': 'cpp26removed text-danger',
             'title': 'C++26で削除',
             'text': '(C++26で削除)',
+        },
+        'cpp29deprecated': {
+            'class_name': 'cpp29deprecated text-warning',
+            'title': 'C++29で非推奨',
+            'text': '(C++29で非推奨)',
+        },
+        'cpp29removed': {
+            'class_name': 'cpp29removed text-danger',
+            'title': 'C++29で削除',
+            'text': '(C++29で削除)',
         },
     }
 

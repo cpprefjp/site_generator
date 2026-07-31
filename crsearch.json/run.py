@@ -467,6 +467,8 @@ class Generator(object):
                     cpp_version = '23'
                 elif any(map(lambda cpp: cpp == 'cpp26', metas['cpp'])):
                     cpp_version = '26'
+                elif any(map(lambda cpp: cpp == 'cpp29', metas['cpp'])):
+                    cpp_version = '29'
 
             # (names[0], cpp_version) が同じものをまとめる
             name = names[0]
