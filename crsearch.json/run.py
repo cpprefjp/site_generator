@@ -322,6 +322,9 @@ class Generator(object):
             elif names[0] == 'article':
                 # それ以外の article/ の下は article 扱いにする
                 return 'article'
+            elif names[0] in {'guide', 'requirements'}:
+                # guide/ と requirements/ の下は article 扱いにする
+                return 'article'
             elif names[0] == 'lang':
                 # lang/ 直下は meta 扱いにする
                 if len(names) == 2:
@@ -334,6 +337,10 @@ class Generator(object):
                 return 'article'
             else:
                 raise RuntimeError(f'unexpected meta: {metas}, file: {"/".join(names)}.md')
+        elif names[0] in {'guide', 'requirements'}:
+            # guide/ と requirements/ の下は、id-type があっても article 扱いにする
+            # (これらの階層のページは所属ヘッダを持たないため、ヘッダ配下に配置できない)
+            return 'article'
         else:
             id_type = metas['id-type'][0]
             if id_type in {'class', 'class template'}:
@@ -510,6 +517,7 @@ def get_files(base_dir):
 def main():
     _KNOWN_DIRS = [
         'site/article', 'site/lang', 'site/reference', 'site/module',
+        'site/guide', 'site/requirements',
     ]
 
     paths = chain.from_iterable([get_files(d) for d in _KNOWN_DIRS])
