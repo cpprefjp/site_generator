@@ -15,10 +15,12 @@
         <meta property="og:site_name" content="{{ self.brand() }}" />
         <meta property="og:type" content="article" />
         <meta property="og:description" content="{{ description|e }}" />
+        <meta property="og:image" content="{{ og_image }}" />
         <meta name="twitter:card" content="summary" />
         <meta name="twitter:title" content="{{ self.title() }}" />
         <meta name="twitter:url" content="{{ url }}" />
         <meta name="twitter:description" content="{{ description|e }}" />
+        <meta name="twitter:image" content="{{ og_image }}" />
 
         {% block rss %}{% endblock %}
 
