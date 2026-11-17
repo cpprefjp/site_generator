@@ -93,6 +93,14 @@ git clone https://github.com/boostjp/image.git boostjp/image
 これでローカルサーバが起動します。
 http://localhost:8000 を開けば `index.html` が表示されます。
 
+## 編集者の GitHub アイコン表示
+
+settings に `GITHUB_REPO` (例: `'cpprefjp/site'`) が設定されている場合、各ページの右上にそのページを編集した人の GitHub アイコンを表示します。
+
+- コミットのメールアドレスから GitHub アカウント名への変換結果は `<setting>.github_users.cache` (例: `settings.cpprefjp.github_users.cache`) に JSON 形式でキャッシュされます。
+- 変換には GitHub API を使います。環境変数 `GITHUB_TOKEN` を設定しておくと、認証付きで問い合わせるためレート制限 (未認証だと 60 リクエスト/時) にかかりにくくなります。`./docker.sh run` は `GITHUB_TOKEN` をコンテナに引き継ぎます。トークンには公開リポジトリの読み取り権限があれば十分です。
+- レート制限などで変換できなかったメールアドレスは、次回実行時に再度問い合わせます。GitHub アカウントと紐付いていないメールアドレスはキャッシュに `null` として保存され、そのエントリを削除すると再度問い合わせます。
+
 ## コーディング規約（開発者向け）
 
 ルールは１つです。

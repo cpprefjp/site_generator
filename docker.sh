@@ -33,7 +33,7 @@ case "$1" in
       exit 1
     fi
     shift 1
-    docker run $DOCKER_RM -v `pwd`:/var/src cpprefjp/site_generator ./run.py "$@" ;;
+    docker run $DOCKER_RM -v `pwd`:/var/src -e GITHUB_TOKEN cpprefjp/site_generator ./run.py "$@" ;;
   "coding" )
     docker run $DOCKER_RM -v `pwd`:/var/src cpprefjp/site_generator flake8 *.py markdown_to_html/*.py ;;
   "console" )

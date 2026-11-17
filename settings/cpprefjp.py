@@ -24,6 +24,10 @@ HISTORY_URL_FORMAT = 'https://github.com/cpprefjp/site/commits/master/{path}'
 PROJECT_URL = 'https://github.com/cpprefjp/site'
 PROJECT_NAME = 'GitHub Project'
 
+# 入力ディレクトリの GitHub リポジトリ (owner/repo)
+# 設定すると、各ページに編集者の GitHub アイコンを表示する
+GITHUB_REPO = 'cpprefjp/site'
+
 # ブランド名
 BRAND = 'cpprefjp - C++日本語リファレンス'
 

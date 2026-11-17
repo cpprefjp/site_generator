@@ -136,6 +136,26 @@
     })();
     </script>
   {% endif %}
+  {% if contributors %}
+    <p class="text-right contributors">
+      {% for contributor in contributors %}
+        {% if contributor.login %}
+          <a href="{{ contributor.url|e }}" target="_blank" title="{{ contributor.login|e }} ({{ contributor.commits }} コミット)" itemprop="contributor" itemscope itemtype="http://schema.org/Person">
+            <meta itemprop="name" content="{{ contributor.name|e }}" />
+            <link itemprop="url" href="{{ contributor.url|e }}" />
+            <img src="{{ contributor.avatar_url|e }}" alt="{{ contributor.login|e }}" width="20" height="20" loading="lazy"
+                 style="border-radius: 50%; box-shadow: 0 0 0 1px #1f232826; vertical-align: middle; margin-left: 3px;">
+          </a>
+        {% else %}
+          <span title="{{ contributor.name|e }} ({{ contributor.commits }} コミット)" itemprop="contributor" itemscope itemtype="http://schema.org/Person"
+                style="display: inline-block; width: 20px; height: 20px; line-height: 20px; border-radius: 50%; box-shadow: 0 0 0 1px #1f232826; vertical-align: middle; margin-left: 3px; text-align: center; color: #999; background: #eee;">
+            <meta itemprop="name" content="{{ contributor.name|e }}" />
+            <span class="fa fa-user"></span>
+          </span>
+        {% endif %}
+      {% endfor %}
+    </p>
+  {% endif %}
 {% endblock %}
 
 {% block mathjax %}

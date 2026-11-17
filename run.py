@@ -14,6 +14,8 @@ import time
 
 import atom
 
+import contributors
+
 import jinja2
 
 import markdown
@@ -30,6 +32,7 @@ if len(sys.argv) < 2:
 settings = importlib.import_module(sys.argv[1])
 CONVERT_ALL = '--all' in sys.argv[2:]
 CACHE_FILE = sys.argv[1] + '.cache'
+GITHUB_USERS_CACHE_FILE = sys.argv[1] + '.github_users.cache'
 TARGET_PREFIX = [x[len('--prefix='):] for x in sys.argv[2:] if x.startswith('--prefix=')]
 TARGET_PREFIX = TARGET_PREFIX[0] if TARGET_PREFIX else ''
 CONCURRENCY = [int(x[len('--concurrency='):]) for x in sys.argv[2:] if x.startswith('--concurrency=')]
@@ -531,7 +534,25 @@ def remove_not_target_paths(paths):
                 pass
 
 
-def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict):
+def make_contributors_getter():
+    """ページのパスから、そのページを編集した人のリストを返す関数を作る
+
+    settings.GITHUB_REPO が設定されていない場合は常に空リストを返す。
+    """
+    repo = getattr(settings, 'GITHUB_REPO', None)
+    if not repo:
+        return lambda path: []
+
+    page_authors, email_to_sha = contributors.collect_page_authors(settings.INPUT_DIR)
+    resolver = contributors.GitHubUserResolver(GITHUB_USERS_CACHE_FILE, repo, os.environ.get('GITHUB_TOKEN'))
+    resolver.resolve(email_to_sha)
+
+    def get_contributors(path):
+        return contributors.make_page_contributors(page_authors.get(path, []), resolver)
+    return get_contributors
+
+
+def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict, get_contributors):
     path = pageinfo['path']
     if path.count("/") <= 1:
         print(path)
@@ -561,6 +582,7 @@ def convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_q
         'project_url': settings.PROJECT_URL,
         'project_name': settings.PROJECT_NAME,
         'latest_commit_info': latest_commit_info,
+        'contributors': get_contributors(pageinfo['path']),
         'keywords': settings.META_KEYWORDS,
         'relative_base': '',
         'relative_index': '/'
@@ -601,6 +623,7 @@ def main():
         global_defined_words = None
 
     cache = Cache(CACHE_FILE)
+    get_contributors = make_contributors_getter()
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(settings.PAGE_TEMPLATE_DIR))
     template = env.get_template('content.html')
     hrefs = {pageinfo['href'] for pageinfo in pageinfos}
@@ -620,7 +643,7 @@ def main():
     if settings.DISABLE_SIDEBAR:
         def run(pageinfos):
             for pageinfo in pageinfos:
-                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict)
+                convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict, get_contributors)
 
         target_pageinfos_list = [[] for n in range(CONCURRENCY)]
         for i, pageinfo in enumerate(target_pageinfos):
@@ -641,7 +664,7 @@ def main():
     else:
         # サイドバーを出力する場合は sidebar への書き込みが発生して怖いので普通に出力する
         for pageinfo in target_pageinfos:
-            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict)
+            convert_pageinfo(pageinfo, sidebar, sidebar_index, template, hrefs, global_qualify_list, global_defined_words, commit_info_dict, get_contributors)
 
     for pageinfo in pageinfos:
         cache.converted(pageinfo['path'])
