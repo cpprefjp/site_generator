@@ -546,6 +546,7 @@ def make_contributors_getter():
     page_authors, email_to_sha = contributors.collect_page_authors(settings.INPUT_DIR)
     resolver = contributors.GitHubUserResolver(GITHUB_USERS_CACHE_FILE, repo, os.environ.get('GITHUB_TOKEN'))
     resolver.resolve(email_to_sha)
+    resolver.build_name_index(page_authors)
 
     def get_contributors(path):
         return contributors.make_page_contributors(page_authors.get(path, []), resolver)
